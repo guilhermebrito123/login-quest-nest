@@ -134,7 +134,7 @@ const Dashboard = () => {
       description: "Mapa operacional e monitoramento 24/7",
       icon: MapPin,
       color: "from-green-500 to-emerald-500",
-      action: () => toast({ title: "Em desenvolvimento", description: "Módulo em breve!" }),
+      action: () => navigate("/mesa-operacoes"),
     },
     {
       title: "Chamados",
