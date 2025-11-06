@@ -6,7 +6,7 @@ import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Badge } from "@/components/ui/badge";
-import { Plus, Search, Edit, Trash2, History, Calendar, MapPin } from "lucide-react";
+import { Plus, Search, Edit, Trash2, History, Calendar, MapPin, Unlink } from "lucide-react";
 import { ColaboradorForm } from "@/components/colaboradores/ColaboradorForm";
 import { PresencaDialog } from "@/components/colaboradores/PresencaDialog";
 import { RequisitosMissingDialog } from "@/components/colaboradores/RequisitosMissingDialog";
@@ -100,6 +100,21 @@ export default function Colaboradores() {
       refetch();
     } catch (error: any) {
       toast.error(error.message || "Erro ao excluir colaborador");
+    }
+  };
+
+  const handleDesvincularPosto = async (colaboradorId: string) => {
+    try {
+      const { error } = await supabase
+        .from("colaboradores")
+        .update({ posto_servico_id: null })
+        .eq("id", colaboradorId);
+
+      if (error) throw error;
+      toast.success("Posto de serviço desvinculado com sucesso");
+      refetch();
+    } catch (error: any) {
+      toast.error(error.message || "Erro ao desvincular posto de serviço");
     }
   };
 
@@ -221,6 +236,16 @@ export default function Colaboradores() {
                       >
                         <MapPin className="h-4 w-4" />
                       </Button>
+                      {colaborador.posto_servico_id && (
+                        <Button
+                          variant="ghost"
+                          size="icon"
+                          onClick={() => handleDesvincularPosto(colaborador.id)}
+                          title="Desvincular Posto de Serviço"
+                        >
+                          <Unlink className="h-4 w-4 text-orange-500" />
+                        </Button>
+                      )}
                       <Button
                         variant="ghost"
                         size="icon"
