@@ -7,7 +7,8 @@ import {
   UserCheck,
   LogOut,
   Calendar,
-  MessageSquare
+  MessageSquare,
+  Package
 } from "lucide-react";
 import { NavLink } from "@/components/NavLink";
 import { useLocation, useNavigate } from "react-router-dom";
@@ -35,6 +36,8 @@ const menuItems = [
   { title: "Ordens de Serviço", url: "/ordens-servico", icon: ClipboardList },
   { title: "Colaboradores", url: "/colaboradores", icon: UserCheck },
   { title: "Escalas", url: "/escalas", icon: Calendar },
+  { title: "Ativos", url: "/ativos", icon: Package },
+  { title: "Estoque", url: "/estoque", icon: Package },
   { title: "Gestão de Usuários", url: "/users", icon: Users },
 ];
 

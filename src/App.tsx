@@ -15,6 +15,8 @@ import MesaOperacoes from "./pages/MesaOperacoes";
 import OrdensServico from "./pages/OrdensServico";
 import Colaboradores from "./pages/Colaboradores";
 import Escalas from "./pages/Escalas";
+import Ativos from "./pages/Ativos";
+import Estoque from "./pages/Estoque";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -36,8 +38,10 @@ const App = () => (
           <Route path="/mesa-operacoes" element={<MesaOperacoes />} />
           <Route path="/chamados" element={<Chamados />} />
           <Route path="/ordens-servico" element={<OrdensServico />} />
-            <Route path="/colaboradores" element={<Colaboradores />} />
-            <Route path="/escalas" element={<Escalas />} />
+          <Route path="/colaboradores" element={<Colaboradores />} />
+          <Route path="/escalas" element={<Escalas />} />
+          <Route path="/ativos" element={<Ativos />} />
+          <Route path="/estoque" element={<Estoque />} />
           {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
           <Route path="*" element={<NotFound />} />
         </Routes>

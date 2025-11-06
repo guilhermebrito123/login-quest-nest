@@ -14,6 +14,62 @@ export type Database = {
   }
   public: {
     Tables: {
+      ativos: {
+        Row: {
+          categoria: string | null
+          created_at: string | null
+          critico: boolean | null
+          data_instalacao: string | null
+          fabricante: string | null
+          frequencia_preventiva_dias: number | null
+          id: string
+          modelo: string | null
+          numero_serie: string | null
+          status: string | null
+          tag_patrimonio: string
+          unidade_id: string | null
+          updated_at: string | null
+        }
+        Insert: {
+          categoria?: string | null
+          created_at?: string | null
+          critico?: boolean | null
+          data_instalacao?: string | null
+          fabricante?: string | null
+          frequencia_preventiva_dias?: number | null
+          id?: string
+          modelo?: string | null
+          numero_serie?: string | null
+          status?: string | null
+          tag_patrimonio: string
+          unidade_id?: string | null
+          updated_at?: string | null
+        }
+        Update: {
+          categoria?: string | null
+          created_at?: string | null
+          critico?: boolean | null
+          data_instalacao?: string | null
+          fabricante?: string | null
+          frequencia_preventiva_dias?: number | null
+          id?: string
+          modelo?: string | null
+          numero_serie?: string | null
+          status?: string | null
+          tag_patrimonio?: string
+          unidade_id?: string | null
+          updated_at?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "ativos_unidade_id_fkey"
+            columns: ["unidade_id"]
+            isOneToOne: false
+            referencedRelation: "unidades"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       chamados: {
         Row: {
           atribuido_para_id: string | null
@@ -636,6 +692,50 @@ export type Database = {
           },
           {
             foreignKeyName: "incidentes_unidade_id_fkey"
+            columns: ["unidade_id"]
+            isOneToOne: false
+            referencedRelation: "unidades"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      itens_estoque: {
+        Row: {
+          created_at: string | null
+          descricao: string
+          id: string
+          quantidade_atual: number
+          quantidade_minima: number
+          sku: string
+          unidade_id: string | null
+          unidade_medida: string
+          updated_at: string | null
+        }
+        Insert: {
+          created_at?: string | null
+          descricao: string
+          id?: string
+          quantidade_atual: number
+          quantidade_minima: number
+          sku: string
+          unidade_id?: string | null
+          unidade_medida: string
+          updated_at?: string | null
+        }
+        Update: {
+          created_at?: string | null
+          descricao?: string
+          id?: string
+          quantidade_atual?: number
+          quantidade_minima?: number
+          sku?: string
+          unidade_id?: string | null
+          unidade_medida?: string
+          updated_at?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "itens_estoque_unidade_id_fkey"
             columns: ["unidade_id"]
             isOneToOne: false
             referencedRelation: "unidades"
