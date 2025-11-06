@@ -7,6 +7,7 @@ import { Label } from "@/components/ui/label";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { useToast } from "@/hooks/use-toast";
 import { Building2, Loader2 } from "lucide-react";
+import { sendWelcomeEmail } from "@/lib/emailService";
 
 const Auth = () => {
   const [isLogin, setIsLogin] = useState(true);
@@ -37,7 +38,7 @@ const Auth = () => {
         });
         navigate("/dashboard");
       } else {
-        const { error } = await supabase.auth.signUp({
+        const { error, data } = await supabase.auth.signUp({
           email,
           password,
           options: {
@@ -51,9 +52,14 @@ const Auth = () => {
 
         if (error) throw error;
 
+        // Send welcome email
+        if (data.user) {
+          await sendWelcomeEmail(email, fullName);
+        }
+
         toast({
           title: "Cadastro realizado!",
-          description: "Sua conta foi criada com sucesso.",
+          description: "Sua conta foi criada com sucesso. Email de boas-vindas enviado!",
         });
         navigate("/dashboard");
       }
