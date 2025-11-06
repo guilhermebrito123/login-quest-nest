@@ -11,7 +11,16 @@ import {
   AlertCircle, 
   LogOut,
   Settings,
-  LayoutDashboard
+  LayoutDashboard,
+  BarChart3,
+  MessageSquare,
+  Eye,
+  Shield,
+  MapPin,
+  FileText,
+  Package,
+  CheckCircle2,
+  AlertTriangle
 } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 
@@ -107,31 +116,87 @@ const Dashboard = () => {
 
   const modules = [
     {
-      title: "Unidades",
-      description: "Gerencie unidades e postos de serviço",
-      icon: Building2,
+      title: "Dashboard 24/7",
+      description: "Resumo executivo e alertas em tempo real",
+      icon: BarChart3,
       color: "from-blue-500 to-cyan-500",
       action: () => toast({ title: "Em desenvolvimento", description: "Módulo em breve!" }),
     },
     {
-      title: "Gestão de Pessoas",
-      description: "Colaboradores, escalas e presença",
-      icon: Users,
-      color: "from-green-500 to-emerald-500",
-      action: () => toast({ title: "Em desenvolvimento", description: "Módulo em breve!" }),
-    },
-    {
-      title: "Ordens de Serviço",
-      description: "Crie e gerencie OS",
-      icon: ClipboardList,
+      title: "Gestão de Contratos",
+      description: "Clientes, contratos, unidades e postos",
+      icon: Building2,
       color: "from-purple-500 to-pink-500",
       action: () => toast({ title: "Em desenvolvimento", description: "Módulo em breve!" }),
     },
     {
+      title: "Mesa de Operações",
+      description: "Mapa operacional e monitoramento 24/7",
+      icon: MapPin,
+      color: "from-green-500 to-emerald-500",
+      action: () => toast({ title: "Em desenvolvimento", description: "Módulo em breve!" }),
+    },
+    {
+      title: "Chamados",
+      description: "Sistema de abertura e acompanhamento",
+      icon: MessageSquare,
+      color: "from-orange-500 to-amber-500",
+      action: () => toast({ title: "Em desenvolvimento", description: "Módulo em breve!" }),
+    },
+    {
+      title: "Ordens de Serviço",
+      description: "Preventivas, corretivas e emergenciais",
+      icon: FileText,
+      color: "from-indigo-500 to-purple-500",
+      action: () => toast({ title: "Em desenvolvimento", description: "Módulo em breve!" }),
+    },
+    {
       title: "Incidentes",
-      description: "Registre e acompanhe incidentes",
-      icon: AlertCircle,
-      color: "from-orange-500 to-red-500",
+      description: "Registro e investigação de incidentes",
+      icon: AlertTriangle,
+      color: "from-red-500 to-rose-500",
+      action: () => toast({ title: "Em desenvolvimento", description: "Módulo em breve!" }),
+    },
+    {
+      title: "Inspeções",
+      description: "Checklists e auditorias",
+      icon: CheckCircle2,
+      color: "from-teal-500 to-cyan-500",
+      action: () => toast({ title: "Em desenvolvimento", description: "Módulo em breve!" }),
+    },
+    {
+      title: "Recursos",
+      description: "Materiais, equipamentos e veículos",
+      icon: Package,
+      color: "from-violet-500 to-purple-500",
+      action: () => toast({ title: "Em desenvolvimento", description: "Módulo em breve!" }),
+    },
+    {
+      title: "Colaboradores",
+      description: "Gestão de pessoal e escalas",
+      icon: Users,
+      color: "from-blue-500 to-indigo-500",
+      action: () => navigate("/users"),
+    },
+    {
+      title: "QSMMA",
+      description: "Qualidade, Segurança, Meio Ambiente e Saúde",
+      icon: Shield,
+      color: "from-emerald-500 to-green-500",
+      action: () => toast({ title: "Em desenvolvimento", description: "Módulo em breve!" }),
+    },
+    {
+      title: "Portal do Cliente",
+      description: "Área restrita para clientes",
+      icon: Eye,
+      color: "from-pink-500 to-rose-500",
+      action: () => toast({ title: "Em desenvolvimento", description: "Módulo em breve!" }),
+    },
+    {
+      title: "Configurações",
+      description: "Configurações do sistema",
+      icon: Settings,
+      color: "from-gray-500 to-slate-500",
       action: () => toast({ title: "Em desenvolvimento", description: "Módulo em breve!" }),
     },
   ];
@@ -146,7 +211,7 @@ const Dashboard = () => {
               <Building2 className="h-6 w-6 text-primary-foreground" />
             </div>
             <div>
-              <h1 className="text-xl font-bold">Facilities Hub</h1>
+              <h1 className="text-xl font-bold">Facilities Center</h1>
               <p className="text-sm text-muted-foreground">
                 Sistema de Gestão de Facilities
               </p>
@@ -183,7 +248,7 @@ const Dashboard = () => {
           </p>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
           {modules.map((module, index) => (
             <Card
               key={index}
@@ -202,29 +267,49 @@ const Dashboard = () => {
         </div>
 
         {/* Quick Stats */}
-        <div className="mt-8 grid grid-cols-1 md:grid-cols-3 gap-6">
+        <div className="mt-8 grid grid-cols-1 md:grid-cols-4 gap-6">
           <Card>
             <CardHeader>
-              <CardTitle className="text-sm font-medium text-muted-foreground">
-                Total de Unidades
-              </CardTitle>
+              <div className="flex items-center justify-between mb-2">
+                <CardTitle className="text-sm font-medium text-muted-foreground">
+                  SLA do Dia
+                </CardTitle>
+                <BarChart3 className="h-5 w-5 text-green-600" />
+              </div>
+              <p className="text-3xl font-bold text-green-600">0%</p>
+            </CardHeader>
+          </Card>
+          <Card>
+            <CardHeader>
+              <div className="flex items-center justify-between mb-2">
+                <CardTitle className="text-sm font-medium text-muted-foreground">
+                  Chamados Abertos
+                </CardTitle>
+                <MessageSquare className="h-5 w-5 text-primary" />
+              </div>
               <p className="text-3xl font-bold">0</p>
             </CardHeader>
           </Card>
           <Card>
             <CardHeader>
-              <CardTitle className="text-sm font-medium text-muted-foreground">
-                Colaboradores Ativos
-              </CardTitle>
-              <p className="text-3xl font-bold">0</p>
+              <div className="flex items-center justify-between mb-2">
+                <CardTitle className="text-sm font-medium text-muted-foreground">
+                  Incidentes Críticos
+                </CardTitle>
+                <AlertTriangle className="h-5 w-5 text-red-600" />
+              </div>
+              <p className="text-3xl font-bold text-red-600">0</p>
             </CardHeader>
           </Card>
           <Card>
             <CardHeader>
-              <CardTitle className="text-sm font-medium text-muted-foreground">
-                OS Abertas
-              </CardTitle>
-              <p className="text-3xl font-bold">0</p>
+              <div className="flex items-center justify-between mb-2">
+                <CardTitle className="text-sm font-medium text-muted-foreground">
+                  Postos Cobertos
+                </CardTitle>
+                <Users className="h-5 w-5 text-primary" />
+              </div>
+              <p className="text-3xl font-bold">0/0</p>
             </CardHeader>
           </Card>
         </div>

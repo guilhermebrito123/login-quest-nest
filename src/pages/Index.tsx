@@ -1,31 +1,40 @@
-import { useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
-import { Building2, CheckCircle2, Users, Shield } from "lucide-react";
+import { Building2, CheckCircle2, Users, Shield, BarChart3, FileText, Activity } from "lucide-react";
 
 const Index = () => {
   const navigate = useNavigate();
 
   const features = [
     {
+      icon: Activity,
+      title: "Monitoramento 24/7",
+      description: "Centro de controle operacional em tempo real",
+    },
+    {
       icon: Building2,
-      title: "Gestão de Unidades",
-      description: "Controle completo de unidades e postos de serviço",
+      title: "Gestão de Contratos",
+      description: "Hierarquia Cliente → Contrato → Unidade → Posto",
     },
     {
       icon: Users,
-      title: "Gestão de Pessoas",
-      description: "Colaboradores, escalas e controle de presença",
+      title: "Gestão de Colaboradores",
+      description: "Controle de escalas, presença e performance",
+    },
+    {
+      icon: FileText,
+      title: "Ordens de Serviço",
+      description: "Preventivas, corretivas e emergenciais",
     },
     {
       icon: CheckCircle2,
-      title: "Ordens de Serviço",
-      description: "Criação e acompanhamento de OS em tempo real",
+      title: "Checklists Inteligentes",
+      description: "Inspeções programadas e auditoria completa",
     },
     {
-      icon: Shield,
-      title: "Controle de Acesso",
-      description: "6 níveis de permissão para segurança total",
+      icon: BarChart3,
+      title: "Dashboard Executivo",
+      description: "KPIs, SLA e NPS em tempo real",
     },
   ];
 
@@ -38,11 +47,13 @@ const Index = () => {
             <Building2 className="h-16 w-16 text-primary-foreground" />
           </div>
           <h1 className="text-5xl md:text-6xl font-bold mb-6 bg-gradient-to-r from-primary via-accent to-primary bg-clip-text text-transparent">
-            Facilities Hub
+            Facilities Center
           </h1>
-          <p className="text-xl text-muted-foreground mb-8">
-            Sistema completo de gestão de facilities com controle total sobre unidades,
-            colaboradores, ordens de serviço e muito mais.
+          <p className="text-xl text-muted-foreground mb-4">
+            Plataforma de gestão de operações de serviço que atua como núcleo de inteligência operacional 24/7
+          </p>
+          <p className="text-lg text-muted-foreground mb-8">
+            Monitoramento contínuo e preditivo com precisão e inteligência para garantir estabilidade operacional
           </p>
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
             <Button
@@ -50,7 +61,7 @@ const Index = () => {
               onClick={() => navigate("/auth")}
               className="text-lg px-8 shadow-lg hover:shadow-xl transition-shadow"
             >
-              Começar Agora
+              Acessar Plataforma
             </Button>
             <Button
               size="lg"
@@ -58,13 +69,13 @@ const Index = () => {
               onClick={() => navigate("/auth")}
               className="text-lg px-8"
             >
-              Já tenho conta
+              Criar Conta
             </Button>
           </div>
         </div>
 
         {/* Features Grid */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-16">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-16">
           {features.map((feature, index) => (
             <div
               key={index}
@@ -82,19 +93,19 @@ const Index = () => {
         {/* Roles Section */}
         <div className="bg-card rounded-2xl p-8 shadow-lg border max-w-4xl mx-auto">
           <h2 className="text-3xl font-bold mb-6 text-center">
-            Perfis de Acesso
+            Controle de Acesso por Perfil (RBAC)
           </h2>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             {[
               { role: "Administrador", description: "Acesso total ao sistema" },
               { role: "Gestor de Operações", description: "Tudo exceto gestão de usuários" },
-              { role: "Supervisor", description: "CRUD de OS, incidentes e checklists" },
-              { role: "Analista Centro Controle", description: "Leitura total + abertura de OS" },
-              { role: "Técnico", description: "Visualizar OS e executar checklists" },
-              { role: "Cliente", description: "Somente leitura e comentários" },
+              { role: "Supervisor", description: "CRUD de OS, incidentes, checklists e presença" },
+              { role: "Analista Centro Controle", description: "Leitura total + abertura de OS e incidentes" },
+              { role: "Técnico", description: "Visualizar OS atribuídas e executar checklists" },
+              { role: "Cliente View", description: "Somente leitura e comentários" },
             ].map((item, index) => (
               <div key={index} className="flex items-start gap-3 p-4 bg-muted/50 rounded-lg">
-                <CheckCircle2 className="h-5 w-5 text-primary flex-shrink-0 mt-0.5" />
+                <Shield className="h-5 w-5 text-primary flex-shrink-0 mt-0.5" />
                 <div>
                   <p className="font-semibold">{item.role}</p>
                   <p className="text-sm text-muted-foreground">{item.description}</p>
@@ -108,7 +119,7 @@ const Index = () => {
       {/* Footer */}
       <footer className="border-t bg-card/50 py-8">
         <div className="container mx-auto px-4 text-center text-muted-foreground">
-          <p>© 2025 Facilities Hub. Todos os direitos reservados.</p>
+          <p>© 2025 Facilities Center - Delta Facilities. Todos os direitos reservados.</p>
         </div>
       </footer>
     </div>

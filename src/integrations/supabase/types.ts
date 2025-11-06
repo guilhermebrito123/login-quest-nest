@@ -14,6 +14,691 @@ export type Database = {
   }
   public: {
     Tables: {
+      cargos: {
+        Row: {
+          created_at: string | null
+          descricao: string | null
+          id: string
+          is_lideranca: boolean | null
+          nome: string
+          updated_at: string | null
+        }
+        Insert: {
+          created_at?: string | null
+          descricao?: string | null
+          id?: string
+          is_lideranca?: boolean | null
+          nome: string
+          updated_at?: string | null
+        }
+        Update: {
+          created_at?: string | null
+          descricao?: string | null
+          id?: string
+          is_lideranca?: boolean | null
+          nome?: string
+          updated_at?: string | null
+        }
+        Relationships: []
+      }
+      chamados: {
+        Row: {
+          avaliacao: number | null
+          comentario_avaliacao: string | null
+          created_at: string | null
+          data_abertura: string | null
+          data_conclusao: string | null
+          descricao: string | null
+          id: string
+          numero: string
+          prioridade: string | null
+          responsavel_id: string | null
+          solicitante_id: string | null
+          status: string | null
+          tipo: string
+          titulo: string
+          unidade_id: string | null
+          updated_at: string | null
+        }
+        Insert: {
+          avaliacao?: number | null
+          comentario_avaliacao?: string | null
+          created_at?: string | null
+          data_abertura?: string | null
+          data_conclusao?: string | null
+          descricao?: string | null
+          id?: string
+          numero: string
+          prioridade?: string | null
+          responsavel_id?: string | null
+          solicitante_id?: string | null
+          status?: string | null
+          tipo: string
+          titulo: string
+          unidade_id?: string | null
+          updated_at?: string | null
+        }
+        Update: {
+          avaliacao?: number | null
+          comentario_avaliacao?: string | null
+          created_at?: string | null
+          data_abertura?: string | null
+          data_conclusao?: string | null
+          descricao?: string | null
+          id?: string
+          numero?: string
+          prioridade?: string | null
+          responsavel_id?: string | null
+          solicitante_id?: string | null
+          status?: string | null
+          tipo?: string
+          titulo?: string
+          unidade_id?: string | null
+          updated_at?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "chamados_responsavel_id_fkey"
+            columns: ["responsavel_id"]
+            isOneToOne: false
+            referencedRelation: "colaboradores"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "chamados_unidade_id_fkey"
+            columns: ["unidade_id"]
+            isOneToOne: false
+            referencedRelation: "unidades"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      checklist_execucoes: {
+        Row: {
+          checklist_id: string | null
+          colaborador_id: string | null
+          created_at: string | null
+          data_execucao: string | null
+          id: string
+          observacoes: string | null
+          status: string | null
+        }
+        Insert: {
+          checklist_id?: string | null
+          colaborador_id?: string | null
+          created_at?: string | null
+          data_execucao?: string | null
+          id?: string
+          observacoes?: string | null
+          status?: string | null
+        }
+        Update: {
+          checklist_id?: string | null
+          colaborador_id?: string | null
+          created_at?: string | null
+          data_execucao?: string | null
+          id?: string
+          observacoes?: string | null
+          status?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "checklist_execucoes_checklist_id_fkey"
+            columns: ["checklist_id"]
+            isOneToOne: false
+            referencedRelation: "checklists"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "checklist_execucoes_colaborador_id_fkey"
+            columns: ["colaborador_id"]
+            isOneToOne: false
+            referencedRelation: "colaboradores"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      checklist_itens: {
+        Row: {
+          checklist_id: string | null
+          created_at: string | null
+          descricao: string
+          id: string
+          obrigatorio: boolean | null
+          ordem: number
+          tipo_resposta: string | null
+        }
+        Insert: {
+          checklist_id?: string | null
+          created_at?: string | null
+          descricao: string
+          id?: string
+          obrigatorio?: boolean | null
+          ordem: number
+          tipo_resposta?: string | null
+        }
+        Update: {
+          checklist_id?: string | null
+          created_at?: string | null
+          descricao?: string
+          id?: string
+          obrigatorio?: boolean | null
+          ordem?: number
+          tipo_resposta?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "checklist_itens_checklist_id_fkey"
+            columns: ["checklist_id"]
+            isOneToOne: false
+            referencedRelation: "checklists"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      checklist_respostas: {
+        Row: {
+          conforme: boolean | null
+          created_at: string | null
+          execucao_id: string | null
+          foto_url: string | null
+          id: string
+          item_id: string | null
+          observacao: string | null
+          resposta: string | null
+        }
+        Insert: {
+          conforme?: boolean | null
+          created_at?: string | null
+          execucao_id?: string | null
+          foto_url?: string | null
+          id?: string
+          item_id?: string | null
+          observacao?: string | null
+          resposta?: string | null
+        }
+        Update: {
+          conforme?: boolean | null
+          created_at?: string | null
+          execucao_id?: string | null
+          foto_url?: string | null
+          id?: string
+          item_id?: string | null
+          observacao?: string | null
+          resposta?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "checklist_respostas_execucao_id_fkey"
+            columns: ["execucao_id"]
+            isOneToOne: false
+            referencedRelation: "checklist_execucoes"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "checklist_respostas_item_id_fkey"
+            columns: ["item_id"]
+            isOneToOne: false
+            referencedRelation: "checklist_itens"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      checklists: {
+        Row: {
+          created_at: string | null
+          descricao: string | null
+          id: string
+          nome: string
+          status: string | null
+          tipo: string | null
+          unidade_id: string | null
+          updated_at: string | null
+        }
+        Insert: {
+          created_at?: string | null
+          descricao?: string | null
+          id?: string
+          nome: string
+          status?: string | null
+          tipo?: string | null
+          unidade_id?: string | null
+          updated_at?: string | null
+        }
+        Update: {
+          created_at?: string | null
+          descricao?: string | null
+          id?: string
+          nome?: string
+          status?: string | null
+          tipo?: string | null
+          unidade_id?: string | null
+          updated_at?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "checklists_unidade_id_fkey"
+            columns: ["unidade_id"]
+            isOneToOne: false
+            referencedRelation: "unidades"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      clientes: {
+        Row: {
+          cnpj: string
+          contato_email: string | null
+          contato_nome: string | null
+          contato_telefone: string | null
+          created_at: string | null
+          id: string
+          razao_social: string
+          status: string | null
+          updated_at: string | null
+        }
+        Insert: {
+          cnpj: string
+          contato_email?: string | null
+          contato_nome?: string | null
+          contato_telefone?: string | null
+          created_at?: string | null
+          id?: string
+          razao_social: string
+          status?: string | null
+          updated_at?: string | null
+        }
+        Update: {
+          cnpj?: string
+          contato_email?: string | null
+          contato_nome?: string | null
+          contato_telefone?: string | null
+          created_at?: string | null
+          id?: string
+          razao_social?: string
+          status?: string | null
+          updated_at?: string | null
+        }
+        Relationships: []
+      }
+      colaboradores: {
+        Row: {
+          cargo_id: string | null
+          cpf: string
+          created_at: string | null
+          data_admissao: string | null
+          data_desligamento: string | null
+          email: string | null
+          escala_id: string | null
+          id: string
+          nome_completo: string
+          observacoes: string | null
+          posto_servico_id: string | null
+          status: string | null
+          telefone: string | null
+          unidade_id: string | null
+          updated_at: string | null
+        }
+        Insert: {
+          cargo_id?: string | null
+          cpf: string
+          created_at?: string | null
+          data_admissao?: string | null
+          data_desligamento?: string | null
+          email?: string | null
+          escala_id?: string | null
+          id?: string
+          nome_completo: string
+          observacoes?: string | null
+          posto_servico_id?: string | null
+          status?: string | null
+          telefone?: string | null
+          unidade_id?: string | null
+          updated_at?: string | null
+        }
+        Update: {
+          cargo_id?: string | null
+          cpf?: string
+          created_at?: string | null
+          data_admissao?: string | null
+          data_desligamento?: string | null
+          email?: string | null
+          escala_id?: string | null
+          id?: string
+          nome_completo?: string
+          observacoes?: string | null
+          posto_servico_id?: string | null
+          status?: string | null
+          telefone?: string | null
+          unidade_id?: string | null
+          updated_at?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "colaboradores_cargo_id_fkey"
+            columns: ["cargo_id"]
+            isOneToOne: false
+            referencedRelation: "cargos"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "colaboradores_escala_id_fkey"
+            columns: ["escala_id"]
+            isOneToOne: false
+            referencedRelation: "escalas"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "colaboradores_posto_servico_id_fkey"
+            columns: ["posto_servico_id"]
+            isOneToOne: false
+            referencedRelation: "postos_servico"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "colaboradores_unidade_id_fkey"
+            columns: ["unidade_id"]
+            isOneToOne: false
+            referencedRelation: "unidades"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      contratos: {
+        Row: {
+          cliente_id: string | null
+          codigo: string
+          created_at: string | null
+          data_fim: string | null
+          data_inicio: string
+          id: string
+          nome: string
+          nps_meta: number | null
+          sla_alvo_pct: number | null
+          status: string | null
+          updated_at: string | null
+        }
+        Insert: {
+          cliente_id?: string | null
+          codigo: string
+          created_at?: string | null
+          data_fim?: string | null
+          data_inicio: string
+          id?: string
+          nome: string
+          nps_meta?: number | null
+          sla_alvo_pct?: number | null
+          status?: string | null
+          updated_at?: string | null
+        }
+        Update: {
+          cliente_id?: string | null
+          codigo?: string
+          created_at?: string | null
+          data_fim?: string | null
+          data_inicio?: string
+          id?: string
+          nome?: string
+          nps_meta?: number | null
+          sla_alvo_pct?: number | null
+          status?: string | null
+          updated_at?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "contratos_cliente_id_fkey"
+            columns: ["cliente_id"]
+            isOneToOne: false
+            referencedRelation: "clientes"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      escalas: {
+        Row: {
+          created_at: string | null
+          descricao: string | null
+          dias_folga: number | null
+          dias_trabalhados: number | null
+          id: string
+          nome: string
+          tipo: string
+          updated_at: string | null
+        }
+        Insert: {
+          created_at?: string | null
+          descricao?: string | null
+          dias_folga?: number | null
+          dias_trabalhados?: number | null
+          id?: string
+          nome: string
+          tipo: string
+          updated_at?: string | null
+        }
+        Update: {
+          created_at?: string | null
+          descricao?: string | null
+          dias_folga?: number | null
+          dias_trabalhados?: number | null
+          id?: string
+          nome?: string
+          tipo?: string
+          updated_at?: string | null
+        }
+        Relationships: []
+      }
+      incidentes: {
+        Row: {
+          acao_tomada: string | null
+          categoria: string | null
+          created_at: string | null
+          data_ocorrencia: string | null
+          data_resolucao: string | null
+          descricao: string | null
+          id: string
+          impacto: string | null
+          numero: string
+          reportado_por_id: string | null
+          responsavel_id: string | null
+          severidade: string
+          status: string | null
+          titulo: string
+          unidade_id: string | null
+          updated_at: string | null
+        }
+        Insert: {
+          acao_tomada?: string | null
+          categoria?: string | null
+          created_at?: string | null
+          data_ocorrencia?: string | null
+          data_resolucao?: string | null
+          descricao?: string | null
+          id?: string
+          impacto?: string | null
+          numero: string
+          reportado_por_id?: string | null
+          responsavel_id?: string | null
+          severidade: string
+          status?: string | null
+          titulo: string
+          unidade_id?: string | null
+          updated_at?: string | null
+        }
+        Update: {
+          acao_tomada?: string | null
+          categoria?: string | null
+          created_at?: string | null
+          data_ocorrencia?: string | null
+          data_resolucao?: string | null
+          descricao?: string | null
+          id?: string
+          impacto?: string | null
+          numero?: string
+          reportado_por_id?: string | null
+          responsavel_id?: string | null
+          severidade?: string
+          status?: string | null
+          titulo?: string
+          unidade_id?: string | null
+          updated_at?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "incidentes_responsavel_id_fkey"
+            columns: ["responsavel_id"]
+            isOneToOne: false
+            referencedRelation: "colaboradores"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "incidentes_unidade_id_fkey"
+            columns: ["unidade_id"]
+            isOneToOne: false
+            referencedRelation: "unidades"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      ordens_servico: {
+        Row: {
+          created_at: string | null
+          data_abertura: string | null
+          data_conclusao: string | null
+          data_prevista: string | null
+          descricao: string | null
+          id: string
+          numero: string
+          observacoes: string | null
+          prioridade: string | null
+          responsavel_id: string | null
+          solicitante_id: string | null
+          status: string | null
+          tipo: string
+          titulo: string
+          unidade_id: string | null
+          updated_at: string | null
+        }
+        Insert: {
+          created_at?: string | null
+          data_abertura?: string | null
+          data_conclusao?: string | null
+          data_prevista?: string | null
+          descricao?: string | null
+          id?: string
+          numero: string
+          observacoes?: string | null
+          prioridade?: string | null
+          responsavel_id?: string | null
+          solicitante_id?: string | null
+          status?: string | null
+          tipo: string
+          titulo: string
+          unidade_id?: string | null
+          updated_at?: string | null
+        }
+        Update: {
+          created_at?: string | null
+          data_abertura?: string | null
+          data_conclusao?: string | null
+          data_prevista?: string | null
+          descricao?: string | null
+          id?: string
+          numero?: string
+          observacoes?: string | null
+          prioridade?: string | null
+          responsavel_id?: string | null
+          solicitante_id?: string | null
+          status?: string | null
+          tipo?: string
+          titulo?: string
+          unidade_id?: string | null
+          updated_at?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "ordens_servico_responsavel_id_fkey"
+            columns: ["responsavel_id"]
+            isOneToOne: false
+            referencedRelation: "colaboradores"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "ordens_servico_unidade_id_fkey"
+            columns: ["unidade_id"]
+            isOneToOne: false
+            referencedRelation: "unidades"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      postos_servico: {
+        Row: {
+          codigo: string
+          created_at: string | null
+          dias_semana: string[] | null
+          efetivo_planejado: number | null
+          escala: string | null
+          funcao: string
+          horario_fim: string | null
+          horario_inicio: string | null
+          id: string
+          intervalo_refeicao: number | null
+          jornada: string | null
+          nome: string
+          observacoes: string | null
+          status: string | null
+          turno: string | null
+          unidade_id: string | null
+          updated_at: string | null
+        }
+        Insert: {
+          codigo: string
+          created_at?: string | null
+          dias_semana?: string[] | null
+          efetivo_planejado?: number | null
+          escala?: string | null
+          funcao: string
+          horario_fim?: string | null
+          horario_inicio?: string | null
+          id?: string
+          intervalo_refeicao?: number | null
+          jornada?: string | null
+          nome: string
+          observacoes?: string | null
+          status?: string | null
+          turno?: string | null
+          unidade_id?: string | null
+          updated_at?: string | null
+        }
+        Update: {
+          codigo?: string
+          created_at?: string | null
+          dias_semana?: string[] | null
+          efetivo_planejado?: number | null
+          escala?: string | null
+          funcao?: string
+          horario_fim?: string | null
+          horario_inicio?: string | null
+          id?: string
+          intervalo_refeicao?: number | null
+          jornada?: string | null
+          nome?: string
+          observacoes?: string | null
+          status?: string | null
+          turno?: string | null
+          unidade_id?: string | null
+          updated_at?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "postos_servico_unidade_id_fkey"
+            columns: ["unidade_id"]
+            isOneToOne: false
+            referencedRelation: "unidades"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       profiles: {
         Row: {
           created_at: string
@@ -40,6 +725,112 @@ export type Database = {
           updated_at?: string
         }
         Relationships: []
+      }
+      recursos_materiais: {
+        Row: {
+          created_at: string | null
+          id: string
+          nome: string
+          observacoes: string | null
+          quantidade: number | null
+          quantidade_minima: number | null
+          status: string | null
+          tipo: string | null
+          unidade_id: string | null
+          updated_at: string | null
+        }
+        Insert: {
+          created_at?: string | null
+          id?: string
+          nome: string
+          observacoes?: string | null
+          quantidade?: number | null
+          quantidade_minima?: number | null
+          status?: string | null
+          tipo?: string | null
+          unidade_id?: string | null
+          updated_at?: string | null
+        }
+        Update: {
+          created_at?: string | null
+          id?: string
+          nome?: string
+          observacoes?: string | null
+          quantidade?: number | null
+          quantidade_minima?: number | null
+          status?: string | null
+          tipo?: string | null
+          unidade_id?: string | null
+          updated_at?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "recursos_materiais_unidade_id_fkey"
+            columns: ["unidade_id"]
+            isOneToOne: false
+            referencedRelation: "unidades"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      unidades: {
+        Row: {
+          cep: string | null
+          cidade: string | null
+          codigo: string
+          contrato_id: string | null
+          created_at: string | null
+          criticidade: string | null
+          endereco: string | null
+          id: string
+          latitude: number | null
+          longitude: number | null
+          nome: string
+          status: string | null
+          uf: string | null
+          updated_at: string | null
+        }
+        Insert: {
+          cep?: string | null
+          cidade?: string | null
+          codigo: string
+          contrato_id?: string | null
+          created_at?: string | null
+          criticidade?: string | null
+          endereco?: string | null
+          id?: string
+          latitude?: number | null
+          longitude?: number | null
+          nome: string
+          status?: string | null
+          uf?: string | null
+          updated_at?: string | null
+        }
+        Update: {
+          cep?: string | null
+          cidade?: string | null
+          codigo?: string
+          contrato_id?: string | null
+          created_at?: string | null
+          criticidade?: string | null
+          endereco?: string | null
+          id?: string
+          latitude?: number | null
+          longitude?: number | null
+          nome?: string
+          status?: string | null
+          uf?: string | null
+          updated_at?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "unidades_contrato_id_fkey"
+            columns: ["contrato_id"]
+            isOneToOne: false
+            referencedRelation: "contratos"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       user_roles: {
         Row: {
