@@ -4,6 +4,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { User } from "@supabase/supabase-js";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { DashboardLayout } from "@/components/DashboardLayout";
 import { 
   Building2, 
   Users, 
@@ -202,42 +203,43 @@ const Dashboard = () => {
   ];
 
   return (
-    <div className="min-h-screen bg-background">
-      {/* Header */}
-      <header className="border-b bg-card shadow-sm">
-        <div className="container mx-auto px-4 py-4 flex items-center justify-between">
-          <div className="flex items-center gap-3">
-            <div className="p-2 bg-gradient-to-br from-primary to-accent rounded-lg">
-              <Building2 className="h-6 w-6 text-primary-foreground" />
+    <DashboardLayout>
+      <div className="min-h-screen bg-background">
+        {/* Header */}
+        <header className="border-b bg-card shadow-sm">
+          <div className="container mx-auto px-4 py-4 flex items-center justify-between">
+            <div className="flex items-center gap-3">
+              <div className="p-2 bg-gradient-to-br from-primary to-accent rounded-lg">
+                <Building2 className="h-6 w-6 text-primary-foreground" />
+              </div>
+              <div>
+                <h1 className="text-xl font-bold">Facilities Center</h1>
+                <p className="text-sm text-muted-foreground">
+                  Sistema de Gestão de Facilities
+                </p>
+              </div>
             </div>
-            <div>
-              <h1 className="text-xl font-bold">Facilities Center</h1>
-              <p className="text-sm text-muted-foreground">
-                Sistema de Gestão de Facilities
-              </p>
-            </div>
-          </div>
-          <div className="flex items-center gap-2">
-            {userRole === "admin" && (
-              <Button
-                variant="outline"
-                size="sm"
-                onClick={() => navigate("/users")}
-              >
-                <Settings className="h-4 w-4 mr-2" />
-                Gestão de Usuários
+            <div className="flex items-center gap-2">
+              {userRole === "admin" && (
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={() => navigate("/users")}
+                >
+                  <Settings className="h-4 w-4 mr-2" />
+                  Gestão de Usuários
+                </Button>
+              )}
+              <Button variant="outline" size="sm" onClick={handleLogout}>
+                <LogOut className="h-4 w-4 mr-2" />
+                Sair
               </Button>
-            )}
-            <Button variant="outline" size="sm" onClick={handleLogout}>
-              <LogOut className="h-4 w-4 mr-2" />
-              Sair
-            </Button>
+            </div>
           </div>
-        </div>
-      </header>
+        </header>
 
-      {/* Main Content */}
-      <main className="container mx-auto px-4 py-8">
+        {/* Main Content */}
+        <main className="container mx-auto px-4 py-8">
         <div className="mb-8">
           <div className="flex items-center gap-2 mb-2">
             <LayoutDashboard className="h-6 w-6 text-primary" />
@@ -315,6 +317,7 @@ const Dashboard = () => {
         </div>
       </main>
     </div>
+    </DashboardLayout>
   );
 };
 

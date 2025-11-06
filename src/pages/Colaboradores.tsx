@@ -11,6 +11,7 @@ import { ColaboradorForm } from "@/components/colaboradores/ColaboradorForm";
 import { ColaboradorCard } from "@/components/colaboradores/ColaboradorCard";
 import { EfetivoStats } from "@/components/colaboradores/EfetivoStats";
 import { PresencaDialog } from "@/components/colaboradores/PresencaDialog";
+import { DashboardLayout } from "@/components/DashboardLayout";
 import { toast } from "sonner";
 
 export default function Colaboradores() {
@@ -108,9 +109,10 @@ export default function Colaboradores() {
   };
 
   return (
-    <div className="min-h-screen bg-background p-8">
-      <div className="max-w-7xl mx-auto space-y-8">
-        <div className="flex items-center justify-between">
+    <DashboardLayout>
+      <div className="min-h-screen bg-background p-8">
+        <div className="max-w-7xl mx-auto space-y-8">
+          <div className="flex items-center justify-between">
           <div>
             <h1 className="text-4xl font-bold text-foreground">Colaboradores</h1>
             <p className="text-muted-foreground mt-2">
@@ -245,7 +247,8 @@ export default function Colaboradores() {
             }}
           />
         )}
+        </div>
       </div>
-    </div>
+    </DashboardLayout>
   );
 }

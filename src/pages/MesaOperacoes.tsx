@@ -6,6 +6,7 @@ import { Button } from "@/components/ui/button";
 import { MapPin, AlertCircle, TrendingUp, Activity } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { toast } from "@/hooks/use-toast";
+import { DashboardLayout } from "@/components/DashboardLayout";
 import mapboxgl from "mapbox-gl";
 import "mapbox-gl/dist/mapbox-gl.css";
 
@@ -249,7 +250,8 @@ const MesaOperacoes = () => {
   }
 
   return (
-    <div className="h-screen flex flex-col">
+    <DashboardLayout>
+      <div className="h-screen flex flex-col">
       {/* Header */}
       <div className="border-b bg-background p-4">
         <div className="container mx-auto">
@@ -397,6 +399,7 @@ const MesaOperacoes = () => {
         )}
       </div>
     </div>
+    </DashboardLayout>
   );
 };
 

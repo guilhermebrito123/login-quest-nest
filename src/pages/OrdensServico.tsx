@@ -10,6 +10,7 @@ import { Badge } from "@/components/ui/badge";
 import { Plus, Search, FileText, ClipboardList, CheckCircle2, XCircle } from "lucide-react";
 import { OrdemServicoForm } from "@/components/os/OrdemServicoForm";
 import { OrdemServicoCard } from "@/components/os/OrdemServicoCard";
+import { DashboardLayout } from "@/components/DashboardLayout";
 import { toast } from "sonner";
 
 export default function OrdensServico() {
@@ -83,8 +84,9 @@ export default function OrdensServico() {
   };
 
   return (
-    <div className="min-h-screen bg-background p-8">
-      <div className="max-w-7xl mx-auto space-y-8">
+    <DashboardLayout>
+      <div className="min-h-screen bg-background p-8">
+        <div className="max-w-7xl mx-auto space-y-8">
         <div className="flex items-center justify-between">
           <div>
             <h1 className="text-4xl font-bold text-foreground">Ordens de Serviço</h1>
@@ -241,7 +243,8 @@ export default function OrdensServico() {
             }}
           />
         )}
+        </div>
       </div>
-    </div>
+    </DashboardLayout>
   );
 }
