@@ -176,7 +176,7 @@ const Dashboard = () => {
       description: "Gestão de pessoal e escalas",
       icon: Users,
       color: "from-blue-500 to-indigo-500",
-      action: () => navigate("/users"),
+      action: () => navigate("/colaboradores"),
     },
     {
       title: "QSMMA",

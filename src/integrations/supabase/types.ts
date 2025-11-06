@@ -784,6 +784,53 @@ export type Database = {
           },
         ]
       }
+      presencas: {
+        Row: {
+          colaborador_id: string
+          created_at: string
+          data: string
+          horario_entrada: string | null
+          horario_saida: string | null
+          id: string
+          observacao: string | null
+          registrado_por: string
+          tipo: string
+          updated_at: string
+        }
+        Insert: {
+          colaborador_id: string
+          created_at?: string
+          data: string
+          horario_entrada?: string | null
+          horario_saida?: string | null
+          id?: string
+          observacao?: string | null
+          registrado_por: string
+          tipo: string
+          updated_at?: string
+        }
+        Update: {
+          colaborador_id?: string
+          created_at?: string
+          data?: string
+          horario_entrada?: string | null
+          horario_saida?: string | null
+          id?: string
+          observacao?: string | null
+          registrado_por?: string
+          tipo?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "presencas_colaborador_id_fkey"
+            columns: ["colaborador_id"]
+            isOneToOne: false
+            referencedRelation: "colaboradores"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       profiles: {
         Row: {
           created_at: string
