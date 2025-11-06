@@ -24,6 +24,9 @@ interface UnidadeComSLA {
     sla_alvo_pct: number;
   };
   sla_atual: number;
+  postos_total: number;
+  postos_preenchidos: number;
+  porcentagem_preenchimento: number;
 }
 
 const MesaOperacoes = () => {
@@ -38,6 +41,42 @@ const MesaOperacoes = () => {
   useEffect(() => {
     fetchUnidades();
     fetchMapboxToken();
+    
+    // Setup realtime subscriptions
+    const incidentesChannel = supabase
+      .channel('incidentes-changes')
+      .on(
+        'postgres_changes',
+        {
+          event: '*',
+          schema: 'public',
+          table: 'incidentes'
+        },
+        () => {
+          fetchUnidades(); // Refetch data when incidentes change
+        }
+      )
+      .subscribe();
+
+    const chamadosChannel = supabase
+      .channel('chamados-changes')
+      .on(
+        'postgres_changes',
+        {
+          event: '*',
+          schema: 'public',
+          table: 'chamados'
+        },
+        () => {
+          fetchUnidades(); // Refetch data when chamados change
+        }
+      )
+      .subscribe();
+
+    return () => {
+      supabase.removeChannel(incidentesChannel);
+      supabase.removeChannel(chamadosChannel);
+    };
   }, []);
 
   const fetchMapboxToken = async () => {
@@ -98,10 +137,12 @@ const MesaOperacoes = () => {
 
       if (unidadesError) throw unidadesError;
 
-      // Calculate SLA for each unidade
+      // Calculate SLA and postos info for each unidade
       const unidadesComSLA = await Promise.all(
         (unidadesData || []).map(async (unidade) => {
           const sla = await calculateSLA(unidade.id);
+          const postosInfo = await getPostosInfo(unidade.id);
+          
           return {
             id: unidade.id,
             nome: unidade.nome,
@@ -116,6 +157,9 @@ const MesaOperacoes = () => {
               sla_alvo_pct: Number(unidade.contratos?.sla_alvo_pct || 95),
             },
             sla_atual: sla,
+            postos_total: postosInfo.total,
+            postos_preenchidos: postosInfo.preenchidos,
+            porcentagem_preenchimento: postosInfo.porcentagem,
           };
         })
       );
@@ -130,6 +174,29 @@ const MesaOperacoes = () => {
     } finally {
       setLoading(false);
     }
+  };
+
+  const getPostosInfo = async (unidadeId: string) => {
+    // Get total postos for this unidade
+    const { data: postosData } = await supabase
+      .from("postos_servico")
+      .select("id, efetivo_planejado")
+      .eq("unidade_id", unidadeId)
+      .eq("status", "ativo");
+
+    const total = postosData?.reduce((sum, posto) => sum + (posto.efetivo_planejado || 1), 0) || 0;
+
+    // Get colaboradores assigned to this unidade
+    const { data: colaboradoresData } = await supabase
+      .from("colaboradores")
+      .select("id")
+      .eq("unidade_id", unidadeId)
+      .eq("status", "ativo");
+
+    const preenchidos = colaboradoresData?.length || 0;
+    const porcentagem = total > 0 ? Math.round((preenchidos / total) * 100) : 0;
+
+    return { total, preenchidos, porcentagem };
   };
 
   const calculateSLA = async (unidadeId: string): Promise<number> => {
@@ -193,12 +260,16 @@ const MesaOperacoes = () => {
         setSelectedUnidade(unidade);
       });
 
-      // Add popup
+      // Add popup with postos info
       const popup = new mapboxgl.Popup({ offset: 25 }).setHTML(
-        `<div style="padding: 8px;">
-          <h3 style="font-weight: bold; margin-bottom: 4px;">${unidade.nome}</h3>
-          <p style="font-size: 12px; color: #666;">${unidade.cidade}/${unidade.uf}</p>
-          <p style="font-size: 12px; margin-top: 4px;">SLA: <strong>${unidade.sla_atual}%</strong></p>
+        `<div style="padding: 12px; min-width: 200px;">
+          <h3 style="font-weight: bold; margin-bottom: 8px; font-size: 14px;">${unidade.nome}</h3>
+          <p style="font-size: 12px; color: #666; margin-bottom: 8px;">${unidade.cidade}/${unidade.uf}</p>
+          <div style="border-top: 1px solid #e5e7eb; padding-top: 8px;">
+            <p style="font-size: 12px; margin-bottom: 4px;">SLA: <strong style="color: ${getSLAColor(unidade.sla_atual)};">${unidade.sla_atual}%</strong></p>
+            <p style="font-size: 12px; margin-bottom: 4px;">Postos Preenchidos: <strong>${unidade.postos_preenchidos}/${unidade.postos_total}</strong></p>
+            <p style="font-size: 12px;">Taxa de Ocupação: <strong style="color: ${unidade.porcentagem_preenchimento >= 90 ? '#22c55e' : unidade.porcentagem_preenchimento >= 70 ? '#eab308' : '#ef4444'};">${unidade.porcentagem_preenchimento}%</strong></p>
+          </div>
         </div>`
       );
 
@@ -412,6 +483,34 @@ const MesaOperacoes = () => {
                 <Badge variant={selectedUnidade.criticidade === "critica" ? "destructive" : "default"}>
                   {selectedUnidade.criticidade}
                 </Badge>
+              </div>
+
+              <div>
+                <p className="text-sm font-medium mb-2">Postos de Serviço</p>
+                <div className="space-y-2">
+                  <div className="flex justify-between text-sm">
+                    <span className="text-muted-foreground">Preenchidos</span>
+                    <span className="font-medium">{selectedUnidade.postos_preenchidos}/{selectedUnidade.postos_total}</span>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <div className="flex-1 bg-secondary rounded-full h-2">
+                      <div
+                        className="h-2 rounded-full transition-all"
+                        style={{
+                          width: `${selectedUnidade.porcentagem_preenchimento}%`,
+                          backgroundColor: selectedUnidade.porcentagem_preenchimento >= 90 ? '#22c55e' : selectedUnidade.porcentagem_preenchimento >= 70 ? '#eab308' : '#ef4444',
+                        }}
+                      />
+                    </div>
+                    <Badge variant={
+                      selectedUnidade.porcentagem_preenchimento >= 90 ? "default" : 
+                      selectedUnidade.porcentagem_preenchimento >= 70 ? "secondary" : 
+                      "destructive"
+                    }>
+                      {selectedUnidade.porcentagem_preenchimento}%
+                    </Badge>
+                  </div>
+                </div>
               </div>
 
               <Button className="w-full" onClick={() => navigate("/contratos")}>
