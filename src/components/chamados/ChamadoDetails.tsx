@@ -147,6 +147,32 @@ export function ChamadoDetails({ chamado, open, onOpenChange, onEdit, onDelete }
     },
   });
 
+  const concluirChamado = useMutation({
+    mutationFn: async () => {
+      const { error } = await supabase
+        .from("chamados")
+        .update({ 
+          status: "concluido",
+          data_conclusao: new Date().toISOString()
+        })
+        .eq("id", chamado.id);
+
+      if (error) throw error;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["chamados"] });
+      toast({ title: "Chamado concluído com sucesso!" });
+      onOpenChange(false);
+    },
+    onError: (error: any) => {
+      toast({
+        title: "Erro ao concluir chamado",
+        description: error.message,
+        variant: "destructive",
+      });
+    },
+  });
+
   const handleEnviarComentario = () => {
     if (novoComentario.trim()) {
       adicionarComentario.mutate(novoComentario);
@@ -177,6 +203,20 @@ export function ChamadoDetails({ chamado, open, onOpenChange, onEdit, onDelete }
                 >
                   <UserCheck className="mr-2 h-4 w-4" />
                   Atribuir para mim
+                </Button>
+              )}
+              {chamado.atribuido_para_id === currentUserId && chamado.status !== "concluido" && (
+                <Button
+                  variant="default"
+                  size="sm"
+                  onClick={() => {
+                    if (confirm("Tem certeza que deseja concluir este chamado?")) {
+                      concluirChamado.mutate();
+                    }
+                  }}
+                  disabled={concluirChamado.isPending}
+                >
+                  Concluir
                 </Button>
               )}
               <Button
