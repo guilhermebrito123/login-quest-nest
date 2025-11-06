@@ -6,7 +6,7 @@ import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Badge } from "@/components/ui/badge";
-import { Plus, Search, Edit, Trash2, History } from "lucide-react";
+import { Plus, Search, Edit, Trash2, History, Calendar, MapPin } from "lucide-react";
 import { ColaboradorForm } from "@/components/colaboradores/ColaboradorForm";
 import { PresencaDialog } from "@/components/colaboradores/PresencaDialog";
 import { RequisitosMissingDialog } from "@/components/colaboradores/RequisitosMissingDialog";
@@ -208,7 +208,24 @@ export default function Colaboradores() {
                       <Button
                         variant="ghost"
                         size="icon"
+                        onClick={() => setEscalaColaborador(colaborador)}
+                        title="Atribuir Escala"
+                      >
+                        <Calendar className="h-4 w-4" />
+                      </Button>
+                      <Button
+                        variant="ghost"
+                        size="icon"
+                        onClick={() => setUnidadeColaborador(colaborador)}
+                        title="Atribuir Unidade/Posto"
+                      >
+                        <MapPin className="h-4 w-4" />
+                      </Button>
+                      <Button
+                        variant="ghost"
+                        size="icon"
                         onClick={() => setPresencaColaborador(colaborador)}
+                        title="Histórico de Presença"
                       >
                         <History className="h-4 w-4" />
                       </Button>
