@@ -5,11 +5,14 @@ import { DashboardLayout } from "@/components/DashboardLayout";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Plus, Search } from "lucide-react";
-import { ChamadoCard } from "@/components/chamados/ChamadoCard";
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
+import { Badge } from "@/components/ui/badge";
+import { Plus, Search, Eye } from "lucide-react";
 import { ChamadoForm } from "@/components/chamados/ChamadoForm";
-import { Skeleton } from "@/components/ui/skeleton";
+import { ChamadoDetails } from "@/components/chamados/ChamadoDetails";
 import { Card } from "@/components/ui/card";
+import { format } from "date-fns";
+import { ptBR } from "date-fns/locale";
 
 export default function Chamados() {
   const [searchTerm, setSearchTerm] = useState("");
@@ -18,6 +21,7 @@ export default function Chamados() {
   const [prioridadeFilter, setPrioridadeFilter] = useState<string>("todos");
   const [showForm, setShowForm] = useState(false);
   const [editingChamado, setEditingChamado] = useState<any>(null);
+  const [detailsChamado, setDetailsChamado] = useState<any>(null);
 
   const { data: chamados, isLoading, refetch } = useQuery({
     queryKey: ["chamados", statusFilter, categoriaFilter, prioridadeFilter],
@@ -69,6 +73,26 @@ export default function Chamados() {
     if (!error) {
       refetch();
     }
+  };
+
+  const getStatusColor = (status: string) => {
+    const colors = {
+      aberto: "bg-yellow-500/10 text-yellow-600 border-yellow-500/20",
+      em_andamento: "bg-blue-500/10 text-blue-600 border-blue-500/20",
+      pendente: "bg-orange-500/10 text-orange-600 border-orange-500/20",
+      concluido: "bg-green-500/10 text-green-600 border-green-500/20",
+    };
+    return colors[status as keyof typeof colors] || "";
+  };
+
+  const getPrioridadeColor = (prioridade: string) => {
+    const colors = {
+      baixa: "bg-gray-500/10 text-gray-600 border-gray-500/20",
+      media: "bg-blue-500/10 text-blue-600 border-blue-500/20",
+      alta: "bg-orange-500/10 text-orange-600 border-orange-500/20",
+      critica: "bg-red-500/10 text-red-600 border-red-500/20",
+    };
+    return colors[prioridade as keyof typeof colors] || "";
   };
 
   return (
@@ -152,28 +176,59 @@ export default function Chamados() {
           </Select>
         </div>
 
-        {isLoading ? (
-          <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
-            {[1, 2, 3].map((i) => (
-              <Skeleton key={i} className="h-[200px]" />
-            ))}
-          </div>
-        ) : filteredChamados && filteredChamados.length > 0 ? (
-          <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
-            {filteredChamados.map((chamado) => (
-              <ChamadoCard
-                key={chamado.id}
-                chamado={chamado}
-                onEdit={handleEdit}
-                onDelete={handleDelete}
-              />
-            ))}
-          </div>
-        ) : (
-          <Card className="p-8 text-center">
-            <p className="text-muted-foreground">Nenhum chamado encontrado</p>
-          </Card>
-        )}
+        <div className="rounded-md border">
+          <Table>
+            <TableHeader>
+              <TableRow>
+                <TableHead>Número</TableHead>
+                <TableHead>Título</TableHead>
+                <TableHead>Unidade</TableHead>
+                <TableHead>Status</TableHead>
+                <TableHead>Prioridade</TableHead>
+                <TableHead>Data Abertura</TableHead>
+                <TableHead className="text-right">Ações</TableHead>
+              </TableRow>
+            </TableHeader>
+            <TableBody>
+              {filteredChamados?.map((chamado) => (
+                <TableRow
+                  key={chamado.id}
+                  className="cursor-pointer hover:bg-muted/50"
+                  onClick={() => setDetailsChamado(chamado)}
+                >
+                  <TableCell className="font-mono text-sm">{chamado.numero}</TableCell>
+                  <TableCell className="font-medium">{chamado.titulo}</TableCell>
+                  <TableCell>{chamado.unidade?.nome || "-"}</TableCell>
+                  <TableCell>
+                    <Badge variant="outline" className={getStatusColor(chamado.status)}>
+                      {chamado.status?.replace("_", " ")}
+                    </Badge>
+                  </TableCell>
+                  <TableCell>
+                    <Badge variant="outline" className={getPrioridadeColor(chamado.prioridade)}>
+                      {chamado.prioridade}
+                    </Badge>
+                  </TableCell>
+                  <TableCell>
+                    {format(new Date(chamado.data_abertura), "dd/MM/yyyy HH:mm", { locale: ptBR })}
+                  </TableCell>
+                  <TableCell className="text-right">
+                    <Button
+                      variant="ghost"
+                      size="icon"
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        setDetailsChamado(chamado);
+                      }}
+                    >
+                      <Eye className="h-4 w-4" />
+                    </Button>
+                  </TableCell>
+                </TableRow>
+              ))}
+            </TableBody>
+          </Table>
+        </div>
 
         {showForm && (
           <ChamadoForm
@@ -188,6 +243,16 @@ export default function Chamados() {
               setEditingChamado(null);
               refetch();
             }}
+          />
+        )}
+
+        {detailsChamado && (
+          <ChamadoDetails
+            chamado={detailsChamado}
+            open={!!detailsChamado}
+            onOpenChange={(open) => !open && setDetailsChamado(null)}
+            onEdit={handleEdit}
+            onDelete={handleDelete}
           />
         )}
       </div>

@@ -4,10 +4,22 @@ import { supabase } from "@/integrations/supabase/client";
 import { DashboardLayout } from "@/components/DashboardLayout";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Plus, Search } from "lucide-react";
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
+import { Badge } from "@/components/ui/badge";
+import { Plus, Search, Edit, Trash2 } from "lucide-react";
 import { CargoForm } from "@/components/colaboradores/CargoForm";
-import { CargoCard } from "@/components/colaboradores/CargoCard";
 import { toast } from "sonner";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from "@/components/ui/alert-dialog";
 
 export default function Cargos() {
   const [searchTerm, setSearchTerm] = useState("");
@@ -52,16 +64,6 @@ export default function Cargos() {
     }
   };
 
-  const handleCloseForm = () => {
-    setShowForm(false);
-    setEditingCargo(null);
-  };
-
-  const handleSuccess = () => {
-    handleCloseForm();
-    refetch();
-  };
-
   return (
     <DashboardLayout>
       <div className="space-y-6">
@@ -85,15 +87,64 @@ export default function Cargos() {
           </div>
         </div>
 
-        <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
-          {filteredCargos?.map((cargo) => (
-            <CargoCard
-              key={cargo.id}
-              cargo={cargo}
-              onEdit={handleEdit}
-              onDelete={handleDelete}
-            />
-          ))}
+        <div className="rounded-md border">
+          <Table>
+            <TableHeader>
+              <TableRow>
+                <TableHead>Nome</TableHead>
+                <TableHead>Descrição</TableHead>
+                <TableHead>Tipo</TableHead>
+                <TableHead className="text-right">Ações</TableHead>
+              </TableRow>
+            </TableHeader>
+            <TableBody>
+              {filteredCargos?.map((cargo) => (
+                <TableRow key={cargo.id}>
+                  <TableCell className="font-medium">{cargo.nome}</TableCell>
+                  <TableCell>{cargo.descricao || "-"}</TableCell>
+                  <TableCell>
+                    {cargo.is_lideranca ? (
+                      <Badge>Liderança</Badge>
+                    ) : (
+                      <Badge variant="outline">Operacional</Badge>
+                    )}
+                  </TableCell>
+                  <TableCell className="text-right">
+                    <div className="flex items-center justify-end gap-2">
+                      <Button
+                        variant="ghost"
+                        size="icon"
+                        onClick={() => handleEdit(cargo)}
+                      >
+                        <Edit className="h-4 w-4" />
+                      </Button>
+                      <AlertDialog>
+                        <AlertDialogTrigger asChild>
+                          <Button variant="ghost" size="icon">
+                            <Trash2 className="h-4 w-4 text-destructive" />
+                          </Button>
+                        </AlertDialogTrigger>
+                        <AlertDialogContent>
+                          <AlertDialogHeader>
+                            <AlertDialogTitle>Confirmar exclusão</AlertDialogTitle>
+                            <AlertDialogDescription>
+                              Tem certeza que deseja excluir este cargo?
+                            </AlertDialogDescription>
+                          </AlertDialogHeader>
+                          <AlertDialogFooter>
+                            <AlertDialogCancel>Cancelar</AlertDialogCancel>
+                            <AlertDialogAction onClick={() => handleDelete(cargo.id)}>
+                              Excluir
+                            </AlertDialogAction>
+                          </AlertDialogFooter>
+                        </AlertDialogContent>
+                      </AlertDialog>
+                    </div>
+                  </TableCell>
+                </TableRow>
+              ))}
+            </TableBody>
+          </Table>
         </div>
 
         {filteredCargos?.length === 0 && (
@@ -102,12 +153,21 @@ export default function Cargos() {
           </div>
         )}
 
-        <CargoForm
-          open={showForm}
-          cargo={editingCargo}
-          onClose={handleCloseForm}
-          onSuccess={handleSuccess}
-        />
+        {showForm && (
+          <CargoForm
+            open={showForm}
+            onClose={() => {
+              setShowForm(false);
+              setEditingCargo(null);
+            }}
+            cargo={editingCargo}
+            onSuccess={() => {
+              setShowForm(false);
+              setEditingCargo(null);
+              refetch();
+            }}
+          />
+        )}
       </div>
     </DashboardLayout>
   );

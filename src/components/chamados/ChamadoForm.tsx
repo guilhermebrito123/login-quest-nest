@@ -50,6 +50,7 @@ export function ChamadoForm({ open, onOpenChange, chamado, onSuccess }: ChamadoF
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [currentUserId, setCurrentUserId] = useState<string | null>(null);
   const [userRole, setUserRole] = useState<string | null>(null);
+  const [uploadedFiles, setUploadedFiles] = useState<File[]>([]);
 
   const form = useForm<ChamadoFormValues>({
     resolver: zodResolver(chamadoSchema),
@@ -184,6 +185,8 @@ export function ChamadoForm({ open, onOpenChange, chamado, onSuccess }: ChamadoF
         numero: chamado?.numero || `CH-${Date.now()}`,
       };
 
+      let chamadoId = chamado?.id;
+
       if (chamado) {
         const { error } = await supabase
           .from("chamados")
@@ -193,16 +196,50 @@ export function ChamadoForm({ open, onOpenChange, chamado, onSuccess }: ChamadoF
         if (error) throw error;
         toast({ title: "Chamado atualizado com sucesso!" });
       } else {
-        const { error } = await supabase
+        const { data: newChamado, error } = await supabase
           .from("chamados")
-          .insert([chamadoData]);
+          .insert([chamadoData])
+          .select()
+          .single();
 
         if (error) throw error;
+        chamadoId = newChamado.id;
         toast({ title: "Chamado criado com sucesso!" });
+      }
+
+      // Upload de arquivos se houver
+      if (uploadedFiles.length > 0 && chamadoId) {
+        const { data: { user } } = await supabase.auth.getUser();
+        if (user) {
+          for (const file of uploadedFiles) {
+            const fileExt = file.name.split('.').pop();
+            const fileName = `${chamadoId}/${Date.now()}.${fileExt}`;
+            
+            const { error: uploadError } = await supabase.storage
+              .from('chamados-anexos')
+              .upload(fileName, file);
+
+            if (uploadError) {
+              console.error('Erro ao fazer upload:', uploadError);
+              continue;
+            }
+
+            // Registrar anexo na tabela
+            await supabase.from('chamados_anexos').insert({
+              chamado_id: chamadoId,
+              usuario_id: user.id,
+              nome_arquivo: file.name,
+              caminho_storage: fileName,
+              tipo_arquivo: file.type,
+              tamanho_bytes: file.size,
+            });
+          }
+        }
       }
 
       onSuccess();
       form.reset();
+      setUploadedFiles([]);
     } catch (error: any) {
       toast({
         title: "Erro ao salvar chamado",
@@ -480,6 +517,26 @@ export function ChamadoForm({ open, onOpenChange, chamado, onSuccess }: ChamadoF
                   </FormItem>
                 )}
               />
+
+              <FormItem className="md:col-span-2">
+                <FormLabel>Anexos</FormLabel>
+                <FormControl>
+                  <Input
+                    type="file"
+                    multiple
+                    accept="image/*,application/pdf,.doc,.docx"
+                    onChange={(e) => {
+                      const files = Array.from(e.target.files || []);
+                      setUploadedFiles(files);
+                    }}
+                  />
+                </FormControl>
+                {uploadedFiles.length > 0 && (
+                  <p className="text-sm text-muted-foreground">
+                    {uploadedFiles.length} arquivo(s) selecionado(s)
+                  </p>
+                )}
+              </FormItem>
             </div>
 
             <div className="flex justify-end gap-2">

@@ -4,17 +4,27 @@ import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Plus, Search, Users, UserCheck, UserX, Briefcase, Calendar } from "lucide-react";
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
+import { Badge } from "@/components/ui/badge";
+import { Plus, Search, Edit, Trash2, History } from "lucide-react";
 import { ColaboradorForm } from "@/components/colaboradores/ColaboradorForm";
-import { ColaboradorCard } from "@/components/colaboradores/ColaboradorCard";
 import { PresencaDialog } from "@/components/colaboradores/PresencaDialog";
 import { RequisitosMissingDialog } from "@/components/colaboradores/RequisitosMissingDialog";
 import { AtribuirEscalaDialog } from "@/components/colaboradores/AtribuirEscalaDialog";
 import { AtribuirUnidadeDialog } from "@/components/colaboradores/AtribuirUnidadeDialog";
 import { DashboardLayout } from "@/components/DashboardLayout";
 import { toast } from "sonner";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from "@/components/ui/alert-dialog";
 
 export default function Colaboradores() {
   const [searchTerm, setSearchTerm] = useState("");
@@ -29,7 +39,7 @@ export default function Colaboradores() {
   const [escalaColaborador, setEscalaColaborador] = useState<any>(null);
   const [unidadeColaborador, setUnidadeColaborador] = useState<any>(null);
 
-  const { data: colaboradores, isLoading, refetch } = useQuery({
+  const { data: colaboradores, refetch } = useQuery({
     queryKey: ["colaboradores", statusFilter, cargoFilter, unidadeFilter],
     queryFn: async () => {
       let query = supabase
@@ -106,166 +116,177 @@ export default function Colaboradores() {
       toast.success("Colaborador excluído com sucesso");
       refetch();
     } catch (error: any) {
-      toast.error("Erro ao excluir colaborador: " + error.message);
+      toast.error(error.message || "Erro ao excluir colaborador");
     }
   };
 
-  const handlePresenca = (colaborador: any) => {
-    setPresencaColaborador(colaborador);
-  };
+  const handleNewColaborador = () => {
+    // Verificar requisitos
+    const missing = [];
+    if (!cargos || cargos.length === 0) missing.push("Cargos");
+    if (!unidades || unidades.length === 0) missing.push("Unidades");
 
-  const handleEscala = (colaborador: any) => {
-    setEscalaColaborador(colaborador);
-  };
-
-  const handleUnidade = (colaborador: any) => {
-    setUnidadeColaborador(colaborador);
-  };
-
-  const checkRequisitos = async () => {
-    const missing: string[] = [];
-
-    // Verificar se há pelo menos 1 cargo
-    const { data: cargosData } = await supabase.from("cargos").select("id").limit(1);
-    if (!cargosData || cargosData.length === 0) {
-      missing.push("Cargo");
-    }
-
-    // Verificar se há pelo menos 1 unidade
-    const { data: unidadesData } = await supabase.from("unidades").select("id").limit(1);
-    if (!unidadesData || unidadesData.length === 0) {
-      missing.push("Unidade");
-    }
-
-    return missing;
-  };
-
-  const handleNovoColaborador = async () => {
-    const missing = await checkRequisitos();
     if (missing.length > 0) {
       setMissingEntities(missing);
       setShowRequisitosMissing(true);
-    } else {
-      setEditingColaborador(null);
-      setShowForm(true);
+      return;
     }
+
+    setShowForm(true);
   };
 
   return (
     <DashboardLayout>
-      <div className="min-h-screen bg-background p-8">
-        <div className="max-w-7xl mx-auto space-y-8">
-          <div className="flex items-center justify-between">
-          <div>
-            <h1 className="text-4xl font-bold text-foreground">Colaboradores</h1>
-            <p className="text-muted-foreground mt-2">
-              Gestão completa de colaboradores, escalas e controle de presença
-            </p>
-          </div>
-          <Button onClick={handleNovoColaborador}>
+      <div className="space-y-6">
+        <div className="flex items-center justify-between">
+          <h1 className="text-3xl font-bold">Colaboradores</h1>
+          <Button onClick={handleNewColaborador}>
             <Plus className="mr-2 h-4 w-4" />
             Novo Colaborador
           </Button>
         </div>
 
-        {/* Filters */}
-        <Card>
-          <CardContent className="pt-6">
-            <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
-              <div className="relative">
-                <Search className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
-                <Input
-                  placeholder="Buscar por nome, CPF, email..."
-                  value={searchTerm}
-                  onChange={(e) => setSearchTerm(e.target.value)}
-                  className="pl-9"
-                />
-              </div>
-              <Select value={statusFilter} onValueChange={setStatusFilter}>
-                <SelectTrigger>
-                  <SelectValue placeholder="Status" />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="all">Todos os Status</SelectItem>
-                  <SelectItem value="ativo">Ativo</SelectItem>
-                  <SelectItem value="inativo">Inativo</SelectItem>
-                  <SelectItem value="ferias">Férias</SelectItem>
-                  <SelectItem value="afastado">Afastado</SelectItem>
-                </SelectContent>
-              </Select>
-              <Select value={cargoFilter} onValueChange={setCargoFilter}>
-                <SelectTrigger>
-                  <SelectValue placeholder="Cargo" />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="all">Todos os Cargos</SelectItem>
-                  {cargos?.map((cargo) => (
-                    <SelectItem key={cargo.id} value={cargo.id}>
-                      {cargo.nome}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-              <Select value={unidadeFilter} onValueChange={setUnidadeFilter}>
-                <SelectTrigger>
-                  <SelectValue placeholder="Unidade" />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="all">Todas as Unidades</SelectItem>
-                  {unidades?.map((unidade) => (
-                    <SelectItem key={unidade.id} value={unidade.id}>
-                      {unidade.nome}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-            </div>
-          </CardContent>
-        </Card>
-
-        {/* Colaboradores List */}
-        <div className="space-y-4">
-          {isLoading ? (
-            <div className="text-center py-12">
-              <p className="text-muted-foreground">Carregando colaboradores...</p>
-            </div>
-          ) : filteredColaboradores && filteredColaboradores.length > 0 ? (
-            <div className="grid gap-4">
-              {filteredColaboradores.map((colaborador) => (
-                <ColaboradorCard
-                  key={colaborador.id}
-                  colaborador={colaborador}
-                  onEdit={handleEdit}
-                  onDelete={handleDelete}
-                  onPresenca={handlePresenca}
-                  onEscala={handleEscala}
-                  onUnidade={handleUnidade}
-                />
+        <div className="flex flex-col gap-4 md:flex-row">
+          <div className="relative flex-1">
+            <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
+            <Input
+              placeholder="Buscar por nome, CPF ou email..."
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value)}
+              className="pl-9"
+            />
+          </div>
+          <Select value={statusFilter} onValueChange={setStatusFilter}>
+            <SelectTrigger className="w-full md:w-[180px]">
+              <SelectValue placeholder="Status" />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="all">Todos Status</SelectItem>
+              <SelectItem value="ativo">Ativo</SelectItem>
+              <SelectItem value="afastado">Afastado</SelectItem>
+              <SelectItem value="ferias">Férias</SelectItem>
+              <SelectItem value="desligado">Desligado</SelectItem>
+            </SelectContent>
+          </Select>
+          <Select value={cargoFilter} onValueChange={setCargoFilter}>
+            <SelectTrigger className="w-full md:w-[180px]">
+              <SelectValue placeholder="Cargo" />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="all">Todos Cargos</SelectItem>
+              {cargos?.map((cargo) => (
+                <SelectItem key={cargo.id} value={cargo.id}>
+                  {cargo.nome}
+                </SelectItem>
               ))}
-            </div>
-          ) : (
-            <Card>
-              <CardContent className="py-12 text-center">
-                <Users className="mx-auto h-12 w-12 text-muted-foreground mb-4" />
-                <p className="text-muted-foreground">Nenhum colaborador encontrado</p>
-                <Button onClick={handleNovoColaborador} className="mt-4">
-                  <Plus className="mr-2 h-4 w-4" />
-                  Adicionar primeiro colaborador
-                </Button>
-              </CardContent>
-            </Card>
-          )}
+            </SelectContent>
+          </Select>
+          <Select value={unidadeFilter} onValueChange={setUnidadeFilter}>
+            <SelectTrigger className="w-full md:w-[180px]">
+              <SelectValue placeholder="Unidade" />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="all">Todas Unidades</SelectItem>
+              {unidades?.map((unidade) => (
+                <SelectItem key={unidade.id} value={unidade.id}>
+                  {unidade.nome}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
         </div>
 
-        {/* Form Dialog */}
+        <div className="rounded-md border">
+          <Table>
+            <TableHeader>
+              <TableRow>
+                <TableHead>Nome</TableHead>
+                <TableHead>Função</TableHead>
+                <TableHead>Cargo</TableHead>
+                <TableHead>Tipo</TableHead>
+                <TableHead>Status</TableHead>
+                <TableHead>Unidade Padrão</TableHead>
+                <TableHead className="text-right">Ações</TableHead>
+              </TableRow>
+            </TableHeader>
+            <TableBody>
+              {filteredColaboradores?.map((colaborador) => (
+                <TableRow key={colaborador.id}>
+                  <TableCell className="font-medium">{colaborador.nome_completo}</TableCell>
+                  <TableCell>{colaborador.posto?.nome || "-"}</TableCell>
+                  <TableCell>{colaborador.cargo?.nome || "-"}</TableCell>
+                  <TableCell>
+                    {colaborador.escala?.tipo === "12x36" ? "escala_12x36" : 
+                     colaborador.escala?.tipo === "diarista" ? "diarista" : 
+                     colaborador.escala?.tipo || "efetivo"}
+                  </TableCell>
+                  <TableCell>
+                    <Badge
+                      variant={
+                        colaborador.status === "ativo"
+                          ? "default"
+                          : colaborador.status === "ferias"
+                          ? "secondary"
+                          : "outline"
+                      }
+                    >
+                      {colaborador.status}
+                    </Badge>
+                  </TableCell>
+                  <TableCell>{colaborador.unidade?.nome || "-"}</TableCell>
+                  <TableCell className="text-right">
+                    <div className="flex items-center justify-end gap-2">
+                      <Button
+                        variant="ghost"
+                        size="icon"
+                        onClick={() => setPresencaColaborador(colaborador)}
+                      >
+                        <History className="h-4 w-4" />
+                      </Button>
+                      <Button
+                        variant="ghost"
+                        size="icon"
+                        onClick={() => handleEdit(colaborador)}
+                      >
+                        <Edit className="h-4 w-4" />
+                      </Button>
+                      <AlertDialog>
+                        <AlertDialogTrigger asChild>
+                          <Button variant="ghost" size="icon">
+                            <Trash2 className="h-4 w-4 text-destructive" />
+                          </Button>
+                        </AlertDialogTrigger>
+                        <AlertDialogContent>
+                          <AlertDialogHeader>
+                            <AlertDialogTitle>Confirmar exclusão</AlertDialogTitle>
+                            <AlertDialogDescription>
+                              Tem certeza que deseja excluir este colaborador?
+                            </AlertDialogDescription>
+                          </AlertDialogHeader>
+                          <AlertDialogFooter>
+                            <AlertDialogCancel>Cancelar</AlertDialogCancel>
+                            <AlertDialogAction onClick={() => handleDelete(colaborador.id)}>
+                              Excluir
+                            </AlertDialogAction>
+                          </AlertDialogFooter>
+                        </AlertDialogContent>
+                      </AlertDialog>
+                    </div>
+                  </TableCell>
+                </TableRow>
+              ))}
+            </TableBody>
+          </Table>
+        </div>
+
         {showForm && (
           <ColaboradorForm
-            colaborador={editingColaborador}
             open={showForm}
             onClose={() => {
               setShowForm(false);
               setEditingColaborador(null);
             }}
+            colaborador={editingColaborador}
             onSuccess={() => {
               setShowForm(false);
               setEditingColaborador(null);
@@ -274,52 +295,40 @@ export default function Colaboradores() {
           />
         )}
 
-        {/* Presenca Dialog */}
         {presencaColaborador && (
           <PresencaDialog
-            colaborador={presencaColaborador}
             open={!!presencaColaborador}
             onClose={() => setPresencaColaborador(null)}
-            onSuccess={() => {
-              setPresencaColaborador(null);
-              toast.success("Presença registrada com sucesso");
-            }}
+            colaborador={presencaColaborador}
+            onSuccess={refetch}
           />
         )}
 
-        {/* Atribuir Escala Dialog */}
+        {showRequisitosMissing && (
+          <RequisitosMissingDialog
+            open={showRequisitosMissing}
+            onClose={() => setShowRequisitosMissing(false)}
+            missingEntities={missingEntities}
+          />
+        )}
+
         {escalaColaborador && (
           <AtribuirEscalaDialog
-            colaborador={escalaColaborador}
             open={!!escalaColaborador}
             onClose={() => setEscalaColaborador(null)}
-            onSuccess={() => {
-              setEscalaColaborador(null);
-              refetch();
-            }}
+            colaborador={escalaColaborador}
+            onSuccess={refetch}
           />
         )}
 
-        {/* Atribuir Unidade Dialog */}
         {unidadeColaborador && (
           <AtribuirUnidadeDialog
-            colaborador={unidadeColaborador}
             open={!!unidadeColaborador}
             onClose={() => setUnidadeColaborador(null)}
-            onSuccess={() => {
-              setUnidadeColaborador(null);
-              refetch();
-            }}
+            colaborador={unidadeColaborador}
+            onSuccess={refetch}
           />
         )}
-
-        {/* Requisitos Missing Dialog */}
-        <RequisitosMissingDialog
-          open={showRequisitosMissing}
-          onClose={() => setShowRequisitosMissing(false)}
-          missingEntities={missingEntities}
-        />
-        </div>
       </div>
     </DashboardLayout>
   );
