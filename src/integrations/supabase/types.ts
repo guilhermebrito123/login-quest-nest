@@ -43,60 +43,102 @@ export type Database = {
       }
       chamados: {
         Row: {
+          atribuido_para_id: string | null
           avaliacao: number | null
+          canal: string | null
+          categoria: string | null
           comentario_avaliacao: string | null
+          contrato_id: string | null
           created_at: string | null
           data_abertura: string | null
           data_conclusao: string | null
           descricao: string | null
           id: string
           numero: string
+          posto_servico_id: string | null
           prioridade: string | null
           responsavel_id: string | null
+          sla_horas: number | null
           solicitante_id: string | null
           status: string | null
+          subcategoria: string | null
           tipo: string
           titulo: string
           unidade_id: string | null
           updated_at: string | null
         }
         Insert: {
+          atribuido_para_id?: string | null
           avaliacao?: number | null
+          canal?: string | null
+          categoria?: string | null
           comentario_avaliacao?: string | null
+          contrato_id?: string | null
           created_at?: string | null
           data_abertura?: string | null
           data_conclusao?: string | null
           descricao?: string | null
           id?: string
           numero: string
+          posto_servico_id?: string | null
           prioridade?: string | null
           responsavel_id?: string | null
+          sla_horas?: number | null
           solicitante_id?: string | null
           status?: string | null
+          subcategoria?: string | null
           tipo: string
           titulo: string
           unidade_id?: string | null
           updated_at?: string | null
         }
         Update: {
+          atribuido_para_id?: string | null
           avaliacao?: number | null
+          canal?: string | null
+          categoria?: string | null
           comentario_avaliacao?: string | null
+          contrato_id?: string | null
           created_at?: string | null
           data_abertura?: string | null
           data_conclusao?: string | null
           descricao?: string | null
           id?: string
           numero?: string
+          posto_servico_id?: string | null
           prioridade?: string | null
           responsavel_id?: string | null
+          sla_horas?: number | null
           solicitante_id?: string | null
           status?: string | null
+          subcategoria?: string | null
           tipo?: string
           titulo?: string
           unidade_id?: string | null
           updated_at?: string | null
         }
         Relationships: [
+          {
+            foreignKeyName: "chamados_atribuido_para_id_fkey"
+            columns: ["atribuido_para_id"]
+            isOneToOne: false
+            referencedRelation: "colaboradores"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "chamados_contrato_id_fkey"
+            columns: ["contrato_id"]
+            isOneToOne: false
+            referencedRelation: "contratos"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "chamados_posto_servico_id_fkey"
+            columns: ["posto_servico_id"]
+            isOneToOne: false
+            referencedRelation: "postos_servico"
+            referencedColumns: ["id"]
+          },
           {
             foreignKeyName: "chamados_responsavel_id_fkey"
             columns: ["responsavel_id"]
@@ -109,6 +151,82 @@ export type Database = {
             columns: ["unidade_id"]
             isOneToOne: false
             referencedRelation: "unidades"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      chamados_anexos: {
+        Row: {
+          caminho_storage: string
+          chamado_id: string
+          created_at: string | null
+          id: string
+          nome_arquivo: string
+          tamanho_bytes: number | null
+          tipo_arquivo: string | null
+          usuario_id: string
+        }
+        Insert: {
+          caminho_storage: string
+          chamado_id: string
+          created_at?: string | null
+          id?: string
+          nome_arquivo: string
+          tamanho_bytes?: number | null
+          tipo_arquivo?: string | null
+          usuario_id: string
+        }
+        Update: {
+          caminho_storage?: string
+          chamado_id?: string
+          created_at?: string | null
+          id?: string
+          nome_arquivo?: string
+          tamanho_bytes?: number | null
+          tipo_arquivo?: string | null
+          usuario_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "chamados_anexos_chamado_id_fkey"
+            columns: ["chamado_id"]
+            isOneToOne: false
+            referencedRelation: "chamados"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      chamados_comentarios: {
+        Row: {
+          chamado_id: string
+          comentario: string
+          created_at: string | null
+          id: string
+          updated_at: string | null
+          usuario_id: string
+        }
+        Insert: {
+          chamado_id: string
+          comentario: string
+          created_at?: string | null
+          id?: string
+          updated_at?: string | null
+          usuario_id: string
+        }
+        Update: {
+          chamado_id?: string
+          comentario?: string
+          created_at?: string | null
+          id?: string
+          updated_at?: string | null
+          usuario_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "chamados_comentarios_chamado_id_fkey"
+            columns: ["chamado_id"]
+            isOneToOne: false
+            referencedRelation: "chamados"
             referencedColumns: ["id"]
           },
         ]

@@ -9,6 +9,7 @@ import Dashboard from "./pages/Dashboard";
 import Dashboard24h from "./pages/Dashboard24h";
 import UserManagement from "./pages/UserManagement";
 import ResetPassword from "./pages/ResetPassword";
+import Chamados from "./pages/Chamados";
 import Contratos from "./pages/Contratos";
 import MesaOperacoes from "./pages/MesaOperacoes";
 import OrdensServico from "./pages/OrdensServico";
@@ -34,6 +35,7 @@ const App = () => (
           <Route path="/users" element={<UserManagement />} />
           <Route path="/contratos" element={<Contratos />} />
           <Route path="/mesa-operacoes" element={<MesaOperacoes />} />
+          <Route path="/chamados" element={<Chamados />} />
           <Route path="/ordens-servico" element={<OrdensServico />} />
             <Route path="/colaboradores" element={<Colaboradores />} />
             <Route path="/escalas" element={<Escalas />} />
