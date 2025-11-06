@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { z } from "zod";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -8,6 +9,41 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { useToast } from "@/hooks/use-toast";
 import { Building2, Loader2 } from "lucide-react";
 import { sendWelcomeEmail } from "@/lib/emailService";
+import { ForgotPasswordDialog } from "@/components/ForgotPasswordDialog";
+
+const signUpSchema = z.object({
+  email: z
+    .string()
+    .trim()
+    .email({ message: "Email inválido" })
+    .max(255, { message: "Email deve ter no máximo 255 caracteres" }),
+  password: z
+    .string()
+    .min(6, { message: "Senha deve ter no mínimo 6 caracteres" })
+    .max(72, { message: "Senha deve ter no máximo 72 caracteres" }),
+  fullName: z
+    .string()
+    .trim()
+    .min(1, { message: "Nome completo é obrigatório" })
+    .max(100, { message: "Nome deve ter no máximo 100 caracteres" }),
+  phone: z
+    .string()
+    .trim()
+    .max(20, { message: "Telefone deve ter no máximo 20 caracteres" })
+    .optional(),
+});
+
+const loginSchema = z.object({
+  email: z
+    .string()
+    .trim()
+    .email({ message: "Email inválido" })
+    .max(255, { message: "Email deve ter no máximo 255 caracteres" }),
+  password: z
+    .string()
+    .min(1, { message: "Senha é obrigatória" })
+    .max(72, { message: "Senha deve ter no máximo 72 caracteres" }),
+});
 
 const Auth = () => {
   const [isLogin, setIsLogin] = useState(true);
@@ -25,9 +61,12 @@ const Auth = () => {
 
     try {
       if (isLogin) {
+        // Validate login data
+        const validatedData = loginSchema.parse({ email, password });
+
         const { error } = await supabase.auth.signInWithPassword({
-          email,
-          password,
+          email: validatedData.email,
+          password: validatedData.password,
         });
 
         if (error) throw error;
@@ -38,14 +77,22 @@ const Auth = () => {
         });
         navigate("/dashboard");
       } else {
-        const { error, data } = await supabase.auth.signUp({
+        // Validate signup data
+        const validatedData = signUpSchema.parse({
           email,
           password,
+          fullName,
+          phone: phone || undefined,
+        });
+
+        const { error, data } = await supabase.auth.signUp({
+          email: validatedData.email,
+          password: validatedData.password,
           options: {
             emailRedirectTo: `${window.location.origin}/dashboard`,
             data: {
-              full_name: fullName,
-              phone: phone,
+              full_name: validatedData.fullName,
+              phone: validatedData.phone,
             },
           },
         });
@@ -54,7 +101,7 @@ const Auth = () => {
 
         // Send welcome email
         if (data.user) {
-          await sendWelcomeEmail(email, fullName);
+          await sendWelcomeEmail(validatedData.email, validatedData.fullName);
         }
 
         toast({
@@ -64,11 +111,19 @@ const Auth = () => {
         navigate("/dashboard");
       }
     } catch (error: any) {
-      toast({
-        title: "Erro",
-        description: error.message,
-        variant: "destructive",
-      });
+      if (error instanceof z.ZodError) {
+        toast({
+          title: "Erro de validação",
+          description: error.errors[0].message,
+          variant: "destructive",
+        });
+      } else {
+        toast({
+          title: "Erro",
+          description: error.message,
+          variant: "destructive",
+        });
+      }
     } finally {
       setLoading(false);
     }
@@ -97,24 +152,26 @@ const Auth = () => {
                 <div className="space-y-2">
                   <Label htmlFor="fullName">Nome Completo</Label>
                   <Input
-                    id="fullName"
-                    type="text"
-                    placeholder="João Silva"
-                    value={fullName}
-                    onChange={(e) => setFullName(e.target.value)}
-                    required={!isLogin}
-                    disabled={loading}
+                id="fullName"
+                type="text"
+                placeholder="João Silva"
+                value={fullName}
+                onChange={(e) => setFullName(e.target.value)}
+                required={!isLogin}
+                disabled={loading}
+                maxLength={100}
                   />
                 </div>
                 <div className="space-y-2">
                   <Label htmlFor="phone">Telefone</Label>
                   <Input
-                    id="phone"
-                    type="tel"
-                    placeholder="(11) 99999-9999"
-                    value={phone}
-                    onChange={(e) => setPhone(e.target.value)}
-                    disabled={loading}
+                id="phone"
+                type="tel"
+                placeholder="(11) 99999-9999"
+                value={phone}
+                onChange={(e) => setPhone(e.target.value)}
+                disabled={loading}
+                maxLength={20}
                   />
                 </div>
               </>
@@ -129,6 +186,7 @@ const Auth = () => {
                 onChange={(e) => setEmail(e.target.value)}
                 required
                 disabled={loading}
+                maxLength={255}
               />
             </div>
             <div className="space-y-2">
@@ -142,6 +200,7 @@ const Auth = () => {
                 required
                 disabled={loading}
                 minLength={6}
+                maxLength={72}
               />
             </div>
             <Button
@@ -161,7 +220,10 @@ const Auth = () => {
               )}
             </Button>
           </form>
-          <div className="mt-6 text-center text-sm">
+          <div className="mt-4 text-center">
+            {isLogin && <ForgotPasswordDialog />}
+          </div>
+          <div className="mt-4 text-center text-sm">
             <button
               type="button"
               onClick={() => setIsLogin(!isLogin)}
