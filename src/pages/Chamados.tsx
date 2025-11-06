@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { DashboardLayout } from "@/components/DashboardLayout";
@@ -19,12 +19,22 @@ export default function Chamados() {
   const [statusFilter, setStatusFilter] = useState<string>("todos");
   const [categoriaFilter, setCategoriaFilter] = useState<string>("todos");
   const [prioridadeFilter, setPrioridadeFilter] = useState<string>("todos");
+  const [atribuidoFilter, setAtribuidoFilter] = useState<string>("todos");
   const [showForm, setShowForm] = useState(false);
   const [editingChamado, setEditingChamado] = useState<any>(null);
   const [detailsChamado, setDetailsChamado] = useState<any>(null);
+  const [currentUserId, setCurrentUserId] = useState<string | null>(null);
+
+  useEffect(() => {
+    const fetchUser = async () => {
+      const { data: { user } } = await supabase.auth.getUser();
+      if (user) setCurrentUserId(user.id);
+    };
+    fetchUser();
+  }, []);
 
   const { data: chamados, isLoading, refetch } = useQuery({
-    queryKey: ["chamados", statusFilter, categoriaFilter, prioridadeFilter],
+    queryKey: ["chamados", statusFilter, categoriaFilter, prioridadeFilter, atribuidoFilter, currentUserId],
     queryFn: async () => {
       let query = supabase
         .from("chamados")
@@ -42,6 +52,9 @@ export default function Chamados() {
       }
       if (prioridadeFilter !== "todos") {
         query = query.eq("prioridade", prioridadeFilter);
+      }
+      if (atribuidoFilter === "meus" && currentUserId) {
+        query = query.eq("atribuido_para_id", currentUserId);
       }
 
       const { data, error } = await query;
@@ -172,6 +185,15 @@ export default function Chamados() {
               <SelectItem value="media">Média</SelectItem>
               <SelectItem value="alta">Alta</SelectItem>
               <SelectItem value="critica">Crítica</SelectItem>
+            </SelectContent>
+          </Select>
+          <Select value={atribuidoFilter} onValueChange={setAtribuidoFilter}>
+            <SelectTrigger className="w-full md:w-[180px]">
+              <SelectValue placeholder="Atribuição" />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="todos">Todos</SelectItem>
+              <SelectItem value="meus">Meus Chamados</SelectItem>
             </SelectContent>
           </Select>
         </div>
