@@ -177,23 +177,49 @@ const MesaOperacoes = () => {
   };
 
   const getPostosInfo = async (unidadeId: string) => {
-    // Get total postos for this unidade
+    // Get all postos for this unidade with their schedule info
     const { data: postosData } = await supabase
       .from("postos_servico")
-      .select("id, efetivo_planejado")
+      .select("id, efetivo_planejado, horario_inicio, horario_fim")
       .eq("unidade_id", unidadeId)
       .eq("status", "ativo");
 
-    const total = postosData?.reduce((sum, posto) => sum + (posto.efetivo_planejado || 1), 0) || 0;
+    if (!postosData) return { total: 0, preenchidos: 0, porcentagem: 0 };
 
-    // Get colaboradores assigned to this unidade
-    const { data: colaboradoresData } = await supabase
-      .from("colaboradores")
-      .select("id")
-      .eq("unidade_id", unidadeId)
-      .eq("status", "ativo");
+    // Calculate total positions needed
+    const total = postosData.reduce((sum, posto) => sum + (posto.efetivo_planejado || 1), 0);
 
-    const preenchidos = colaboradoresData?.length || 0;
+    // Get current time in minutes
+    const agora = new Date();
+    const horaAtual = agora.getHours() * 60 + agora.getMinutes();
+
+    // Count filled positions considering work schedule
+    let preenchidos = 0;
+    
+    for (const posto of postosData) {
+      // Check if within work schedule
+      let dentroHorario = true;
+      if (posto.horario_inicio && posto.horario_fim) {
+        const [hIni, mIni] = posto.horario_inicio.split(':').map(Number);
+        const [hFim, mFim] = posto.horario_fim.split(':').map(Number);
+        const inicioMin = hIni * 60 + mIni;
+        const fimMin = hFim * 60 + mFim;
+        
+        dentroHorario = horaAtual >= inicioMin && horaAtual <= fimMin;
+      }
+
+      // Only count if within schedule
+      if (dentroHorario) {
+        const { data: colabsData } = await supabase
+          .from("colaboradores")
+          .select("id")
+          .eq("posto_servico_id", posto.id)
+          .eq("status", "ativo");
+
+        preenchidos += colabsData?.length || 0;
+      }
+    }
+
     const porcentagem = total > 0 ? Math.round((preenchidos / total) * 100) : 0;
 
     return { total, preenchidos, porcentagem };
