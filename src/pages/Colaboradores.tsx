@@ -9,7 +9,6 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Plus, Search, Users, UserCheck, UserX, Briefcase, Calendar } from "lucide-react";
 import { ColaboradorForm } from "@/components/colaboradores/ColaboradorForm";
 import { ColaboradorCard } from "@/components/colaboradores/ColaboradorCard";
-import { EfetivoStats } from "@/components/colaboradores/EfetivoStats";
 import { PresencaDialog } from "@/components/colaboradores/PresencaDialog";
 import { RequisitosMissingDialog } from "@/components/colaboradores/RequisitosMissingDialog";
 import { AtribuirEscalaDialog } from "@/components/colaboradores/AtribuirEscalaDialog";
@@ -168,9 +167,6 @@ export default function Colaboradores() {
             Novo Colaborador
           </Button>
         </div>
-
-        {/* Stats Dashboard */}
-        <EfetivoStats colaboradores={colaboradores || []} />
 
         {/* Filters */}
         <Card>

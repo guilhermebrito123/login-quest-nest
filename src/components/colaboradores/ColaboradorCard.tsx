@@ -2,7 +2,7 @@ import { useState } from "react";
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { Pencil, Trash2, Mail, Phone, Briefcase, MapPin, Calendar, CalendarCheck, Clock } from "lucide-react";
+import { Pencil, Trash2, Mail, Phone, Briefcase, MapPin, Calendar, CalendarCheck, Clock, ChevronDown, ChevronUp } from "lucide-react";
 import {
   AlertDialog,
   AlertDialogAction,
@@ -25,6 +25,7 @@ interface ColaboradorCardProps {
 
 export function ColaboradorCard({ colaborador, onEdit, onDelete, onPresenca, onEscala, onUnidade }: ColaboradorCardProps) {
   const [showDeleteDialog, setShowDeleteDialog] = useState(false);
+  const [showDetails, setShowDetails] = useState(false);
 
   const getStatusColor = (status: string) => {
     switch (status) {
@@ -44,20 +45,17 @@ export function ColaboradorCard({ colaborador, onEdit, onDelete, onPresenca, onE
     <>
       <Card className="hover:shadow-md transition-shadow">
         <CardHeader className="pb-3">
-          <div className="flex items-start justify-between">
+          <div className="flex items-start justify-between gap-4">
             <div className="space-y-1 flex-1">
-              <div className="flex items-center gap-2">
+              <div className="flex items-center gap-2 flex-wrap">
                 <h3 className="text-lg font-semibold">{colaborador.nome_completo}</h3>
                 <Badge className={getStatusColor(colaborador.status)}>{colaborador.status}</Badge>
-              </div>
-              <div className="flex flex-wrap gap-2 text-sm text-muted-foreground">
-                {colaborador.cpf && <span>CPF: {colaborador.cpf}</span>}
                 {colaborador.cargo?.nome && (
                   <Badge variant="outline">{colaborador.cargo.nome}</Badge>
                 )}
               </div>
             </div>
-            <div className="flex gap-1">
+            <div className="flex gap-1 flex-shrink-0">
               {colaborador.status === "ativo" && (
                 <>
                   <Button variant="ghost" size="icon" onClick={() => onPresenca(colaborador)} title="Registrar Presença">
@@ -81,6 +79,9 @@ export function ColaboradorCard({ colaborador, onEdit, onDelete, onPresenca, onE
               >
                 <MapPin className="h-4 w-4" />
               </Button>
+              <Button variant="ghost" size="icon" onClick={() => setShowDetails(!showDetails)}>
+                {showDetails ? <ChevronUp className="h-4 w-4" /> : <ChevronDown className="h-4 w-4" />}
+              </Button>
               <Button variant="ghost" size="icon" onClick={() => onEdit(colaborador)}>
                 <Pencil className="h-4 w-4" />
               </Button>
@@ -90,54 +91,55 @@ export function ColaboradorCard({ colaborador, onEdit, onDelete, onPresenca, onE
             </div>
           </div>
         </CardHeader>
-        <CardContent>
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-3 text-sm">
-            {colaborador.email && (
-              <div className="flex items-center gap-2">
-                <Mail className="h-4 w-4 text-muted-foreground" />
-                <span className="truncate">{colaborador.email}</span>
-              </div>
-            )}
-            {colaborador.telefone && (
-              <div className="flex items-center gap-2">
-                <Phone className="h-4 w-4 text-muted-foreground" />
-                <span>{colaborador.telefone}</span>
-              </div>
-            )}
-            {colaborador.unidade?.nome && (
-              <div className="flex items-center gap-2">
-                <MapPin className="h-4 w-4 text-muted-foreground" />
-                <span className="truncate">{colaborador.unidade.nome}</span>
-              </div>
-            )}
-            {colaborador.data_admissao && (
-              <div className="flex items-center gap-2">
-                <Calendar className="h-4 w-4 text-muted-foreground" />
-                <span>{formatDate(colaborador.data_admissao)}</span>
-              </div>
-            )}
-          </div>
-          
-          {colaborador.posto?.nome && (
-            <div className="mt-3 pt-3 border-t">
-              <div className="flex items-center gap-2 text-sm">
-                <Briefcase className="h-4 w-4 text-muted-foreground" />
-                <span className="font-medium">Posto:</span>
-                <span>{colaborador.posto.codigo} - {colaborador.posto.nome}</span>
-              </div>
+        
+        {showDetails && (
+          <CardContent>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-3 text-sm">
+              {colaborador.cpf && (
+                <div className="flex items-center gap-2">
+                  <span className="font-medium">CPF:</span>
+                  <span>{colaborador.cpf}</span>
+                </div>
+              )}
+              {colaborador.email && (
+                <div className="flex items-center gap-2">
+                  <Mail className="h-4 w-4 text-muted-foreground" />
+                  <span className="truncate">{colaborador.email}</span>
+                </div>
+              )}
+              {colaborador.telefone && (
+                <div className="flex items-center gap-2">
+                  <Phone className="h-4 w-4 text-muted-foreground" />
+                  <span>{colaborador.telefone}</span>
+                </div>
+              )}
+              {colaborador.unidade?.nome && (
+                <div className="flex items-center gap-2">
+                  <MapPin className="h-4 w-4 text-muted-foreground" />
+                  <span className="truncate">{colaborador.unidade.nome}</span>
+                </div>
+              )}
+              {colaborador.data_admissao && (
+                <div className="flex items-center gap-2">
+                  <Calendar className="h-4 w-4 text-muted-foreground" />
+                  <span>{formatDate(colaborador.data_admissao)}</span>
+                </div>
+              )}
+              {colaborador.posto?.nome && (
+                <div className="flex items-center gap-2">
+                  <Briefcase className="h-4 w-4 text-muted-foreground" />
+                  <span>{colaborador.posto.codigo} - {colaborador.posto.nome}</span>
+                </div>
+              )}
+              {colaborador.escala && (
+                <div className="flex items-center gap-2">
+                  <Clock className="h-4 w-4 text-muted-foreground" />
+                  <span>{colaborador.escala.nome} ({colaborador.escala.tipo})</span>
+                </div>
+              )}
             </div>
-          )}
-
-          {colaborador.escala && (
-            <div className="mt-2">
-              <div className="flex items-center gap-2 text-sm">
-                <Calendar className="h-4 w-4 text-muted-foreground" />
-                <span className="font-medium">Escala:</span>
-                <span>{colaborador.escala.nome} ({colaborador.escala.tipo})</span>
-              </div>
-            </div>
-          )}
-        </CardContent>
+          </CardContent>
+        )}
       </Card>
 
       <AlertDialog open={showDeleteDialog} onOpenChange={setShowDeleteDialog}>

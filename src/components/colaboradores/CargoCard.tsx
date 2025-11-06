@@ -1,7 +1,8 @@
+import { useState } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { Pencil, Trash2, Shield } from "lucide-react";
+import { Pencil, Trash2, Shield, ChevronDown, ChevronUp } from "lucide-react";
 import {
   AlertDialog,
   AlertDialogAction,
@@ -26,6 +27,8 @@ interface CargoCardProps {
 }
 
 export function CargoCard({ cargo, onEdit, onDelete }: CargoCardProps) {
+  const [showDetails, setShowDetails] = useState(false);
+
   return (
     <Card>
       <CardHeader>
@@ -42,6 +45,15 @@ export function CargoCard({ cargo, onEdit, onDelete }: CargoCardProps) {
             </div>
           </div>
           <div className="flex gap-1">
+            {cargo.descricao && (
+              <Button
+                variant="ghost"
+                size="icon"
+                onClick={() => setShowDetails(!showDetails)}
+              >
+                {showDetails ? <ChevronUp className="h-4 w-4" /> : <ChevronDown className="h-4 w-4" />}
+              </Button>
+            )}
             <Button
               variant="ghost"
               size="icon"
@@ -73,7 +85,7 @@ export function CargoCard({ cargo, onEdit, onDelete }: CargoCardProps) {
           </div>
         </div>
       </CardHeader>
-      {cargo.descricao && (
+      {showDetails && cargo.descricao && (
         <CardContent>
           <p className="text-sm text-muted-foreground">{cargo.descricao}</p>
         </CardContent>
