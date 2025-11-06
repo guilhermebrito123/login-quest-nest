@@ -122,7 +122,7 @@ export type Database = {
             foreignKeyName: "chamados_atribuido_para_id_fkey"
             columns: ["atribuido_para_id"]
             isOneToOne: false
-            referencedRelation: "colaboradores"
+            referencedRelation: "profiles"
             referencedColumns: ["id"]
           },
           {
