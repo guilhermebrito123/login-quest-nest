@@ -7,7 +7,6 @@ import {
   UserCheck,
   LogOut,
   Calendar,
-  Briefcase,
   MessageSquare
 } from "lucide-react";
 import { NavLink } from "@/components/NavLink";
@@ -36,7 +35,6 @@ const menuItems = [
   { title: "Ordens de Serviço", url: "/ordens-servico", icon: ClipboardList },
   { title: "Colaboradores", url: "/colaboradores", icon: UserCheck },
   { title: "Escalas", url: "/escalas", icon: Calendar },
-  { title: "Cargos", url: "/cargos", icon: Briefcase },
   { title: "Gestão de Usuários", url: "/users", icon: Users },
 ];
 

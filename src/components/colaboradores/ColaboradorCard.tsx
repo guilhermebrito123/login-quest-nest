@@ -50,8 +50,8 @@ export function ColaboradorCard({ colaborador, onEdit, onDelete, onPresenca, onE
               <div className="flex items-center gap-2 flex-wrap">
                 <h3 className="text-lg font-semibold">{colaborador.nome_completo}</h3>
                 <Badge className={getStatusColor(colaborador.status)}>{colaborador.status}</Badge>
-                {colaborador.cargo?.nome && (
-                  <Badge variant="outline">{colaborador.cargo.nome}</Badge>
+                {colaborador.cargo && (
+                  <Badge variant="outline">{colaborador.cargo}</Badge>
                 )}
               </div>
             </div>

@@ -29,7 +29,6 @@ import {
 export default function Colaboradores() {
   const [searchTerm, setSearchTerm] = useState("");
   const [statusFilter, setStatusFilter] = useState<string>("all");
-  const [cargoFilter, setCargoFilter] = useState<string>("all");
   const [unidadeFilter, setUnidadeFilter] = useState<string>("all");
   const [showForm, setShowForm] = useState(false);
   const [editingColaborador, setEditingColaborador] = useState<any>(null);
@@ -40,13 +39,12 @@ export default function Colaboradores() {
   const [unidadeColaborador, setUnidadeColaborador] = useState<any>(null);
 
   const { data: colaboradores, refetch } = useQuery({
-    queryKey: ["colaboradores", statusFilter, cargoFilter, unidadeFilter],
+    queryKey: ["colaboradores", statusFilter, unidadeFilter],
     queryFn: async () => {
       let query = supabase
         .from("colaboradores")
         .select(`
           *,
-          cargo:cargos(nome),
           unidade:unidades(nome),
           escala:escalas(nome, tipo),
           posto:postos_servico(nome, codigo)
@@ -56,26 +54,11 @@ export default function Colaboradores() {
       if (statusFilter !== "all") {
         query = query.eq("status", statusFilter);
       }
-      if (cargoFilter !== "all") {
-        query = query.eq("cargo_id", cargoFilter);
-      }
       if (unidadeFilter !== "all") {
         query = query.eq("unidade_id", unidadeFilter);
       }
 
       const { data, error } = await query;
-      if (error) throw error;
-      return data;
-    },
-  });
-
-  const { data: cargos } = useQuery({
-    queryKey: ["cargos"],
-    queryFn: async () => {
-      const { data, error } = await supabase
-        .from("cargos")
-        .select("id, nome")
-        .order("nome");
       if (error) throw error;
       return data;
     },
@@ -123,7 +106,6 @@ export default function Colaboradores() {
   const handleNewColaborador = () => {
     // Verificar requisitos
     const missing = [];
-    if (!cargos || cargos.length === 0) missing.push("Cargos");
     if (!unidades || unidades.length === 0) missing.push("Unidades");
 
     if (missing.length > 0) {
@@ -168,19 +150,6 @@ export default function Colaboradores() {
               <SelectItem value="desligado">Desligado</SelectItem>
             </SelectContent>
           </Select>
-          <Select value={cargoFilter} onValueChange={setCargoFilter}>
-            <SelectTrigger className="w-full md:w-[180px]">
-              <SelectValue placeholder="Cargo" />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value="all">Todos Cargos</SelectItem>
-              {cargos?.map((cargo) => (
-                <SelectItem key={cargo.id} value={cargo.id}>
-                  {cargo.nome}
-                </SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
           <Select value={unidadeFilter} onValueChange={setUnidadeFilter}>
             <SelectTrigger className="w-full md:w-[180px]">
               <SelectValue placeholder="Unidade" />
@@ -201,8 +170,8 @@ export default function Colaboradores() {
             <TableHeader>
               <TableRow>
                 <TableHead>Nome</TableHead>
-                <TableHead>Função</TableHead>
                 <TableHead>Cargo</TableHead>
+                <TableHead>Função</TableHead>
                 <TableHead>Tipo</TableHead>
                 <TableHead>Status</TableHead>
                 <TableHead>Unidade Padrão</TableHead>
@@ -213,8 +182,8 @@ export default function Colaboradores() {
               {filteredColaboradores?.map((colaborador) => (
                 <TableRow key={colaborador.id}>
                   <TableCell className="font-medium">{colaborador.nome_completo}</TableCell>
+                  <TableCell>{colaborador.cargo || "-"}</TableCell>
                   <TableCell>{colaborador.posto?.nome || "-"}</TableCell>
-                  <TableCell>{colaborador.cargo?.nome || "-"}</TableCell>
                   <TableCell>
                     {colaborador.escala?.tipo === "12x36" ? "escala_12x36" : 
                      colaborador.escala?.tipo === "diarista" ? "diarista" : 

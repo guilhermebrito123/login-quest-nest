@@ -14,33 +14,6 @@ export type Database = {
   }
   public: {
     Tables: {
-      cargos: {
-        Row: {
-          created_at: string | null
-          descricao: string | null
-          id: string
-          is_lideranca: boolean | null
-          nome: string
-          updated_at: string | null
-        }
-        Insert: {
-          created_at?: string | null
-          descricao?: string | null
-          id?: string
-          is_lideranca?: boolean | null
-          nome: string
-          updated_at?: string | null
-        }
-        Update: {
-          created_at?: string | null
-          descricao?: string | null
-          id?: string
-          is_lideranca?: boolean | null
-          nome?: string
-          updated_at?: string | null
-        }
-        Relationships: []
-      }
       chamados: {
         Row: {
           atribuido_para_id: string | null
@@ -441,7 +414,7 @@ export type Database = {
       }
       colaboradores: {
         Row: {
-          cargo_id: string | null
+          cargo: string | null
           cpf: string
           created_at: string | null
           data_admissao: string | null
@@ -458,7 +431,7 @@ export type Database = {
           updated_at: string | null
         }
         Insert: {
-          cargo_id?: string | null
+          cargo?: string | null
           cpf: string
           created_at?: string | null
           data_admissao?: string | null
@@ -475,7 +448,7 @@ export type Database = {
           updated_at?: string | null
         }
         Update: {
-          cargo_id?: string | null
+          cargo?: string | null
           cpf?: string
           created_at?: string | null
           data_admissao?: string | null
@@ -492,13 +465,6 @@ export type Database = {
           updated_at?: string | null
         }
         Relationships: [
-          {
-            foreignKeyName: "colaboradores_cargo_id_fkey"
-            columns: ["cargo_id"]
-            isOneToOne: false
-            referencedRelation: "cargos"
-            referencedColumns: ["id"]
-          },
           {
             foreignKeyName: "colaboradores_escala_id_fkey"
             columns: ["escala_id"]

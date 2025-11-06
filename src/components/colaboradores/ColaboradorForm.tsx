@@ -25,20 +25,10 @@ export function ColaboradorForm({ colaborador, open, onClose, onSuccess }: Colab
     email: "",
     data_admissao: "",
     data_desligamento: "",
-    cargo_id: "",
+    cargo: "",
     status: "ativo",
     observacoes: "",
   });
-
-  const { data: cargos } = useQuery({
-    queryKey: ["cargos"],
-    queryFn: async () => {
-      const { data, error } = await supabase.from("cargos").select("id, nome").order("nome");
-      if (error) throw error;
-      return data;
-    },
-  });
-
 
   useEffect(() => {
     if (colaborador) {
@@ -49,7 +39,7 @@ export function ColaboradorForm({ colaborador, open, onClose, onSuccess }: Colab
         email: colaborador.email || "",
         data_admissao: colaborador.data_admissao || "",
         data_desligamento: colaborador.data_desligamento || "",
-        cargo_id: colaborador.cargo_id || "",
+        cargo: colaborador.cargo || "",
         status: colaborador.status || "ativo",
         observacoes: colaborador.observacoes || "",
       });
@@ -63,7 +53,7 @@ export function ColaboradorForm({ colaborador, open, onClose, onSuccess }: Colab
     try {
       const payload = {
         ...formData,
-        cargo_id: formData.cargo_id || null,
+        cargo: formData.cargo || null,
         data_desligamento: formData.data_desligamento || null,
       };
 
@@ -176,19 +166,13 @@ export function ColaboradorForm({ colaborador, open, onClose, onSuccess }: Colab
           )}
 
           <div className="space-y-2">
-            <Label htmlFor="cargo_id">Cargo</Label>
-            <Select value={formData.cargo_id} onValueChange={(value) => setFormData({ ...formData, cargo_id: value })}>
-              <SelectTrigger>
-                <SelectValue placeholder="Selecione..." />
-              </SelectTrigger>
-              <SelectContent>
-                {cargos?.map((cargo) => (
-                  <SelectItem key={cargo.id} value={cargo.id}>
-                    {cargo.nome}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
+            <Label htmlFor="cargo">Cargo</Label>
+            <Input
+              id="cargo"
+              value={formData.cargo}
+              onChange={(e) => setFormData({ ...formData, cargo: e.target.value })}
+              placeholder="Ex: Vigilante, Supervisor, etc."
+            />
           </div>
 
           <div className="space-y-2">
