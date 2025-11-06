@@ -87,6 +87,12 @@ const Contratos = () => {
   const [showUnidadeForm, setShowUnidadeForm] = useState(false);
   const [showPostoForm, setShowPostoForm] = useState(false);
   
+  // State for editing entities
+  const [editingClienteId, setEditingClienteId] = useState<string | undefined>(undefined);
+  const [editingContratoId, setEditingContratoId] = useState<string | undefined>(undefined);
+  const [editingUnidadeId, setEditingUnidadeId] = useState<string | undefined>(undefined);
+  const [editingPostoId, setEditingPostoId] = useState<string | undefined>(undefined);
+  
   // Selected entities for hierarchy
   const [selectedCliente, setSelectedCliente] = useState<string | null>(null);
   const [selectedContrato, setSelectedContrato] = useState<string | null>(null);
@@ -354,10 +360,15 @@ const Contratos = () => {
 
             {showClienteForm && (
               <ClienteForm
-                onClose={() => setShowClienteForm(false)}
+                clienteId={editingClienteId}
+                onClose={() => {
+                  setShowClienteForm(false);
+                  setEditingClienteId(undefined);
+                }}
                 onSuccess={() => {
                   loadClientes();
                   setShowClienteForm(false);
+                  setEditingClienteId(undefined);
                 }}
               />
             )}
@@ -371,8 +382,11 @@ const Contratos = () => {
                     setSelectedCliente(cliente.id);
                     setActiveTab("contratos");
                   }}
-                  onEdit={loadClientes}
-                  onDelete={loadClientes}
+                  onEdit={() => {
+                    setEditingClienteId(cliente.id);
+                    setShowClienteForm(true);
+                  }}
+                  onDelete={() => loadClientes()}
                 />
               ))}
             </div>
@@ -407,11 +421,16 @@ const Contratos = () => {
 
             {showContratoForm && (
               <ContratoForm
-                clienteId={selectedCliente}
-                onClose={() => setShowContratoForm(false)}
+                contratoId={editingContratoId}
+                clienteId={selectedCliente || undefined}
+                onClose={() => {
+                  setShowContratoForm(false);
+                  setEditingContratoId(undefined);
+                }}
                 onSuccess={() => {
                   loadContratos();
                   setShowContratoForm(false);
+                  setEditingContratoId(undefined);
                 }}
               />
             )}
@@ -426,8 +445,11 @@ const Contratos = () => {
                     setSelectedContrato(contrato.id);
                     setActiveTab("unidades");
                   }}
-                  onEdit={loadContratos}
-                  onDelete={loadContratos}
+                  onEdit={() => {
+                    setEditingContratoId(contrato.id);
+                    setShowContratoForm(true);
+                  }}
+                  onDelete={() => loadContratos()}
                 />
               ))}
             </div>
@@ -462,11 +484,16 @@ const Contratos = () => {
 
             {showUnidadeForm && (
               <UnidadeForm
-                contratoId={selectedContrato}
-                onClose={() => setShowUnidadeForm(false)}
+                unidadeId={editingUnidadeId}
+                contratoId={selectedContrato || undefined}
+                onClose={() => {
+                  setShowUnidadeForm(false);
+                  setEditingUnidadeId(undefined);
+                }}
                 onSuccess={() => {
                   loadUnidades();
                   setShowUnidadeForm(false);
+                  setEditingUnidadeId(undefined);
                 }}
               />
             )}
@@ -481,8 +508,11 @@ const Contratos = () => {
                     setSelectedUnidade(unidade.id);
                     setActiveTab("postos");
                   }}
-                  onEdit={loadUnidades}
-                  onDelete={loadUnidades}
+                  onEdit={() => {
+                    setEditingUnidadeId(unidade.id);
+                    setShowUnidadeForm(true);
+                  }}
+                  onDelete={() => loadUnidades()}
                 />
               ))}
             </div>
@@ -517,11 +547,16 @@ const Contratos = () => {
 
             {showPostoForm && (
               <PostoForm
-                unidadeId={selectedUnidade}
-                onClose={() => setShowPostoForm(false)}
+                postoId={editingPostoId}
+                unidadeId={selectedUnidade || undefined}
+                onClose={() => {
+                  setShowPostoForm(false);
+                  setEditingPostoId(undefined);
+                }}
                 onSuccess={() => {
                   loadPostos();
                   setShowPostoForm(false);
+                  setEditingPostoId(undefined);
                 }}
               />
             )}
@@ -532,8 +567,11 @@ const Contratos = () => {
                   key={posto.id}
                   posto={posto}
                   unidade={unidades.find(u => u.id === posto.unidade_id)}
-                  onEdit={loadPostos}
-                  onDelete={loadPostos}
+                  onEdit={() => {
+                    setEditingPostoId(posto.id);
+                    setShowPostoForm(true);
+                  }}
+                  onDelete={() => loadPostos()}
                 />
               ))}
             </div>
