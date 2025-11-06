@@ -127,7 +127,7 @@ const Dashboard = () => {
       description: "Clientes, contratos, unidades e postos",
       icon: Building2,
       color: "from-purple-500 to-pink-500",
-      action: () => toast({ title: "Em desenvolvimento", description: "Módulo em breve!" }),
+      action: () => navigate("/contratos"),
     },
     {
       title: "Mesa de Operações",
