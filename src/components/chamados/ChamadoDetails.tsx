@@ -17,9 +17,11 @@ interface ChamadoDetailsProps {
   chamado: any;
   open: boolean;
   onOpenChange: (open: boolean) => void;
+  onEdit: (chamado: any) => void;
+  onDelete: (id: string) => void;
 }
 
-export function ChamadoDetails({ chamado, open, onOpenChange }: ChamadoDetailsProps) {
+export function ChamadoDetails({ chamado, open, onOpenChange, onEdit, onDelete }: ChamadoDetailsProps) {
   const { toast } = useToast();
   const queryClient = useQueryClient();
   const [novoComentario, setNovoComentario] = useState("");
@@ -126,10 +128,36 @@ export function ChamadoDetails({ chamado, open, onOpenChange }: ChamadoDetailsPr
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="max-w-4xl max-h-[90vh] overflow-y-auto">
         <DialogHeader>
-          <DialogTitle className="flex items-center gap-2">
-            <span>{chamado.numero}</span>
-            <Badge>{chamado.status?.replace("_", " ")}</Badge>
-          </DialogTitle>
+          <div className="flex items-center justify-between">
+            <DialogTitle className="flex items-center gap-2">
+              <span>{chamado.numero}</span>
+              <Badge>{chamado.status?.replace("_", " ")}</Badge>
+            </DialogTitle>
+            <div className="flex gap-2">
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={() => {
+                  onEdit(chamado);
+                  onOpenChange(false);
+                }}
+              >
+                Editar
+              </Button>
+              <Button
+                variant="destructive"
+                size="sm"
+                onClick={() => {
+                  if (confirm("Tem certeza que deseja excluir este chamado?")) {
+                    onDelete(chamado.id);
+                    onOpenChange(false);
+                  }
+                }}
+              >
+                Excluir
+              </Button>
+            </div>
+          </div>
         </DialogHeader>
 
         <div className="space-y-6">

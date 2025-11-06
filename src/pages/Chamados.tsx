@@ -26,12 +26,7 @@ export default function Chamados() {
         .from("chamados")
         .select(`
           *,
-          unidade:unidades(nome, codigo),
-          posto_servico:postos_servico(nome, codigo),
-          contrato:contratos(nome, codigo),
-          solicitante:colaboradores!chamados_solicitante_id_fkey(nome_completo),
-          atribuido:colaboradores!chamados_atribuido_para_id_fkey(nome_completo),
-          responsavel:colaboradores!chamados_responsavel_id_fkey(nome_completo)
+          unidade:unidades(nome, codigo)
         `)
         .order("data_abertura", { ascending: false });
 

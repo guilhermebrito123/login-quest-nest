@@ -47,48 +47,17 @@ export function ChamadoCard({ chamado, onEdit, onDelete }: ChamadoCardProps) {
     return colors[prioridade as keyof typeof colors] || "";
   };
 
-  const getCategoriaLabel = (categoria: string) => {
-    const labels = {
-      manutencao: "Manutenção",
-      rh: "RH",
-      suprimentos: "Suprimentos",
-      atendimento: "Atendimento",
-    };
-    return labels[categoria as keyof typeof labels] || categoria;
-  };
-
-  const calculateSLAStatus = () => {
-    if (!chamado.sla_horas || chamado.status === "concluido") return null;
-    
-    const horasDecorridas = differenceInHours(new Date(), new Date(chamado.data_abertura));
-    const percentualSLA = (horasDecorridas / chamado.sla_horas) * 100;
-    
-    if (percentualSLA >= 100) {
-      return { color: "text-red-600", icon: AlertTriangle, label: "SLA Estourado" };
-    } else if (percentualSLA >= 80) {
-      return { color: "text-orange-600", icon: Clock, label: "SLA Próximo" };
-    }
-    return null;
-  };
-
-  const slaStatus = calculateSLAStatus();
-
   return (
     <>
-      <Card className="p-4 hover:shadow-lg transition-shadow">
+      <Card 
+        className="p-4 hover:shadow-lg transition-all cursor-pointer hover:border-primary/50"
+        onClick={() => setShowDetails(true)}
+      >
         <div className="space-y-3">
-          <div className="flex items-start justify-between">
-            <div className="flex-1">
-              <div className="flex items-center gap-2 mb-1">
-                <span className="text-sm font-mono text-muted-foreground">{chamado.numero}</span>
-                {slaStatus && (
-                  <Badge variant="outline" className={slaStatus.color}>
-                    <slaStatus.icon className="mr-1 h-3 w-3" />
-                    {slaStatus.label}
-                  </Badge>
-                )}
-              </div>
-              <h3 className="font-semibold line-clamp-1">{chamado.titulo}</h3>
+          <div className="flex items-start justify-between gap-2">
+            <div className="flex-1 min-w-0">
+              <span className="text-xs font-mono text-muted-foreground">{chamado.numero}</span>
+              <h3 className="font-semibold line-clamp-2 mt-1">{chamado.titulo}</h3>
             </div>
           </div>
 
@@ -99,76 +68,11 @@ export function ChamadoCard({ chamado, onEdit, onDelete }: ChamadoCardProps) {
             <Badge variant="outline" className={getPrioridadeColor(chamado.prioridade)}>
               {chamado.prioridade}
             </Badge>
-            {chamado.categoria && (
-              <Badge variant="outline">
-                {getCategoriaLabel(chamado.categoria)}
-              </Badge>
-            )}
           </div>
 
-          {chamado.descricao && (
-            <p className="text-sm text-muted-foreground line-clamp-2">
-              {chamado.descricao}
-            </p>
-          )}
-
-          <div className="space-y-1 text-xs text-muted-foreground">
-            {chamado.unidade && (
-              <div>Unidade: {chamado.unidade.nome}</div>
-            )}
-            {chamado.posto_servico && (
-              <div>Posto: {chamado.posto_servico.nome}</div>
-            )}
-            {chamado.solicitante && (
-              <div>Solicitante: {chamado.solicitante.nome_completo}</div>
-            )}
-            {chamado.atribuido && (
-              <div>Atribuído: {chamado.atribuido.nome_completo}</div>
-            )}
-            <div>Aberto em: {format(new Date(chamado.data_abertura), "dd/MM/yyyy HH:mm", { locale: ptBR })}</div>
-            {chamado.sla_horas && (
-              <div>SLA: {chamado.sla_horas}h</div>
-            )}
-          </div>
-
-          <div className="flex gap-2 pt-2 border-t">
-            <Button
-              variant="ghost"
-              size="sm"
-              className="flex-1"
-              onClick={() => setShowDetails(true)}
-            >
-              <Eye className="mr-2 h-4 w-4" />
-              Detalhes
-            </Button>
-            <Button
-              variant="ghost"
-              size="sm"
-              onClick={() => onEdit(chamado)}
-            >
-              <Edit className="h-4 w-4" />
-            </Button>
-            <AlertDialog>
-              <AlertDialogTrigger asChild>
-                <Button variant="ghost" size="sm">
-                  <Trash2 className="h-4 w-4 text-destructive" />
-                </Button>
-              </AlertDialogTrigger>
-              <AlertDialogContent>
-                <AlertDialogHeader>
-                  <AlertDialogTitle>Confirmar exclusão</AlertDialogTitle>
-                  <AlertDialogDescription>
-                    Tem certeza que deseja excluir este chamado? Esta ação não pode ser desfeita.
-                  </AlertDialogDescription>
-                </AlertDialogHeader>
-                <AlertDialogFooter>
-                  <AlertDialogCancel>Cancelar</AlertDialogCancel>
-                  <AlertDialogAction onClick={() => onDelete(chamado.id)}>
-                    Excluir
-                  </AlertDialogAction>
-                </AlertDialogFooter>
-              </AlertDialogContent>
-            </AlertDialog>
+          <div className="text-xs text-muted-foreground">
+            {chamado.unidade && <div>{chamado.unidade.nome}</div>}
+            <div>{format(new Date(chamado.data_abertura), "dd/MM/yyyy HH:mm", { locale: ptBR })}</div>
           </div>
         </div>
       </Card>
@@ -178,6 +82,8 @@ export function ChamadoCard({ chamado, onEdit, onDelete }: ChamadoCardProps) {
           chamado={chamado}
           open={showDetails}
           onOpenChange={setShowDetails}
+          onEdit={onEdit}
+          onDelete={onDelete}
         />
       )}
     </>

@@ -182,7 +182,6 @@ export function ChamadoForm({ open, onOpenChange, chamado, onSuccess }: ChamadoF
         sla_horas: data.sla_horas,
         canal: data.canal,
         numero: chamado?.numero || `CH-${Date.now()}`,
-        solicitante_id: userRole === "admin" ? (data.solicitante_id || null) : currentUserId,
       };
 
       if (chamado) {
