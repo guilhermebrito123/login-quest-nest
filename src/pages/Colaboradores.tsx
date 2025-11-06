@@ -11,6 +11,8 @@ import { ColaboradorForm } from "@/components/colaboradores/ColaboradorForm";
 import { ColaboradorCard } from "@/components/colaboradores/ColaboradorCard";
 import { EfetivoStats } from "@/components/colaboradores/EfetivoStats";
 import { PresencaDialog } from "@/components/colaboradores/PresencaDialog";
+import { RequisitosMissingDialog } from "@/components/colaboradores/RequisitosMissingDialog";
+import { AtribuirEscalaDialog } from "@/components/colaboradores/AtribuirEscalaDialog";
 import { DashboardLayout } from "@/components/DashboardLayout";
 import { toast } from "sonner";
 
@@ -22,6 +24,9 @@ export default function Colaboradores() {
   const [showForm, setShowForm] = useState(false);
   const [editingColaborador, setEditingColaborador] = useState<any>(null);
   const [presencaColaborador, setPresencaColaborador] = useState<any>(null);
+  const [showRequisitosMissing, setShowRequisitosMissing] = useState(false);
+  const [missingEntities, setMissingEntities] = useState<string[]>([]);
+  const [escalaColaborador, setEscalaColaborador] = useState<any>(null);
 
   const { data: colaboradores, isLoading, refetch } = useQuery({
     queryKey: ["colaboradores", statusFilter, cargoFilter, unidadeFilter],
@@ -108,6 +113,39 @@ export default function Colaboradores() {
     setPresencaColaborador(colaborador);
   };
 
+  const handleEscala = (colaborador: any) => {
+    setEscalaColaborador(colaborador);
+  };
+
+  const checkRequisitos = async () => {
+    const missing: string[] = [];
+
+    // Verificar se há pelo menos 1 cargo
+    const { data: cargosData } = await supabase.from("cargos").select("id").limit(1);
+    if (!cargosData || cargosData.length === 0) {
+      missing.push("Cargo");
+    }
+
+    // Verificar se há pelo menos 1 unidade
+    const { data: unidadesData } = await supabase.from("unidades").select("id").limit(1);
+    if (!unidadesData || unidadesData.length === 0) {
+      missing.push("Unidade");
+    }
+
+    return missing;
+  };
+
+  const handleNovoColaborador = async () => {
+    const missing = await checkRequisitos();
+    if (missing.length > 0) {
+      setMissingEntities(missing);
+      setShowRequisitosMissing(true);
+    } else {
+      setEditingColaborador(null);
+      setShowForm(true);
+    }
+  };
+
   return (
     <DashboardLayout>
       <div className="min-h-screen bg-background p-8">
@@ -119,10 +157,7 @@ export default function Colaboradores() {
               Gestão completa de colaboradores, escalas e controle de presença
             </p>
           </div>
-          <Button onClick={() => {
-            setEditingColaborador(null);
-            setShowForm(true);
-          }}>
+          <Button onClick={handleNovoColaborador}>
             <Plus className="mr-2 h-4 w-4" />
             Novo Colaborador
           </Button>
@@ -201,6 +236,7 @@ export default function Colaboradores() {
                   onEdit={handleEdit}
                   onDelete={handleDelete}
                   onPresenca={handlePresenca}
+                  onEscala={handleEscala}
                 />
               ))}
             </div>
@@ -209,7 +245,7 @@ export default function Colaboradores() {
               <CardContent className="py-12 text-center">
                 <Users className="mx-auto h-12 w-12 text-muted-foreground mb-4" />
                 <p className="text-muted-foreground">Nenhum colaborador encontrado</p>
-                <Button onClick={() => setShowForm(true)} className="mt-4">
+                <Button onClick={handleNovoColaborador} className="mt-4">
                   <Plus className="mr-2 h-4 w-4" />
                   Adicionar primeiro colaborador
                 </Button>
@@ -247,6 +283,26 @@ export default function Colaboradores() {
             }}
           />
         )}
+
+        {/* Atribuir Escala Dialog */}
+        {escalaColaborador && (
+          <AtribuirEscalaDialog
+            colaborador={escalaColaborador}
+            open={!!escalaColaborador}
+            onClose={() => setEscalaColaborador(null)}
+            onSuccess={() => {
+              setEscalaColaborador(null);
+              refetch();
+            }}
+          />
+        )}
+
+        {/* Requisitos Missing Dialog */}
+        <RequisitosMissingDialog
+          open={showRequisitosMissing}
+          onClose={() => setShowRequisitosMissing(false)}
+          missingEntities={missingEntities}
+        />
         </div>
       </div>
     </DashboardLayout>

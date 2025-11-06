@@ -2,7 +2,7 @@ import { useState } from "react";
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { Pencil, Trash2, Mail, Phone, Briefcase, MapPin, Calendar, CalendarCheck } from "lucide-react";
+import { Pencil, Trash2, Mail, Phone, Briefcase, MapPin, Calendar, CalendarCheck, Clock } from "lucide-react";
 import {
   AlertDialog,
   AlertDialogAction,
@@ -19,9 +19,10 @@ interface ColaboradorCardProps {
   onEdit: (colaborador: any) => void;
   onDelete: (id: string) => void;
   onPresenca: (colaborador: any) => void;
+  onEscala: (colaborador: any) => void;
 }
 
-export function ColaboradorCard({ colaborador, onEdit, onDelete, onPresenca }: ColaboradorCardProps) {
+export function ColaboradorCard({ colaborador, onEdit, onDelete, onPresenca, onEscala }: ColaboradorCardProps) {
   const [showDeleteDialog, setShowDeleteDialog] = useState(false);
 
   const getStatusColor = (status: string) => {
@@ -57,9 +58,19 @@ export function ColaboradorCard({ colaborador, onEdit, onDelete, onPresenca }: C
             </div>
             <div className="flex gap-1">
               {colaborador.status === "ativo" && (
-                <Button variant="ghost" size="icon" onClick={() => onPresenca(colaborador)} title="Registrar Presença">
-                  <CalendarCheck className="h-4 w-4" />
-                </Button>
+                <>
+                  <Button variant="ghost" size="icon" onClick={() => onPresenca(colaborador)} title="Registrar Presença">
+                    <CalendarCheck className="h-4 w-4" />
+                  </Button>
+                  <Button 
+                    variant="ghost" 
+                    size="icon" 
+                    onClick={() => onEscala(colaborador)} 
+                    title={colaborador.escala_id ? "Alterar Escala" : "Atribuir Escala"}
+                  >
+                    <Clock className="h-4 w-4" />
+                  </Button>
+                </>
               )}
               <Button variant="ghost" size="icon" onClick={() => onEdit(colaborador)}>
                 <Pencil className="h-4 w-4" />
