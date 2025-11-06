@@ -13,6 +13,7 @@ import { EfetivoStats } from "@/components/colaboradores/EfetivoStats";
 import { PresencaDialog } from "@/components/colaboradores/PresencaDialog";
 import { RequisitosMissingDialog } from "@/components/colaboradores/RequisitosMissingDialog";
 import { AtribuirEscalaDialog } from "@/components/colaboradores/AtribuirEscalaDialog";
+import { AtribuirUnidadeDialog } from "@/components/colaboradores/AtribuirUnidadeDialog";
 import { DashboardLayout } from "@/components/DashboardLayout";
 import { toast } from "sonner";
 
@@ -27,6 +28,7 @@ export default function Colaboradores() {
   const [showRequisitosMissing, setShowRequisitosMissing] = useState(false);
   const [missingEntities, setMissingEntities] = useState<string[]>([]);
   const [escalaColaborador, setEscalaColaborador] = useState<any>(null);
+  const [unidadeColaborador, setUnidadeColaborador] = useState<any>(null);
 
   const { data: colaboradores, isLoading, refetch } = useQuery({
     queryKey: ["colaboradores", statusFilter, cargoFilter, unidadeFilter],
@@ -115,6 +117,10 @@ export default function Colaboradores() {
 
   const handleEscala = (colaborador: any) => {
     setEscalaColaborador(colaborador);
+  };
+
+  const handleUnidade = (colaborador: any) => {
+    setUnidadeColaborador(colaborador);
   };
 
   const checkRequisitos = async () => {
@@ -237,6 +243,7 @@ export default function Colaboradores() {
                   onDelete={handleDelete}
                   onPresenca={handlePresenca}
                   onEscala={handleEscala}
+                  onUnidade={handleUnidade}
                 />
               ))}
             </div>
@@ -292,6 +299,19 @@ export default function Colaboradores() {
             onClose={() => setEscalaColaborador(null)}
             onSuccess={() => {
               setEscalaColaborador(null);
+              refetch();
+            }}
+          />
+        )}
+
+        {/* Atribuir Unidade Dialog */}
+        {unidadeColaborador && (
+          <AtribuirUnidadeDialog
+            colaborador={unidadeColaborador}
+            open={!!unidadeColaborador}
+            onClose={() => setUnidadeColaborador(null)}
+            onSuccess={() => {
+              setUnidadeColaborador(null);
               refetch();
             }}
           />

@@ -26,9 +26,6 @@ export function ColaboradorForm({ colaborador, open, onClose, onSuccess }: Colab
     data_admissao: "",
     data_desligamento: "",
     cargo_id: "",
-    unidade_id: "",
-    escala_id: "",
-    posto_servico_id: "",
     status: "ativo",
     observacoes: "",
   });
@@ -42,39 +39,6 @@ export function ColaboradorForm({ colaborador, open, onClose, onSuccess }: Colab
     },
   });
 
-  const { data: unidades } = useQuery({
-    queryKey: ["unidades"],
-    queryFn: async () => {
-      const { data, error } = await supabase.from("unidades").select("id, nome").eq("status", "ativo").order("nome");
-      if (error) throw error;
-      return data;
-    },
-  });
-
-  const { data: escalas } = useQuery({
-    queryKey: ["escalas"],
-    queryFn: async () => {
-      const { data, error } = await supabase.from("escalas").select("id, nome, tipo").order("nome");
-      if (error) throw error;
-      return data;
-    },
-  });
-
-  const { data: postos } = useQuery({
-    queryKey: ["postos", formData.unidade_id],
-    queryFn: async () => {
-      if (!formData.unidade_id) return [];
-      const { data, error } = await supabase
-        .from("postos_servico")
-        .select("id, nome, codigo")
-        .eq("unidade_id", formData.unidade_id)
-        .eq("status", "ativo")
-        .order("nome");
-      if (error) throw error;
-      return data;
-    },
-    enabled: !!formData.unidade_id,
-  });
 
   useEffect(() => {
     if (colaborador) {
@@ -86,9 +50,6 @@ export function ColaboradorForm({ colaborador, open, onClose, onSuccess }: Colab
         data_admissao: colaborador.data_admissao || "",
         data_desligamento: colaborador.data_desligamento || "",
         cargo_id: colaborador.cargo_id || "",
-        unidade_id: colaborador.unidade_id || "",
-        escala_id: colaborador.escala_id || "",
-        posto_servico_id: colaborador.posto_servico_id || "",
         status: colaborador.status || "ativo",
         observacoes: colaborador.observacoes || "",
       });
@@ -103,9 +64,6 @@ export function ColaboradorForm({ colaborador, open, onClose, onSuccess }: Colab
       const payload = {
         ...formData,
         cargo_id: formData.cargo_id || null,
-        unidade_id: formData.unidade_id || null,
-        escala_id: formData.escala_id || null,
-        posto_servico_id: formData.posto_servico_id || null,
         data_desligamento: formData.data_desligamento || null,
       };
 
@@ -217,77 +175,20 @@ export function ColaboradorForm({ colaborador, open, onClose, onSuccess }: Colab
             </div>
           )}
 
-          <div className="grid grid-cols-2 gap-4">
-            <div className="space-y-2">
-              <Label htmlFor="cargo_id">Cargo</Label>
-              <Select value={formData.cargo_id} onValueChange={(value) => setFormData({ ...formData, cargo_id: value })}>
-                <SelectTrigger>
-                  <SelectValue placeholder="Selecione..." />
-                </SelectTrigger>
-                <SelectContent>
-                  {cargos?.map((cargo) => (
-                    <SelectItem key={cargo.id} value={cargo.id}>
-                      {cargo.nome}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-            </div>
-            <div className="space-y-2">
-              <Label htmlFor="escala_id">Escala</Label>
-              <Select value={formData.escala_id} onValueChange={(value) => setFormData({ ...formData, escala_id: value })}>
-                <SelectTrigger>
-                  <SelectValue placeholder="Selecione..." />
-                </SelectTrigger>
-                <SelectContent>
-                  {escalas?.map((escala) => (
-                    <SelectItem key={escala.id} value={escala.id}>
-                      {escala.nome} ({escala.tipo})
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-            </div>
-          </div>
-
-          <div className="grid grid-cols-2 gap-4">
-            <div className="space-y-2">
-              <Label htmlFor="unidade_id">Unidade</Label>
-              <Select 
-                value={formData.unidade_id} 
-                onValueChange={(value) => setFormData({ ...formData, unidade_id: value, posto_servico_id: "" })}
-              >
-                <SelectTrigger>
-                  <SelectValue placeholder="Selecione..." />
-                </SelectTrigger>
-                <SelectContent>
-                  {unidades?.map((unidade) => (
-                    <SelectItem key={unidade.id} value={unidade.id}>
-                      {unidade.nome}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-            </div>
-            <div className="space-y-2">
-              <Label htmlFor="posto_servico_id">Posto de Serviço</Label>
-              <Select 
-                value={formData.posto_servico_id} 
-                onValueChange={(value) => setFormData({ ...formData, posto_servico_id: value })}
-                disabled={!formData.unidade_id}
-              >
-                <SelectTrigger>
-                  <SelectValue placeholder="Selecione unidade primeiro..." />
-                </SelectTrigger>
-                <SelectContent>
-                  {postos?.map((posto) => (
-                    <SelectItem key={posto.id} value={posto.id}>
-                      {posto.codigo} - {posto.nome}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-            </div>
+          <div className="space-y-2">
+            <Label htmlFor="cargo_id">Cargo</Label>
+            <Select value={formData.cargo_id} onValueChange={(value) => setFormData({ ...formData, cargo_id: value })}>
+              <SelectTrigger>
+                <SelectValue placeholder="Selecione..." />
+              </SelectTrigger>
+              <SelectContent>
+                {cargos?.map((cargo) => (
+                  <SelectItem key={cargo.id} value={cargo.id}>
+                    {cargo.nome}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
           </div>
 
           <div className="space-y-2">

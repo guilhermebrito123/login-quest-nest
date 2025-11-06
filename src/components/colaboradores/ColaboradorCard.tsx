@@ -20,9 +20,10 @@ interface ColaboradorCardProps {
   onDelete: (id: string) => void;
   onPresenca: (colaborador: any) => void;
   onEscala: (colaborador: any) => void;
+  onUnidade: (colaborador: any) => void;
 }
 
-export function ColaboradorCard({ colaborador, onEdit, onDelete, onPresenca, onEscala }: ColaboradorCardProps) {
+export function ColaboradorCard({ colaborador, onEdit, onDelete, onPresenca, onEscala, onUnidade }: ColaboradorCardProps) {
   const [showDeleteDialog, setShowDeleteDialog] = useState(false);
 
   const getStatusColor = (status: string) => {
@@ -72,6 +73,14 @@ export function ColaboradorCard({ colaborador, onEdit, onDelete, onPresenca, onE
                   </Button>
                 </>
               )}
+              <Button 
+                variant="ghost" 
+                size="icon" 
+                onClick={() => onUnidade(colaborador)} 
+                title={colaborador.unidade_id ? "Alterar Unidade" : "Atribuir Unidade"}
+              >
+                <MapPin className="h-4 w-4" />
+              </Button>
               <Button variant="ghost" size="icon" onClick={() => onEdit(colaborador)}>
                 <Pencil className="h-4 w-4" />
               </Button>
