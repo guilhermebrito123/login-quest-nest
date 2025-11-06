@@ -205,22 +205,15 @@ const Contratos = () => {
       {/* Header */}
       <header className="border-b bg-card shadow-sm">
         <div className="container mx-auto px-4 py-4">
-          <div className="flex items-center justify-between">
-            <div className="flex items-center gap-3">
-              <Button variant="ghost" size="icon" onClick={() => navigate("/dashboard")}>
-                <ArrowLeft className="h-5 w-5" />
-              </Button>
-              <div className="flex items-center gap-3">
-                <div className="p-2 bg-gradient-to-br from-primary to-accent rounded-lg">
-                  <Building2 className="h-6 w-6 text-primary-foreground" />
-                </div>
-                <div>
-                  <h1 className="text-xl font-bold">Gestão de Contratos</h1>
-                  <p className="text-sm text-muted-foreground">
-                    Hierarquia: Cliente → Contrato → Unidade → Posto
-                  </p>
-                </div>
-              </div>
+          <div className="flex items-center gap-3">
+            <div className="p-2 bg-gradient-to-br from-primary to-accent rounded-lg">
+              <Building2 className="h-6 w-6 text-primary-foreground" />
+            </div>
+            <div>
+              <h1 className="text-xl font-bold">Gestão de Contratos</h1>
+              <p className="text-sm text-muted-foreground">
+                Hierarquia: Cliente → Contrato → Unidade → Posto
+              </p>
             </div>
           </div>
         </div>

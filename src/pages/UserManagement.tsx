@@ -187,20 +187,16 @@ const UserManagement = () => {
       <div className="min-h-screen bg-background">
       {/* Header */}
       <header className="border-b bg-card shadow-sm">
-        <div className="container mx-auto px-4 py-4 flex items-center justify-between">
+        <div className="container mx-auto px-4 py-4">
           <div className="flex items-center gap-3">
             <div className="p-2 bg-gradient-to-br from-primary to-accent rounded-lg">
               <Building2 className="h-6 w-6 text-primary-foreground" />
             </div>
             <div>
-              <h1 className="text-xl font-bold">Facilities Hub</h1>
+              <h1 className="text-xl font-bold">Facilities Center</h1>
               <p className="text-sm text-muted-foreground">Gestão de Usuários</p>
             </div>
           </div>
-          <Button variant="outline" size="sm" onClick={() => navigate("/dashboard")}>
-            <ArrowLeft className="h-4 w-4 mr-2" />
-            Voltar ao Dashboard
-          </Button>
         </div>
       </header>
 

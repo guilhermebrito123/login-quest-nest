@@ -89,14 +89,6 @@ const Dashboard = () => {
     }
   };
 
-  const handleLogout = async () => {
-    await supabase.auth.signOut();
-    toast({
-      title: "Logout realizado",
-      description: "Até logo!",
-    });
-    navigate("/auth");
-  };
 
   if (loading) {
     return (
@@ -207,7 +199,7 @@ const Dashboard = () => {
       <div className="min-h-screen bg-background">
         {/* Header */}
         <header className="border-b bg-card shadow-sm">
-          <div className="container mx-auto px-4 py-4 flex items-center justify-between">
+          <div className="container mx-auto px-4 py-4">
             <div className="flex items-center gap-3">
               <div className="p-2 bg-gradient-to-br from-primary to-accent rounded-lg">
                 <Building2 className="h-6 w-6 text-primary-foreground" />
@@ -218,22 +210,6 @@ const Dashboard = () => {
                   Sistema de Gestão de Facilities
                 </p>
               </div>
-            </div>
-            <div className="flex items-center gap-2">
-              {userRole === "admin" && (
-                <Button
-                  variant="outline"
-                  size="sm"
-                  onClick={() => navigate("/users")}
-                >
-                  <Settings className="h-4 w-4 mr-2" />
-                  Gestão de Usuários
-                </Button>
-              )}
-              <Button variant="outline" size="sm" onClick={handleLogout}>
-                <LogOut className="h-4 w-4 mr-2" />
-                Sair
-              </Button>
             </div>
           </div>
         </header>

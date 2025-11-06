@@ -255,14 +255,9 @@ const MesaOperacoes = () => {
       {/* Header */}
       <div className="border-b bg-background p-4">
         <div className="container mx-auto">
-          <div className="flex items-center justify-between mb-4">
-            <div>
-              <h1 className="text-3xl font-bold">Mesa de Operações 24/7</h1>
-              <p className="text-muted-foreground">Monitoramento em tempo real de todas as unidades</p>
-            </div>
-            <Button variant="outline" onClick={() => navigate("/contratos")}>
-              Gestão de Contratos
-            </Button>
+          <div className="mb-4">
+            <h1 className="text-3xl font-bold">Mesa de Operações 24/7</h1>
+            <p className="text-muted-foreground">Monitoramento em tempo real de todas as unidades</p>
           </div>
 
           {/* Stats Cards */}

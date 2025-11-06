@@ -5,11 +5,12 @@ import {
   Headphones, 
   ClipboardList, 
   UserCheck,
-  Home,
-  Settings
+  LogOut
 } from "lucide-react";
 import { NavLink } from "@/components/NavLink";
-import { useLocation } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
+import { supabase } from "@/integrations/supabase/client";
+import { toast } from "sonner";
 
 import {
   Sidebar,
@@ -24,7 +25,6 @@ import {
 } from "@/components/ui/sidebar";
 
 const menuItems = [
-  { title: "Início", url: "/", icon: Home },
   { title: "Dashboard", url: "/dashboard", icon: LayoutDashboard },
   { title: "Contratos", url: "/contratos", icon: FileText },
   { title: "Mesa de Operações", url: "/mesa-operacoes", icon: Headphones },
@@ -36,9 +36,16 @@ const menuItems = [
 export function AppSidebar() {
   const { open } = useSidebar();
   const location = useLocation();
+  const navigate = useNavigate();
   const currentPath = location.pathname;
 
   const isActive = (path: string) => currentPath === path;
+
+  const handleLogout = async () => {
+    await supabase.auth.signOut();
+    toast.success("Logout realizado com sucesso");
+    navigate("/auth");
+  };
 
   return (
     <Sidebar className={open ? "w-64" : "w-16"} collapsible="icon">
@@ -64,6 +71,14 @@ export function AppSidebar() {
                   </SidebarMenuButton>
                 </SidebarMenuItem>
               ))}
+              
+              {/* Botão de Sair */}
+              <SidebarMenuItem>
+                <SidebarMenuButton onClick={handleLogout}>
+                  <LogOut className="h-5 w-5" />
+                  {open && <span>Sair</span>}
+                </SidebarMenuButton>
+              </SidebarMenuItem>
             </SidebarMenu>
           </SidebarGroupContent>
         </SidebarGroup>
