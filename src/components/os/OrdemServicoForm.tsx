@@ -26,6 +26,7 @@ export function OrdemServicoForm({ os, open, onClose, onSuccess }: OrdemServicoF
     prioridade: "media",
     status: "aberta",
     unidade_id: "",
+    ativo_id: "",
     responsavel_id: "",
     data_prevista: "",
     observacoes: "",
@@ -56,6 +57,19 @@ export function OrdemServicoForm({ os, open, onClose, onSuccess }: OrdemServicoF
     },
   });
 
+  const { data: ativos } = useQuery({
+    queryKey: ["ativos"],
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from("ativos")
+        .select("id, tag_patrimonio, categoria, modelo")
+        .eq("status", "operacional")
+        .order("tag_patrimonio");
+      if (error) throw error;
+      return data;
+    },
+  });
+
   useEffect(() => {
     if (os) {
       setFormData({
@@ -66,6 +80,7 @@ export function OrdemServicoForm({ os, open, onClose, onSuccess }: OrdemServicoF
         prioridade: os.prioridade || "media",
         status: os.status || "aberta",
         unidade_id: os.unidade_id || "",
+        ativo_id: os.ativo_id || "",
         responsavel_id: os.responsavel_id || "",
         data_prevista: os.data_prevista || "",
         observacoes: os.observacoes || "",
@@ -104,6 +119,7 @@ export function OrdemServicoForm({ os, open, onClose, onSuccess }: OrdemServicoF
         solicitante_id: os?.solicitante_id || user.id,
         data_prevista: formData.data_prevista || null,
         responsavel_id: formData.responsavel_id || null,
+        ativo_id: formData.ativo_id || null,
       };
 
       if (os) {
@@ -231,20 +247,36 @@ export function OrdemServicoForm({ os, open, onClose, onSuccess }: OrdemServicoF
               </Select>
             </div>
             <div className="space-y-2">
-              <Label htmlFor="responsavel_id">Responsável</Label>
-              <Select value={formData.responsavel_id} onValueChange={(value) => setFormData({ ...formData, responsavel_id: value })}>
+              <Label htmlFor="ativo_id">Ativo</Label>
+              <Select value={formData.ativo_id} onValueChange={(value) => setFormData({ ...formData, ativo_id: value })}>
                 <SelectTrigger>
                   <SelectValue placeholder="Selecione..." />
                 </SelectTrigger>
                 <SelectContent>
-                  {usuarios?.map((usuario) => (
-                    <SelectItem key={usuario.id} value={usuario.id}>
-                      {usuario.full_name}
+                  {ativos?.map((ativo) => (
+                    <SelectItem key={ativo.id} value={ativo.id}>
+                      {ativo.tag_patrimonio} - {ativo.categoria} {ativo.modelo}
                     </SelectItem>
                   ))}
                 </SelectContent>
               </Select>
             </div>
+          </div>
+
+          <div className="space-y-2">
+            <Label htmlFor="responsavel_id">Responsável</Label>
+            <Select value={formData.responsavel_id} onValueChange={(value) => setFormData({ ...formData, responsavel_id: value })}>
+              <SelectTrigger>
+                <SelectValue placeholder="Selecione..." />
+              </SelectTrigger>
+              <SelectContent>
+                {usuarios?.map((usuario) => (
+                  <SelectItem key={usuario.id} value={usuario.id}>
+                    {usuario.full_name}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
           </div>
 
           <div className="space-y-2">

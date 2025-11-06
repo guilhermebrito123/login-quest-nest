@@ -781,6 +781,7 @@ export type Database = {
       }
       ordens_servico: {
         Row: {
+          ativo_id: string | null
           created_at: string | null
           data_abertura: string | null
           data_conclusao: string | null
@@ -799,6 +800,7 @@ export type Database = {
           updated_at: string | null
         }
         Insert: {
+          ativo_id?: string | null
           created_at?: string | null
           data_abertura?: string | null
           data_conclusao?: string | null
@@ -817,6 +819,7 @@ export type Database = {
           updated_at?: string | null
         }
         Update: {
+          ativo_id?: string | null
           created_at?: string | null
           data_abertura?: string | null
           data_conclusao?: string | null
@@ -835,6 +838,13 @@ export type Database = {
           updated_at?: string | null
         }
         Relationships: [
+          {
+            foreignKeyName: "ordens_servico_ativo_id_fkey"
+            columns: ["ativo_id"]
+            isOneToOne: false
+            referencedRelation: "ativos"
+            referencedColumns: ["id"]
+          },
           {
             foreignKeyName: "ordens_servico_responsavel_id_fkey"
             columns: ["responsavel_id"]
