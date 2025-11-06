@@ -95,7 +95,7 @@ export default function Ativos() {
           </Button>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
           <Card>
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
               <CardTitle className="text-sm font-medium">Total de Ativos</CardTitle>
@@ -125,18 +125,20 @@ export default function Ativos() {
               <div className="text-2xl font-bold">{stats.criticos || 0}</div>
             </CardContent>
           </Card>
+        </div>
 
-          <Card>
-            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="text-sm font-medium">Categorias</CardTitle>
-              <Package className="h-4 w-4 text-muted-foreground" />
-            </CardHeader>
-            <CardContent>
-              <div className="text-2xl font-bold">
-                {Object.keys(stats.categorias || {}).length}
-              </div>
-            </CardContent>
-          </Card>
+        <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+          {Object.entries(stats.categorias || {}).map(([categoria, count]) => (
+            <Card key={categoria}>
+              <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                <CardTitle className="text-sm font-medium capitalize">{categoria}</CardTitle>
+                <Package className="h-4 w-4 text-muted-foreground" />
+              </CardHeader>
+              <CardContent>
+                <div className="text-2xl font-bold">{count as number}</div>
+              </CardContent>
+            </Card>
+          ))}
         </div>
 
         <Card>
