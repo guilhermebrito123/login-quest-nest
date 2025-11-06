@@ -37,7 +37,33 @@ const MesaOperacoes = () => {
 
   useEffect(() => {
     fetchUnidades();
+    fetchMapboxToken();
   }, []);
+
+  const fetchMapboxToken = async () => {
+    try {
+      const { data, error } = await supabase.functions.invoke('get-mapbox-token');
+      
+      if (error) throw error;
+      
+      if (data?.token) {
+        setMapboxToken(data.token);
+      } else {
+        toast({
+          title: "Token do Mapbox não configurado",
+          description: "Configure o token MAPBOX_PUBLIC_TOKEN nos secrets do projeto",
+          variant: "destructive",
+        });
+      }
+    } catch (error: any) {
+      console.error('Erro ao buscar token do Mapbox:', error);
+      toast({
+        title: "Erro ao carregar token do Mapbox",
+        description: "Usando formulário manual",
+        variant: "destructive",
+      });
+    }
+  };
 
   useEffect(() => {
     if (mapboxToken && unidades.length > 0 && mapContainer.current && !map.current) {
@@ -214,38 +240,40 @@ const MesaOperacoes = () => {
 
   if (!mapboxToken) {
     return (
-      <div className="container mx-auto p-6">
-        <Card className="max-w-md mx-auto mt-20">
-          <CardHeader>
-            <CardTitle>Configurar Mapbox</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <p className="text-sm text-muted-foreground mb-4">
-              Para visualizar o mapa, insira seu token público do Mapbox. Você pode obter um em{" "}
-              <a
-                href="https://mapbox.com/"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="text-primary underline"
-              >
-                mapbox.com
-              </a>
-            </p>
-            <form onSubmit={handleTokenSubmit} className="space-y-4">
-              <input
-                name="token"
-                type="text"
-                placeholder="pk.eyJ1..."
-                className="w-full px-3 py-2 border rounded-md"
-                required
-              />
-              <Button type="submit" className="w-full">
-                Configurar Token
-              </Button>
-            </form>
-          </CardContent>
-        </Card>
-      </div>
+      <DashboardLayout>
+        <div className="container mx-auto p-6">
+          <Card className="max-w-md mx-auto mt-20">
+            <CardHeader>
+              <CardTitle>Carregando Mapa</CardTitle>
+            </CardHeader>
+            <CardContent>
+              <div className="text-center py-8">
+                <Activity className="h-8 w-8 animate-spin mx-auto mb-4" />
+                <p className="text-sm text-muted-foreground">
+                  Carregando token do Mapbox...
+                </p>
+              </div>
+              
+              <div className="mt-6 border-t pt-6">
+                <p className="text-sm text-muted-foreground mb-4">
+                  Ou insira manualmente seu token público do Mapbox:
+                </p>
+                <form onSubmit={handleTokenSubmit} className="space-y-4">
+                  <input
+                    name="token"
+                    type="text"
+                    placeholder="pk.eyJ1..."
+                    className="w-full px-3 py-2 border rounded-md"
+                  />
+                  <Button type="submit" className="w-full">
+                    Usar Token Manual
+                  </Button>
+                </form>
+              </div>
+            </CardContent>
+          </Card>
+        </div>
+      </DashboardLayout>
     );
   }
 
