@@ -631,6 +631,91 @@ export type Database = {
           },
         ]
       }
+      os_anexos: {
+        Row: {
+          caminho_storage: string
+          created_at: string
+          id: string
+          nome_arquivo: string
+          os_id: string
+          tamanho_bytes: number | null
+          tipo_arquivo: string | null
+          uploaded_by: string
+        }
+        Insert: {
+          caminho_storage: string
+          created_at?: string
+          id?: string
+          nome_arquivo: string
+          os_id: string
+          tamanho_bytes?: number | null
+          tipo_arquivo?: string | null
+          uploaded_by: string
+        }
+        Update: {
+          caminho_storage?: string
+          created_at?: string
+          id?: string
+          nome_arquivo?: string
+          os_id?: string
+          tamanho_bytes?: number | null
+          tipo_arquivo?: string | null
+          uploaded_by?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "os_anexos_os_id_fkey"
+            columns: ["os_id"]
+            isOneToOne: false
+            referencedRelation: "ordens_servico"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      os_historico: {
+        Row: {
+          acao: string
+          campo_alterado: string | null
+          created_at: string
+          id: string
+          observacao: string | null
+          os_id: string
+          usuario_id: string
+          valor_anterior: string | null
+          valor_novo: string | null
+        }
+        Insert: {
+          acao: string
+          campo_alterado?: string | null
+          created_at?: string
+          id?: string
+          observacao?: string | null
+          os_id: string
+          usuario_id: string
+          valor_anterior?: string | null
+          valor_novo?: string | null
+        }
+        Update: {
+          acao?: string
+          campo_alterado?: string | null
+          created_at?: string
+          id?: string
+          observacao?: string | null
+          os_id?: string
+          usuario_id?: string
+          valor_anterior?: string | null
+          valor_novo?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "os_historico_os_id_fkey"
+            columns: ["os_id"]
+            isOneToOne: false
+            referencedRelation: "ordens_servico"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       postos_servico: {
         Row: {
           codigo: string

@@ -148,7 +148,7 @@ const Dashboard = () => {
       description: "Preventivas, corretivas e emergenciais",
       icon: FileText,
       color: "from-indigo-500 to-purple-500",
-      action: () => toast({ title: "Em desenvolvimento", description: "Módulo em breve!" }),
+      action: () => navigate("/ordens-servico"),
     },
     {
       title: "Incidentes",
