@@ -6,6 +6,7 @@ import { BrowserRouter, Routes, Route } from "react-router-dom";
 import Index from "./pages/Index";
 import Auth from "./pages/Auth";
 import Dashboard from "./pages/Dashboard";
+import Dashboard24h from "./pages/Dashboard24h";
 import UserManagement from "./pages/UserManagement";
 import ResetPassword from "./pages/ResetPassword";
 import Contratos from "./pages/Contratos";
@@ -27,6 +28,7 @@ const App = () => (
           <Route path="/auth" element={<Auth />} />
           <Route path="/reset-password" element={<ResetPassword />} />
           <Route path="/dashboard" element={<Dashboard />} />
+          <Route path="/dashboard-24h" element={<Dashboard24h />} />
           <Route path="/users" element={<UserManagement />} />
           <Route path="/contratos" element={<Contratos />} />
           <Route path="/mesa-operacoes" element={<MesaOperacoes />} />

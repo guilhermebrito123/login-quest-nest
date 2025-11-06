@@ -25,6 +25,7 @@ import {
 } from "@/components/ui/sidebar";
 
 const menuItems = [
+  { title: "Dashboard 24/7", url: "/dashboard-24h", icon: LayoutDashboard },
   { title: "Dashboard", url: "/dashboard", icon: LayoutDashboard },
   { title: "Contratos", url: "/contratos", icon: FileText },
   { title: "Mesa de Operações", url: "/mesa-operacoes", icon: Headphones },
