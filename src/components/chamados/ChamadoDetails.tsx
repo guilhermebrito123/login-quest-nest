@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
@@ -9,7 +9,7 @@ import { Card } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
 import { format } from "date-fns";
 import { ptBR } from "date-fns/locale";
-import { MessageSquare, Paperclip, Send, UserCircle, Star } from "lucide-react";
+import { MessageSquare, Paperclip, Send, UserCircle, Star, UserCheck } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { Skeleton } from "@/components/ui/skeleton";
 
@@ -26,6 +26,15 @@ export function ChamadoDetails({ chamado, open, onOpenChange, onEdit, onDelete }
   const queryClient = useQueryClient();
   const [novoComentario, setNovoComentario] = useState("");
   const [avaliacao, setAvaliacao] = useState<number | null>(chamado.avaliacao || null);
+  const [currentUserId, setCurrentUserId] = useState<string | null>(null);
+
+  useEffect(() => {
+    const fetchUser = async () => {
+      const { data: { user } } = await supabase.auth.getUser();
+      if (user) setCurrentUserId(user.id);
+    };
+    fetchUser();
+  }, []);
 
   const { data: comentarios, isLoading: loadingComentarios } = useQuery({
     queryKey: ["chamados_comentarios", chamado.id],
@@ -113,6 +122,31 @@ export function ChamadoDetails({ chamado, open, onOpenChange, onEdit, onDelete }
     },
   });
 
+  const atribuirParaMim = useMutation({
+    mutationFn: async () => {
+      if (!currentUserId) throw new Error("Usuário não autenticado");
+      
+      const { error } = await supabase
+        .from("chamados")
+        .update({ atribuido_para_id: currentUserId })
+        .eq("id", chamado.id);
+
+      if (error) throw error;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["chamados"] });
+      toast({ title: "Você foi atribuído ao chamado com sucesso!" });
+      onOpenChange(false);
+    },
+    onError: (error: any) => {
+      toast({
+        title: "Erro ao atribuir chamado",
+        description: error.message,
+        variant: "destructive",
+      });
+    },
+  });
+
   const handleEnviarComentario = () => {
     if (novoComentario.trim()) {
       adicionarComentario.mutate(novoComentario);
@@ -134,6 +168,17 @@ export function ChamadoDetails({ chamado, open, onOpenChange, onEdit, onDelete }
               <Badge>{chamado.status?.replace("_", " ")}</Badge>
             </DialogTitle>
             <div className="flex gap-2">
+              {!chamado.atribuido_para_id && currentUserId && (
+                <Button
+                  variant="default"
+                  size="sm"
+                  onClick={() => atribuirParaMim.mutate()}
+                  disabled={atribuirParaMim.isPending}
+                >
+                  <UserCheck className="mr-2 h-4 w-4" />
+                  Atribuir para mim
+                </Button>
+              )}
               <Button
                 variant="outline"
                 size="sm"
