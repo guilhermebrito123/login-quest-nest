@@ -72,11 +72,19 @@ interface ColaboradorReserva {
   funcao: string;
 }
 
+interface Diarista {
+  id: string;
+  nome_completo: string;
+  telefone: string;
+  cidade: string | null;
+}
+
 export function GestaoCoberturaDialog({ open, onClose }: GestaoCoberturaDialogProps) {
   const [loading, setLoading] = useState(true);
   const [postosVagos, setPostosVagos] = useState<PostoVago[]>([]);
   const [diasVagos, setDiasVagos] = useState<DiaVago[]>([]);
   const [colaboradoresReserva, setColaboradoresReserva] = useState<ColaboradorReserva[]>([]);
+  const [diaristas, setDiaristas] = useState<Diarista[]>([]);
   const [filterPosto, setFilterPosto] = useState<string>("all");
   const [filterData, setFilterData] = useState<Date | undefined>(undefined);
   const [postos, setPostos] = useState<{ id: string; nome: string; codigo: string }[]>([]);
@@ -90,7 +98,7 @@ export function GestaoCoberturaDialog({ open, onClose }: GestaoCoberturaDialogPr
   const loadData = async () => {
     setLoading(true);
     try {
-      await Promise.all([loadPostosVagos(), loadDiasVagos(), loadPostos(), loadColaboradoresReserva()]);
+      await Promise.all([loadPostosVagos(), loadDiasVagos(), loadPostos(), loadColaboradoresReserva(), loadDiaristas()]);
     } catch (error: any) {
       toast({
         title: "Erro ao carregar dados",
@@ -248,6 +256,18 @@ export function GestaoCoberturaDialog({ open, onClose }: GestaoCoberturaDialogPr
     }));
 
     setColaboradoresReserva(reservasData);
+  };
+
+  const loadDiaristas = async () => {
+    const { data, error } = await supabase
+      .from("diaristas")
+      .select("id, nome_completo, telefone, cidade")
+      .eq("status", "ativo")
+      .order("nome_completo");
+
+    if (error) throw error;
+
+    setDiaristas(data || []);
   };
 
   const filteredPostosVagos = postosVagos.filter((posto) => {
@@ -502,6 +522,42 @@ export function GestaoCoberturaDialog({ open, onClose }: GestaoCoberturaDialogPr
                       </CardContent>
                     </Card>
                   ))}
+
+                  {/* Diaristas Disponíveis */}
+                  {diaristas.length > 0 && (
+                    <div className="mt-6 pt-6 border-t">
+                      <h3 className="text-lg font-semibold mb-3 flex items-center gap-2">
+                        <Users className="h-5 w-5 text-blue-500" />
+                        Diaristas Disponíveis ({diaristas.length})
+                      </h3>
+                      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3">
+                        {diaristas.map((diarista) => (
+                          <Card key={diarista.id} className="border-blue-200">
+                            <CardContent className="p-3">
+                              <div>
+                                <h4 className="font-semibold text-sm mb-2">
+                                  {diarista.nome_completo}
+                                </h4>
+                                <div className="space-y-1">
+                                  <div className="flex items-center gap-2 text-xs">
+                                    <span className="text-muted-foreground">Telefone:</span>
+                                    <span className="font-medium">{diarista.telefone}</span>
+                                  </div>
+                                  <div className="flex items-center gap-2 text-xs">
+                                    <span className="text-muted-foreground">Cidade:</span>
+                                    <span className="font-medium">{diarista.cidade || "Não informada"}</span>
+                                  </div>
+                                </div>
+                                <Badge variant="outline" className="text-xs bg-blue-50 mt-2">
+                                  Diarista
+                                </Badge>
+                              </div>
+                            </CardContent>
+                          </Card>
+                        ))}
+                      </div>
+                    </div>
+                  )}
                 </div>
               )}
             </CardContent>
