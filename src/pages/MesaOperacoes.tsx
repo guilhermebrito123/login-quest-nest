@@ -330,6 +330,35 @@ const MesaOperacoes = () => {
     criticas: unidades.filter((u) => u.criticidade === "critica").length,
   };
 
+  // Agrupar unidades por cidade e calcular ocupação
+  const cidadesStats = unidades.reduce((acc, unidade) => {
+    const cidadeKey = `${unidade.cidade}/${unidade.uf}`;
+    
+    if (!acc[cidadeKey]) {
+      acc[cidadeKey] = {
+        cidade: unidade.cidade,
+        uf: unidade.uf,
+        postos_total: 0,
+        postos_preenchidos: 0,
+        unidades_count: 0,
+      };
+    }
+    
+    acc[cidadeKey].postos_total += unidade.postos_total;
+    acc[cidadeKey].postos_preenchidos += unidade.postos_preenchidos;
+    acc[cidadeKey].unidades_count += 1;
+    
+    return acc;
+  }, {} as Record<string, { cidade: string; uf: string; postos_total: number; postos_preenchidos: number; unidades_count: number }>);
+
+  const cidadesArray = Object.entries(cidadesStats).map(([key, data]) => ({
+    cidadeUf: key,
+    ...data,
+    porcentagem_ocupacao: data.postos_total > 0 
+      ? Math.round((data.postos_preenchidos / data.postos_total) * 100) 
+      : 0,
+  })).sort((a, b) => b.porcentagem_ocupacao - a.porcentagem_ocupacao);
+
   if (loading) {
     return (
       <div className="flex items-center justify-center h-screen">
@@ -463,6 +492,53 @@ const MesaOperacoes = () => {
               </CardContent>
             </Card>
           </div>
+
+          {/* Cards de Ocupação por Cidade */}
+          {cidadesArray.length > 0 && (
+            <div className="mt-4">
+              <h3 className="text-sm font-semibold mb-3 text-muted-foreground uppercase">Ocupação por Região</h3>
+              <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-6 gap-3">
+                {cidadesArray.map((cidade) => (
+                  <Card 
+                    key={cidade.cidadeUf}
+                    className={`transition-all hover:shadow-md ${
+                      cidade.porcentagem_ocupacao === 100 
+                        ? 'border-green-500/50' 
+                        : cidade.porcentagem_ocupacao >= 70 
+                        ? 'border-yellow-500/50' 
+                        : 'border-red-500/50'
+                    }`}
+                  >
+                    <CardContent className="p-4">
+                      <div className="space-y-2">
+                        <div className="flex items-center gap-2">
+                          <MapPin className="h-3 w-3 text-muted-foreground" />
+                          <p className="text-sm font-semibold truncate">{cidade.cidade}</p>
+                        </div>
+                        <div>
+                          <p className={`text-2xl font-bold ${
+                            cidade.porcentagem_ocupacao === 100 
+                              ? 'text-green-500' 
+                              : cidade.porcentagem_ocupacao >= 70 
+                              ? 'text-yellow-500' 
+                              : 'text-red-500'
+                          }`}>
+                            {cidade.porcentagem_ocupacao}%
+                          </p>
+                          <p className="text-xs text-muted-foreground">
+                            {cidade.postos_preenchidos}/{cidade.postos_total} postos
+                          </p>
+                        </div>
+                        <Badge variant="outline" className="text-xs">
+                          {cidade.unidades_count} {cidade.unidades_count === 1 ? 'unidade' : 'unidades'}
+                        </Badge>
+                      </div>
+                    </CardContent>
+                  </Card>
+                ))}
+              </div>
+            </div>
+          )}
         </div>
       </div>
 
