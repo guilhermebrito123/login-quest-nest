@@ -81,7 +81,7 @@ const Contratos = () => {
   const [loading, setLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState("");
   const [activeTab, setActiveTab] = useState("clientes");
-  const [filterUnidadeId, setFilterUnidadeId] = useState<string>("");
+  const [filterUnidadeId, setFilterUnidadeId] = useState<string>("all");
   
   // State for entities
   const [clientes, setClientes] = useState<Cliente[]>([]);
@@ -203,7 +203,7 @@ const Contratos = () => {
     : postos.filter(p => {
         const matchesSearch = p.nome.toLowerCase().includes(searchTerm.toLowerCase()) ||
           p.codigo.toLowerCase().includes(searchTerm.toLowerCase());
-        const matchesUnidade = !filterUnidadeId || p.unidade_id === filterUnidadeId;
+        const matchesUnidade = filterUnidadeId === "all" || p.unidade_id === filterUnidadeId;
         return matchesSearch && matchesUnidade;
       });
 
@@ -556,7 +556,7 @@ const Contratos = () => {
                       <SelectValue placeholder="Filtrar por unidade" />
                     </SelectTrigger>
                     <SelectContent>
-                      <SelectItem value="">Todas as unidades</SelectItem>
+                      <SelectItem value="all">Todas as unidades</SelectItem>
                       {unidades.map((unidade) => (
                         <SelectItem key={unidade.id} value={unidade.id}>
                           {unidade.nome}
