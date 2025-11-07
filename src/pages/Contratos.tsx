@@ -16,6 +16,13 @@ import {
   TrendingUp,
   Users
 } from "lucide-react";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 import { toast } from "@/hooks/use-toast";
 import ClienteForm from "@/components/contratos/ClienteForm";
 import ContratoForm from "@/components/contratos/ContratoForm";
@@ -74,6 +81,7 @@ const Contratos = () => {
   const [loading, setLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState("");
   const [activeTab, setActiveTab] = useState("clientes");
+  const [filterUnidadeId, setFilterUnidadeId] = useState<string>("");
   
   // State for entities
   const [clientes, setClientes] = useState<Cliente[]>([]);
@@ -192,10 +200,12 @@ const Contratos = () => {
 
   const filteredPostos = selectedUnidade
     ? postos.filter(p => p.unidade_id === selectedUnidade)
-    : postos.filter(p => 
-        p.nome.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        p.codigo.toLowerCase().includes(searchTerm.toLowerCase())
-      );
+    : postos.filter(p => {
+        const matchesSearch = p.nome.toLowerCase().includes(searchTerm.toLowerCase()) ||
+          p.codigo.toLowerCase().includes(searchTerm.toLowerCase());
+        const matchesUnidade = !filterUnidadeId || p.unidade_id === filterUnidadeId;
+        return matchesSearch && matchesUnidade;
+      });
 
   if (loading) {
     return (
@@ -529,15 +539,32 @@ const Contratos = () => {
 
           {/* Postos Tab */}
           <TabsContent value="postos" className="space-y-4">
-            <div className="flex items-center justify-between">
-              <div className="relative flex-1 max-w-sm">
-                <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-                <Input
-                  placeholder="Buscar posto..."
-                  value={searchTerm}
-                  onChange={(e) => setSearchTerm(e.target.value)}
-                  className="pl-10"
-                />
+            <div className="flex items-center justify-between gap-4">
+              <div className="flex items-center gap-2 flex-1">
+                <div className="relative flex-1 max-w-sm">
+                  <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+                  <Input
+                    placeholder="Buscar posto..."
+                    value={searchTerm}
+                    onChange={(e) => setSearchTerm(e.target.value)}
+                    className="pl-10"
+                  />
+                </div>
+                {!selectedUnidade && (
+                  <Select value={filterUnidadeId} onValueChange={setFilterUnidadeId}>
+                    <SelectTrigger className="w-[250px]">
+                      <SelectValue placeholder="Filtrar por unidade" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="">Todas as unidades</SelectItem>
+                      {unidades.map((unidade) => (
+                        <SelectItem key={unidade.id} value={unidade.id}>
+                          {unidade.nome}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                )}
               </div>
               <Button onClick={() => setShowPostoForm(true)}>
                 <Plus className="h-4 w-4 mr-2" />
