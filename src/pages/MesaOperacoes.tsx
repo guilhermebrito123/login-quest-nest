@@ -3,10 +3,11 @@ import { supabase } from "@/integrations/supabase/client";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { MapPin, AlertCircle, TrendingUp, Activity } from "lucide-react";
+import { MapPin, AlertCircle, TrendingUp, Activity, ClipboardList } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { toast } from "@/hooks/use-toast";
 import { DashboardLayout } from "@/components/DashboardLayout";
+import { GestaoCoberturaDialog } from "@/components/contratos/GestaoCoberturaDialog";
 import mapboxgl from "mapbox-gl";
 import "mapbox-gl/dist/mapbox-gl.css";
 
@@ -37,6 +38,7 @@ const MesaOperacoes = () => {
   const [selectedUnidade, setSelectedUnidade] = useState<UnidadeComSLA | null>(null);
   const [loading, setLoading] = useState(true);
   const [mapboxToken, setMapboxToken] = useState("");
+  const [coberturaDialogOpen, setCoberturaDialogOpen] = useState(false);
 
   useEffect(() => {
     fetchUnidades();
@@ -384,9 +386,19 @@ const MesaOperacoes = () => {
       {/* Header */}
       <div className="border-b bg-background p-4">
         <div className="container mx-auto">
-          <div className="mb-4">
-            <h1 className="text-3xl font-bold">Mesa de Operações 24/7</h1>
-            <p className="text-muted-foreground">Monitoramento em tempo real de todas as unidades</p>
+          <div className="mb-4 flex items-center justify-between">
+            <div>
+              <h1 className="text-3xl font-bold">Mesa de Operações 24/7</h1>
+              <p className="text-muted-foreground">Monitoramento em tempo real de todas as unidades</p>
+            </div>
+            <Button 
+              onClick={() => setCoberturaDialogOpen(true)}
+              variant="default"
+              className="gap-2"
+            >
+              <ClipboardList className="h-4 w-4" />
+              Gestão de Cobertura
+            </Button>
           </div>
 
           {/* Stats Cards */}
@@ -549,8 +561,13 @@ const MesaOperacoes = () => {
             </div>
           </div>
         )}
+        </div>
       </div>
-    </div>
+      
+      <GestaoCoberturaDialog 
+        open={coberturaDialogOpen} 
+        onClose={() => setCoberturaDialogOpen(false)} 
+      />
     </DashboardLayout>
   );
 };

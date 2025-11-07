@@ -266,41 +266,90 @@ const PostoCard = ({ posto, unidade, onEdit, onDelete }: PostoCardProps) => {
     }
   };
 
-  const handleConfirmarPresenca = () => {
+  const handleConfirmarPresenca = async () => {
     if (!selectedDayForAction) return;
     
-    // Remove dos dias vagos se estiver lá
-    setDiasVagos(prev => prev.filter(d => d.getTime() !== selectedDayForAction.getTime()));
-    
-    // Adiciona aos dias de presença se não estiver
-    if (!diasPresenca.some(d => d.getTime() === selectedDayForAction.getTime())) {
-      setDiasPresenca(prev => [...prev, selectedDayForAction]);
+    try {
+      // Remove from database if marked as vago
+      const { error } = await supabase
+        .from("posto_dias_vagos")
+        .delete()
+        .eq("posto_servico_id", posto.id)
+        .eq("data", selectedDayForAction.toISOString().split('T')[0]);
+
+      if (error) throw error;
+
+      // Remove dos dias vagos se estiver lá
+      setDiasVagos(prev => prev.filter(d => d.getTime() !== selectedDayForAction.getTime()));
+      
+      // Adiciona aos dias de presença se não estiver
+      if (!diasPresenca.some(d => d.getTime() === selectedDayForAction.getTime())) {
+        setDiasPresenca(prev => [...prev, selectedDayForAction]);
+      }
+      
+      setDayActionOpen(false);
+      toast({
+        title: "Presença confirmada",
+        description: `Presença confirmada para ${selectedDayForAction.toLocaleDateString('pt-BR')}`,
+      });
+    } catch (error: any) {
+      toast({
+        title: "Erro ao confirmar presença",
+        description: error.message,
+        variant: "destructive",
+      });
     }
-    
-    setDayActionOpen(false);
-    toast({
-      title: "Presença confirmada",
-      description: `Presença confirmada para ${selectedDayForAction.toLocaleDateString('pt-BR')}`,
-    });
   };
 
-  const handleMarcarVago = () => {
+  const handleMarcarVago = async () => {
     if (!selectedDayForAction) return;
     
-    // Remove dos dias de presença se estiver lá
-    setDiasPresenca(prev => prev.filter(d => d.getTime() !== selectedDayForAction.getTime()));
-    
-    // Adiciona aos dias vagos se não estiver
-    if (!diasVagos.some(d => d.getTime() === selectedDayForAction.getTime())) {
-      setDiasVagos(prev => [...prev, selectedDayForAction]);
+    try {
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) throw new Error("Usuário não autenticado");
+
+      // Find the colaborador assigned to this posto
+      const { data: colabs } = await supabase
+        .from("colaboradores")
+        .select("id")
+        .eq("posto_servico_id", posto.id)
+        .eq("status", "ativo")
+        .limit(1)
+        .single();
+
+      // Save to database
+      const { error } = await supabase
+        .from("posto_dias_vagos")
+        .insert({
+          posto_servico_id: posto.id,
+          colaborador_id: colabs?.id || null,
+          data: selectedDayForAction.toISOString().split('T')[0],
+          created_by: user.id,
+        });
+
+      if (error && !error.message.includes('duplicate key')) throw error;
+
+      // Remove dos dias de presença se estiver lá
+      setDiasPresenca(prev => prev.filter(d => d.getTime() !== selectedDayForAction.getTime()));
+      
+      // Adiciona aos dias vagos se não estiver
+      if (!diasVagos.some(d => d.getTime() === selectedDayForAction.getTime())) {
+        setDiasVagos(prev => [...prev, selectedDayForAction]);
+      }
+      
+      setDayActionOpen(false);
+      toast({
+        title: "Posto vago",
+        description: `Posto marcado como vago para ${selectedDayForAction.toLocaleDateString('pt-BR')}`,
+        variant: "destructive",
+      });
+    } catch (error: any) {
+      toast({
+        title: "Erro ao marcar dia vago",
+        description: error.message,
+        variant: "destructive",
+      });
     }
-    
-    setDayActionOpen(false);
-    toast({
-      title: "Posto vago",
-      description: `Posto marcado como vago para ${selectedDayForAction.toLocaleDateString('pt-BR')}`,
-      variant: "destructive",
-    });
   };
 
   return (

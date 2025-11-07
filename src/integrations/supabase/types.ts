@@ -946,6 +946,51 @@ export type Database = {
           },
         ]
       }
+      posto_dias_vagos: {
+        Row: {
+          colaborador_id: string | null
+          created_at: string
+          created_by: string
+          data: string
+          id: string
+          motivo: string | null
+          posto_servico_id: string
+        }
+        Insert: {
+          colaborador_id?: string | null
+          created_at?: string
+          created_by: string
+          data: string
+          id?: string
+          motivo?: string | null
+          posto_servico_id: string
+        }
+        Update: {
+          colaborador_id?: string | null
+          created_at?: string
+          created_by?: string
+          data?: string
+          id?: string
+          motivo?: string | null
+          posto_servico_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "posto_dias_vagos_colaborador_id_fkey"
+            columns: ["colaborador_id"]
+            isOneToOne: false
+            referencedRelation: "colaboradores"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "posto_dias_vagos_posto_servico_id_fkey"
+            columns: ["posto_servico_id"]
+            isOneToOne: false
+            referencedRelation: "postos_servico"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       postos_servico: {
         Row: {
           codigo: string
