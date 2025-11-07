@@ -2,9 +2,17 @@ import { useEffect, useState } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { Briefcase, Clock, Users, Trash2, Edit, UserCheck, UserX } from "lucide-react";
+import { Briefcase, Clock, Users, Trash2, Edit, UserCheck, UserX, Calendar as CalendarIcon } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "@/hooks/use-toast";
+import { Calendar } from "@/components/ui/calendar";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "@/components/ui/dialog";
 import {
   AlertDialog,
   AlertDialogAction,
@@ -40,6 +48,8 @@ interface PostoCardProps {
 const PostoCard = ({ posto, unidade, onEdit, onDelete }: PostoCardProps) => {
   const [colaboradoresLotados, setColaboradoresLotados] = useState<any[]>([]);
   const [ocupacaoAtual, setOcupacaoAtual] = useState<'ocupado' | 'vago' | 'parcial'>('vago');
+  const [selectedDate, setSelectedDate] = useState<Date>();
+  const [calendarOpen, setCalendarOpen] = useState(false);
 
   useEffect(() => {
     fetchColaboradores();
@@ -182,7 +192,27 @@ const PostoCard = ({ posto, unidade, onEdit, onDelete }: PostoCardProps) => {
               <p className="text-sm text-muted-foreground">{posto.codigo}</p>
             </div>
           </div>
-          <div className="flex gap-2">
+          <div className="flex gap-2 items-center">
+            <Dialog open={calendarOpen} onOpenChange={setCalendarOpen}>
+              <DialogTrigger asChild>
+                <Button variant="ghost" size="sm" className="h-8 w-8 p-0">
+                  <CalendarIcon className="h-4 w-4" />
+                </Button>
+              </DialogTrigger>
+              <DialogContent className="sm:max-w-md">
+                <DialogHeader>
+                  <DialogTitle>Calendário - {posto.nome}</DialogTitle>
+                </DialogHeader>
+                <div className="flex justify-center">
+                  <Calendar
+                    mode="single"
+                    selected={selectedDate}
+                    onSelect={setSelectedDate}
+                    className="rounded-md border"
+                  />
+                </div>
+              </DialogContent>
+            </Dialog>
             <Badge variant={getStatusColor(posto.status)}>
               {posto.status}
             </Badge>
