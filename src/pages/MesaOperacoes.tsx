@@ -242,6 +242,12 @@ const MesaOperacoes = () => {
     return "#ef4444"; // red
   };
 
+  const getOcupacaoColor = (porcentagem: number): string => {
+    if (porcentagem === 100) return "#22c55e"; // green - 100%
+    if (porcentagem >= 70) return "#eab308"; // yellow - 70% a 99.99%
+    return "#ef4444"; // red - abaixo de 70%
+  };
+
   const getSLABadgeVariant = (sla: number): "default" | "secondary" | "destructive" => {
     if (sla >= 100) return "default";
     if (sla >= 90) return "secondary";
@@ -268,7 +274,7 @@ const MesaOperacoes = () => {
 
       const el = document.createElement("div");
       el.className = "marker";
-      el.style.backgroundColor = getSLAColor(unidade.sla_atual);
+      el.style.backgroundColor = getOcupacaoColor(unidade.porcentagem_preenchimento);
       el.style.width = "24px";
       el.style.height = "24px";
       el.style.borderRadius = "50%";
