@@ -2,7 +2,7 @@ import { useState } from "react";
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { Pencil, Trash2, Eye, Calendar, User, MapPin, Clock } from "lucide-react";
+import { Pencil, Trash2, Eye, Calendar, User, MapPin, Clock, CheckCircle2 } from "lucide-react";
 import { OrdemServicoDetails } from "./OrdemServicoDetails";
 import {
   AlertDialog,
@@ -19,11 +19,13 @@ interface OrdemServicoCardProps {
   os: any;
   onEdit: (os: any) => void;
   onDelete: (id: string) => void;
+  onConcluir: (id: string) => void;
 }
 
-export function OrdemServicoCard({ os, onEdit, onDelete }: OrdemServicoCardProps) {
+export function OrdemServicoCard({ os, onEdit, onDelete, onConcluir }: OrdemServicoCardProps) {
   const [showDetails, setShowDetails] = useState(false);
   const [showDeleteDialog, setShowDeleteDialog] = useState(false);
+  const [showConcluirDialog, setShowConcluirDialog] = useState(false);
 
   const getStatusColor = (status: string) => {
     switch (status) {
@@ -77,9 +79,21 @@ export function OrdemServicoCard({ os, onEdit, onDelete }: OrdemServicoCardProps
               <Button variant="ghost" size="icon" onClick={() => setShowDetails(true)}>
                 <Eye className="h-4 w-4" />
               </Button>
-              <Button variant="ghost" size="icon" onClick={() => onEdit(os)}>
-                <Pencil className="h-4 w-4" />
-              </Button>
+              {os.status !== "concluida" && (
+                <>
+                  <Button 
+                    variant="ghost" 
+                    size="icon" 
+                    onClick={() => setShowConcluirDialog(true)}
+                    className="text-green-600 hover:text-green-700 hover:bg-green-50"
+                  >
+                    <CheckCircle2 className="h-4 w-4" />
+                  </Button>
+                  <Button variant="ghost" size="icon" onClick={() => onEdit(os)}>
+                    <Pencil className="h-4 w-4" />
+                  </Button>
+                </>
+              )}
               <Button variant="ghost" size="icon" onClick={() => setShowDeleteDialog(true)}>
                 <Trash2 className="h-4 w-4 text-destructive" />
               </Button>
@@ -139,6 +153,26 @@ export function OrdemServicoCard({ os, onEdit, onDelete }: OrdemServicoCardProps
             <AlertDialogCancel>Cancelar</AlertDialogCancel>
             <AlertDialogAction onClick={() => onDelete(os.id)} className="bg-destructive text-destructive-foreground">
               Excluir
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
+
+      <AlertDialog open={showConcluirDialog} onOpenChange={setShowConcluirDialog}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Concluir Ordem de Serviço</AlertDialogTitle>
+            <AlertDialogDescription>
+              Tem certeza que deseja concluir a OS {os.numero}? Esta ação marcará a ordem como concluída.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel>Cancelar</AlertDialogCancel>
+            <AlertDialogAction 
+              onClick={() => onConcluir(os.id)} 
+              className="bg-green-600 hover:bg-green-700"
+            >
+              Concluir
             </AlertDialogAction>
           </AlertDialogFooter>
         </AlertDialogContent>

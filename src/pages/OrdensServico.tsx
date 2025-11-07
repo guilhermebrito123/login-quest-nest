@@ -15,7 +15,7 @@ import { toast } from "sonner";
 
 export default function OrdensServico() {
   const [searchTerm, setSearchTerm] = useState("");
-  const [statusFilter, setStatusFilter] = useState<string>("all");
+  const [statusFilter, setStatusFilter] = useState<string>("ativas");
   const [prioridadeFilter, setPrioridadeFilter] = useState<string>("all");
   const [tipoFilter, setTipoFilter] = useState<string>("all");
   const [showForm, setShowForm] = useState(false);
@@ -34,9 +34,13 @@ export default function OrdensServico() {
         `)
         .order("created_at", { ascending: false });
 
-      if (statusFilter !== "all") {
+      // Filtro especial para "ativas" (não concluídas)
+      if (statusFilter === "ativas") {
+        query = query.neq("status", "concluida");
+      } else if (statusFilter !== "all") {
         query = query.eq("status", statusFilter);
       }
+      
       if (prioridadeFilter !== "all") {
         query = query.eq("prioridade", prioridadeFilter);
       }
@@ -80,6 +84,24 @@ export default function OrdensServico() {
       refetch();
     } catch (error: any) {
       toast.error("Erro ao excluir OS: " + error.message);
+    }
+  };
+
+  const handleConcluir = async (id: string) => {
+    try {
+      const { error } = await supabase
+        .from("ordens_servico")
+        .update({ 
+          status: "concluida",
+          data_conclusao: new Date().toISOString()
+        })
+        .eq("id", id);
+
+      if (error) throw error;
+      toast.success("OS concluída com sucesso");
+      refetch();
+    } catch (error: any) {
+      toast.error("Erro ao concluir OS: " + error.message);
     }
   };
 
@@ -161,6 +183,7 @@ export default function OrdensServico() {
                   <SelectValue placeholder="Status" />
                 </SelectTrigger>
                 <SelectContent>
+                  <SelectItem value="ativas">Ativas (Abertas e Em Andamento)</SelectItem>
                   <SelectItem value="all">Todos os Status</SelectItem>
                   <SelectItem value="aberta">Aberta</SelectItem>
                   <SelectItem value="em_andamento">Em Andamento</SelectItem>
@@ -210,6 +233,7 @@ export default function OrdensServico() {
                   os={os}
                   onEdit={handleEdit}
                   onDelete={handleDelete}
+                  onConcluir={handleConcluir}
                 />
               ))}
             </div>
