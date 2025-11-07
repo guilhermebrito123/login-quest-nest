@@ -38,13 +38,18 @@ const UnidadeForm = ({ unidadeId, contratoId, onClose, onSuccess }: UnidadeFormP
     cidade: "",
     uf: "",
     cep: "",
+    latitude: "",
+    longitude: "",
     criticidade: "media",
     status: "ativo",
   });
 
   useEffect(() => {
     loadContratos();
-  }, []);
+    if (unidadeId) {
+      loadUnidade();
+    }
+  }, [unidadeId]);
 
   const loadContratos = async () => {
     const { data } = await supabase
@@ -55,15 +60,57 @@ const UnidadeForm = ({ unidadeId, contratoId, onClose, onSuccess }: UnidadeFormP
     setContratos(data || []);
   };
 
+  const loadUnidade = async () => {
+    if (!unidadeId) return;
+    
+    const { data, error } = await supabase
+      .from("unidades")
+      .select("*")
+      .eq("id", unidadeId)
+      .single();
+
+    if (error) {
+      toast({
+        title: "Erro ao carregar unidade",
+        description: error.message,
+        variant: "destructive",
+      });
+      return;
+    }
+
+    if (data) {
+      setFormData({
+        contrato_id: data.contrato_id || "",
+        nome: data.nome,
+        codigo: data.codigo,
+        endereco: data.endereco || "",
+        cidade: data.cidade || "",
+        uf: data.uf || "",
+        cep: data.cep || "",
+        latitude: data.latitude ? String(data.latitude) : "",
+        longitude: data.longitude ? String(data.longitude) : "",
+        criticidade: data.criticidade || "media",
+        status: data.status || "ativo",
+      });
+    }
+  };
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);
 
     try {
+      // Convert latitude and longitude to numbers or null
+      const payload = {
+        ...formData,
+        latitude: formData.latitude ? parseFloat(formData.latitude) : null,
+        longitude: formData.longitude ? parseFloat(formData.longitude) : null,
+      };
+
       if (unidadeId) {
         const { error } = await supabase
           .from("unidades")
-          .update(formData)
+          .update(payload)
           .eq("id", unidadeId);
 
         if (error) throw error;
@@ -75,7 +122,7 @@ const UnidadeForm = ({ unidadeId, contratoId, onClose, onSuccess }: UnidadeFormP
       } else {
         const { error } = await supabase
           .from("unidades")
-          .insert([formData]);
+          .insert([payload]);
 
         if (error) throw error;
 
@@ -199,6 +246,34 @@ const UnidadeForm = ({ unidadeId, contratoId, onClose, onSuccess }: UnidadeFormP
                   setFormData({ ...formData, cep: e.target.value })
                 }
                 placeholder="00000-000"
+              />
+            </div>
+
+            <div className="space-y-2">
+              <Label htmlFor="latitude">Latitude</Label>
+              <Input
+                id="latitude"
+                type="number"
+                step="any"
+                value={formData.latitude}
+                onChange={(e) =>
+                  setFormData({ ...formData, latitude: e.target.value })
+                }
+                placeholder="-15.7801"
+              />
+            </div>
+
+            <div className="space-y-2">
+              <Label htmlFor="longitude">Longitude</Label>
+              <Input
+                id="longitude"
+                type="number"
+                step="any"
+                value={formData.longitude}
+                onChange={(e) =>
+                  setFormData({ ...formData, longitude: e.target.value })
+                }
+                placeholder="-47.9292"
               />
             </div>
 
