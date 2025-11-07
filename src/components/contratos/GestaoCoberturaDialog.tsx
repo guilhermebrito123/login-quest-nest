@@ -65,10 +65,18 @@ interface DiaVago {
   } | null;
 }
 
+interface ColaboradorReserva {
+  id: string;
+  nome_completo: string;
+  cargo: string;
+  funcao: string;
+}
+
 export function GestaoCoberturaDialog({ open, onClose }: GestaoCoberturaDialogProps) {
   const [loading, setLoading] = useState(true);
   const [postosVagos, setPostosVagos] = useState<PostoVago[]>([]);
   const [diasVagos, setDiasVagos] = useState<DiaVago[]>([]);
+  const [colaboradoresReserva, setColaboradoresReserva] = useState<ColaboradorReserva[]>([]);
   const [filterPosto, setFilterPosto] = useState<string>("all");
   const [filterData, setFilterData] = useState<Date | undefined>(undefined);
   const [postos, setPostos] = useState<{ id: string; nome: string; codigo: string }[]>([]);
@@ -82,7 +90,7 @@ export function GestaoCoberturaDialog({ open, onClose }: GestaoCoberturaDialogPr
   const loadData = async () => {
     setLoading(true);
     try {
-      await Promise.all([loadPostosVagos(), loadDiasVagos(), loadPostos()]);
+      await Promise.all([loadPostosVagos(), loadDiasVagos(), loadPostos(), loadColaboradoresReserva()]);
     } catch (error: any) {
       toast({
         title: "Erro ao carregar dados",
@@ -222,6 +230,26 @@ export function GestaoCoberturaDialog({ open, onClose }: GestaoCoberturaDialogPr
     setDiasVagos(diasVagosData);
   };
 
+  const loadColaboradoresReserva = async () => {
+    const { data, error } = await supabase
+      .from("colaboradores")
+      .select("id, nome_completo, cargo")
+      .is("posto_servico_id", null)
+      .eq("status", "ativo")
+      .order("nome_completo");
+
+    if (error) throw error;
+
+    const reservasData: ColaboradorReserva[] = (data || []).map((colab) => ({
+      id: colab.id,
+      nome_completo: colab.nome_completo,
+      cargo: colab.cargo || "Sem cargo",
+      funcao: colab.cargo || "Sem função",
+    }));
+
+    setColaboradoresReserva(reservasData);
+  };
+
   const filteredPostosVagos = postosVagos.filter((posto) => {
     if (filterPosto !== "all" && posto.id !== filterPosto) return false;
     return true;
@@ -355,6 +383,37 @@ export function GestaoCoberturaDialog({ open, onClose }: GestaoCoberturaDialogPr
                       </CardContent>
                     </Card>
                   ))}
+
+                  {/* Reservas Técnicas Disponíveis */}
+                  {colaboradoresReserva.length > 0 && (
+                    <div className="mt-6 pt-6 border-t">
+                      <h3 className="text-lg font-semibold mb-3 flex items-center gap-2">
+                        <Users className="h-5 w-5 text-green-500" />
+                        Reservas Técnicas Disponíveis ({colaboradoresReserva.length})
+                      </h3>
+                      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3">
+                        {colaboradoresReserva.map((colab) => (
+                          <Card key={colab.id} className="border-green-200">
+                            <CardContent className="p-3">
+                              <div>
+                                <h4 className="font-semibold text-sm mb-1">
+                                  {colab.nome_completo}
+                                </h4>
+                                <div className="flex items-center gap-2">
+                                  <Badge variant="secondary" className="text-xs">
+                                    {colab.cargo}
+                                  </Badge>
+                                  <Badge variant="outline" className="text-xs bg-green-50">
+                                    Disponível
+                                  </Badge>
+                                </div>
+                              </div>
+                            </CardContent>
+                          </Card>
+                        ))}
+                      </div>
+                    </div>
+                  )}
                 </div>
               )}
             </CardContent>
