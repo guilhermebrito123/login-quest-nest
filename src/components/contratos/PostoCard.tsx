@@ -50,6 +50,7 @@ const PostoCard = ({ posto, unidade, onEdit, onDelete }: PostoCardProps) => {
   const [ocupacaoAtual, setOcupacaoAtual] = useState<'ocupado' | 'vago' | 'parcial'>('vago');
   const [selectedDate, setSelectedDate] = useState<Date>();
   const [calendarOpen, setCalendarOpen] = useState(false);
+  const [diasConfirmados, setDiasConfirmados] = useState<Date[]>([]);
 
   useEffect(() => {
     fetchColaboradores();
@@ -179,6 +180,38 @@ const PostoCard = ({ posto, unidade, onEdit, onDelete }: PostoCardProps) => {
     }
   };
 
+  const calcularDiasJornada = () => {
+    if (!posto.escala) return;
+    
+    const escalaMatch = posto.escala.match(/(\d+)x(\d+)/);
+    if (!escalaMatch) return;
+    
+    const diasTrabalhados = parseInt(escalaMatch[1]);
+    const diasFolga = parseInt(escalaMatch[2]);
+    
+    const hoje = new Date();
+    const diasParaPreencher: Date[] = [];
+    const totalCiclo = diasTrabalhados + diasFolga;
+    
+    // Preenche os próximos 90 dias baseado na escala
+    for (let i = 0; i < 90; i++) {
+      const data = new Date(hoje);
+      data.setDate(hoje.getDate() + i);
+      
+      // Verifica se o dia está dentro do período de trabalho do ciclo
+      const posicaoNoCiclo = i % totalCiclo;
+      if (posicaoNoCiclo < diasTrabalhados) {
+        diasParaPreencher.push(data);
+      }
+    }
+    
+    setDiasConfirmados(diasParaPreencher);
+    toast({
+      title: "Jornada confirmada",
+      description: `Jornada de ${posto.escala} confirmada com sucesso`,
+    });
+  };
+
   return (
     <Card className="hover:shadow-lg transition-shadow">
       <CardHeader>
@@ -203,13 +236,44 @@ const PostoCard = ({ posto, unidade, onEdit, onDelete }: PostoCardProps) => {
                 <DialogHeader>
                   <DialogTitle>Calendário - {posto.nome}</DialogTitle>
                 </DialogHeader>
-                <div className="flex justify-center">
-                  <Calendar
-                    mode="single"
-                    selected={selectedDate}
-                    onSelect={setSelectedDate}
-                    className="rounded-md border"
-                  />
+                <div className="space-y-4">
+                  <div className="flex justify-center">
+                    <Calendar
+                      mode="single"
+                      selected={selectedDate}
+                      onSelect={setSelectedDate}
+                      className="rounded-md border pointer-events-auto"
+                      modifiers={{
+                        confirmado: diasConfirmados,
+                      }}
+                      modifiersStyles={{
+                        confirmado: {
+                          backgroundColor: 'hsl(var(--primary))',
+                          color: 'hsl(var(--primary-foreground))',
+                          fontWeight: 'bold',
+                        },
+                      }}
+                    />
+                  </div>
+                  {posto.escala && (
+                    <div className="flex justify-center gap-2">
+                      <Button 
+                        onClick={calcularDiasJornada}
+                        className="w-full"
+                        disabled={diasConfirmados.length > 0}
+                      >
+                        {diasConfirmados.length > 0 ? 'Jornada Confirmada' : 'Confirmar Jornada'}
+                      </Button>
+                      {diasConfirmados.length > 0 && (
+                        <Button 
+                          onClick={() => setDiasConfirmados([])}
+                          variant="outline"
+                        >
+                          Limpar
+                        </Button>
+                      )}
+                    </div>
+                  )}
                 </div>
               </DialogContent>
             </Dialog>
