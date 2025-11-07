@@ -49,6 +49,10 @@ interface DiaVago {
     codigo: string;
     unidade: {
       nome: string;
+      contrato: {
+        nome: string;
+        codigo: string;
+      } | null;
     };
   };
   colaborador: {
@@ -159,7 +163,11 @@ export function GestaoCoberturaDialog({ open, onClose }: GestaoCoberturaDialogPr
           nome,
           codigo,
           unidades (
-            nome
+            nome,
+            contratos (
+              nome,
+              codigo
+            )
           )
         ),
         colaboradores (
@@ -181,6 +189,12 @@ export function GestaoCoberturaDialog({ open, onClose }: GestaoCoberturaDialogPr
         codigo: item.postos_servico?.codigo || "",
         unidade: {
           nome: item.postos_servico?.unidades?.nome || "Sem unidade",
+          contrato: item.postos_servico?.unidades?.contratos
+            ? {
+                nome: item.postos_servico.unidades.contratos.nome,
+                codigo: item.postos_servico.unidades.contratos.codigo,
+              }
+            : null,
         },
       },
       colaborador: item.colaboradores
@@ -358,9 +372,16 @@ export function GestaoCoberturaDialog({ open, onClose }: GestaoCoberturaDialogPr
                               </h4>
                               <Badge variant="outline">{dia.posto.codigo}</Badge>
                             </div>
-                            <p className="text-sm text-muted-foreground mb-2">
-                              {dia.posto.unidade.nome} • {dia.posto.nome}
-                            </p>
+                            <div className="space-y-1 mb-2">
+                              {dia.posto.unidade.contrato && (
+                                <p className="text-sm text-muted-foreground">
+                                  <span className="font-medium">Contrato:</span> {dia.posto.unidade.contrato.codigo} - {dia.posto.unidade.contrato.nome}
+                                </p>
+                              )}
+                              <p className="text-sm text-muted-foreground">
+                                <span className="font-medium">Unidade:</span> {dia.posto.unidade.nome} • {dia.posto.nome}
+                              </p>
+                            </div>
                             {dia.colaborador ? (
                               <div className="space-y-1">
                                 <div className="text-sm">
@@ -384,7 +405,16 @@ export function GestaoCoberturaDialog({ open, onClose }: GestaoCoberturaDialogPr
                             {dia.motivo && (
                               <div className="mt-2 text-sm">
                                 <span className="text-muted-foreground">Motivo: </span>
-                                <span>{dia.motivo}</span>
+                                <Badge variant="secondary">
+                                  {dia.motivo === 'falta_justificada' ? 'Falta Justificada' :
+                                   dia.motivo === 'falta_injustificada' ? 'Falta Injustificada' :
+                                   dia.motivo === 'pedido' ? 'Pedido' :
+                                   dia.motivo === 'afastamento_inss' ? 'Afastamento INSS' :
+                                   dia.motivo === 'folga' ? 'Folga' :
+                                   dia.motivo === 'ferias' ? 'Férias' :
+                                   dia.motivo === 'suspensao' ? 'Suspensão' :
+                                   dia.motivo}
+                                </Badge>
                               </div>
                             )}
                           </div>
