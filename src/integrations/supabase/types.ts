@@ -894,7 +894,14 @@ export type Database = {
             foreignKeyName: "ordens_servico_responsavel_id_fkey"
             columns: ["responsavel_id"]
             isOneToOne: false
-            referencedRelation: "colaboradores"
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "ordens_servico_solicitante_id_fkey"
+            columns: ["solicitante_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
             referencedColumns: ["id"]
           },
           {
