@@ -596,6 +596,7 @@ export type Database = {
       }
       diaristas: {
         Row: {
+          cidade: string | null
           cnh: string
           created_at: string
           email: string
@@ -609,6 +610,7 @@ export type Database = {
           updated_at: string
         }
         Insert: {
+          cidade?: string | null
           cnh: string
           created_at?: string
           email: string
@@ -622,6 +624,7 @@ export type Database = {
           updated_at?: string
         }
         Update: {
+          cidade?: string | null
           cnh?: string
           created_at?: string
           email?: string

@@ -32,6 +32,7 @@ export function DiaristaForm({ open, onClose, onSuccess, diarista }: DiaristaFor
     rg: "",
     cnh: "",
     endereco: "",
+    cidade: "",
     telefone: "",
     email: "",
     possui_antecedente: false,
@@ -45,6 +46,7 @@ export function DiaristaForm({ open, onClose, onSuccess, diarista }: DiaristaFor
         rg: diarista.rg || "",
         cnh: diarista.cnh || "",
         endereco: diarista.endereco || "",
+        cidade: diarista.cidade || "",
         telefone: diarista.telefone || "",
         email: diarista.email || "",
         possui_antecedente: diarista.possui_antecedente || false,
@@ -56,6 +58,7 @@ export function DiaristaForm({ open, onClose, onSuccess, diarista }: DiaristaFor
         rg: "",
         cnh: "",
         endereco: "",
+        cidade: "",
         telefone: "",
         email: "",
         possui_antecedente: false,
@@ -156,6 +159,17 @@ export function DiaristaForm({ open, onClose, onSuccess, diarista }: DiaristaFor
                   setFormData({ ...formData, endereco: e.target.value })
                 }
                 required
+              />
+            </div>
+
+            <div className="space-y-2">
+              <Label htmlFor="cidade">Cidade</Label>
+              <Input
+                id="cidade"
+                value={formData.cidade}
+                onChange={(e) =>
+                  setFormData({ ...formData, cidade: e.target.value })
+                }
               />
             </div>
 

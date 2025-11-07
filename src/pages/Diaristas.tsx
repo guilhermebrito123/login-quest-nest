@@ -104,12 +104,12 @@ export default function Diaristas() {
           <Table>
             <TableHeader>
               <TableRow>
-                <TableHead>Nome</TableHead>
+              <TableHead>Nome</TableHead>
                 <TableHead>RG</TableHead>
                 <TableHead>CNH</TableHead>
+                <TableHead>Cidade</TableHead>
                 <TableHead>Telefone</TableHead>
                 <TableHead>Email</TableHead>
-                <TableHead>Endereço</TableHead>
                 <TableHead>Status</TableHead>
                 <TableHead className="text-right">Ações</TableHead>
               </TableRow>
@@ -135,9 +135,9 @@ export default function Diaristas() {
                     </TableCell>
                     <TableCell>{diarista.rg}</TableCell>
                     <TableCell>{diarista.cnh}</TableCell>
+                    <TableCell>{diarista.cidade || "-"}</TableCell>
                     <TableCell>{diarista.telefone}</TableCell>
                     <TableCell>{diarista.email}</TableCell>
-                    <TableCell>{diarista.endereco}</TableCell>
                     <TableCell>
                       <Badge
                         variant={
