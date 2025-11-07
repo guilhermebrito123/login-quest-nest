@@ -61,6 +61,8 @@ const PostoCard = ({ posto, unidade, onEdit, onDelete }: PostoCardProps) => {
 
   useEffect(() => {
     fetchColaboradores();
+    fetchJornadaConfirmada();
+    fetchDiasVagos();
     
     // Subscribe to realtime changes
     const channel = supabase
@@ -83,6 +85,43 @@ const PostoCard = ({ posto, unidade, onEdit, onDelete }: PostoCardProps) => {
       supabase.removeChannel(channel);
     };
   }, [posto.id]);
+
+  const fetchDiasVagos = async () => {
+    const hoje = new Date();
+    const primeiroDiaMes = new Date(hoje.getFullYear(), hoje.getMonth(), 1);
+    const ultimoDiaMes = new Date(hoje.getFullYear(), hoje.getMonth() + 1, 0);
+
+    const { data, error } = await supabase
+      .from("posto_dias_vagos")
+      .select("data")
+      .eq("posto_servico_id", posto.id)
+      .gte("data", primeiroDiaMes.toISOString().split('T')[0])
+      .lte("data", ultimoDiaMes.toISOString().split('T')[0]);
+
+    if (!error && data) {
+      const diasConvertidos = data.map((item) => new Date(item.data + 'T00:00:00'));
+      setDiasVagos(diasConvertidos);
+    }
+  };
+
+  const fetchJornadaConfirmada = async () => {
+    const hoje = new Date();
+    const mes = hoje.getMonth() + 1;
+    const ano = hoje.getFullYear();
+
+    const { data, error } = await supabase
+      .from("posto_jornadas")
+      .select("dias_trabalho")
+      .eq("posto_servico_id", posto.id)
+      .eq("mes", mes)
+      .eq("ano", ano)
+      .maybeSingle();
+
+    if (!error && data) {
+      const diasConvertidos = data.dias_trabalho.map((dia: string) => new Date(dia + 'T00:00:00'));
+      setDiasConfirmados(diasConvertidos);
+    }
+  };
 
   const fetchColaboradores = async () => {
     const { data, error } = await supabase
@@ -187,7 +226,7 @@ const PostoCard = ({ posto, unidade, onEdit, onDelete }: PostoCardProps) => {
     }
   };
 
-  const calcularDiasJornada = () => {
+  const calcularDiasJornada = async () => {
     if (!posto.escala) return;
     
     // Validação: só pode cadastrar jornada se o posto estiver ocupado
@@ -255,11 +294,41 @@ const PostoCard = ({ posto, unidade, onEdit, onDelete }: PostoCardProps) => {
       }
     }
     
-    setDiasConfirmados(diasParaPreencher);
-    toast({
-      title: "Jornada confirmada",
-      description: `Jornada de ${posto.escala} confirmada para ${diasParaPreencher.length} dias do mês corrente`,
-    });
+    // Salvar no banco de dados
+    try {
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) throw new Error("Usuário não autenticado");
+
+      const mes = hoje.getMonth() + 1;
+      const ano = hoje.getFullYear();
+      const diasFormatados = diasParaPreencher.map(d => d.toISOString().split('T')[0]);
+
+      const { error } = await supabase
+        .from("posto_jornadas")
+        .upsert({
+          posto_servico_id: posto.id,
+          mes,
+          ano,
+          dias_trabalho: diasFormatados,
+          created_by: user.id,
+        }, {
+          onConflict: 'posto_servico_id,mes,ano'
+        });
+
+      if (error) throw error;
+
+      setDiasConfirmados(diasParaPreencher);
+      toast({
+        title: "Jornada confirmada",
+        description: `Jornada de ${posto.escala} confirmada para ${diasParaPreencher.length} dias do mês corrente`,
+      });
+    } catch (error: any) {
+      toast({
+        title: "Erro ao salvar jornada",
+        description: error.message,
+        variant: "destructive",
+      });
+    }
   };
 
   const handleDayClick = (day: Date | undefined) => {
@@ -435,7 +504,31 @@ const PostoCard = ({ posto, unidade, onEdit, onDelete }: PostoCardProps) => {
                         </Button>
                         {diasConfirmados.length > 0 && (
                           <Button 
-                            onClick={() => setDiasConfirmados([])}
+                            onClick={async () => {
+                              try {
+                                const hoje = new Date();
+                                const { error } = await supabase
+                                  .from("posto_jornadas")
+                                  .delete()
+                                  .eq("posto_servico_id", posto.id)
+                                  .eq("mes", hoje.getMonth() + 1)
+                                  .eq("ano", hoje.getFullYear());
+
+                                if (error) throw error;
+
+                                setDiasConfirmados([]);
+                                toast({
+                                  title: "Jornada limpa",
+                                  description: "Jornada removida com sucesso",
+                                });
+                              } catch (error: any) {
+                                toast({
+                                  title: "Erro ao limpar jornada",
+                                  description: error.message,
+                                  variant: "destructive",
+                                });
+                              }
+                            }}
                             variant="outline"
                           >
                             Limpar

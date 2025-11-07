@@ -991,6 +991,44 @@ export type Database = {
           },
         ]
       }
+      posto_jornadas: {
+        Row: {
+          ano: number
+          created_at: string
+          created_by: string
+          dias_trabalho: string[]
+          id: string
+          mes: number
+          posto_servico_id: string
+        }
+        Insert: {
+          ano: number
+          created_at?: string
+          created_by: string
+          dias_trabalho: string[]
+          id?: string
+          mes: number
+          posto_servico_id: string
+        }
+        Update: {
+          ano?: number
+          created_at?: string
+          created_by?: string
+          dias_trabalho?: string[]
+          id?: string
+          mes?: number
+          posto_servico_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "posto_jornadas_posto_servico_id_fkey"
+            columns: ["posto_servico_id"]
+            isOneToOne: false
+            referencedRelation: "postos_servico"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       postos_servico: {
         Row: {
           codigo: string

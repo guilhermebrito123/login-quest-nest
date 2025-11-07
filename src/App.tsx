@@ -3,6 +3,7 @@ import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
+import { ProtectedRoute } from "@/components/ProtectedRoute";
 import Index from "./pages/Index";
 import Auth from "./pages/Auth";
 import Dashboard from "./pages/Dashboard";
@@ -31,17 +32,17 @@ const App = () => (
           <Route path="/" element={<Index />} />
           <Route path="/auth" element={<Auth />} />
           <Route path="/reset-password" element={<ResetPassword />} />
-          <Route path="/dashboard" element={<Dashboard />} />
-          <Route path="/dashboard-24h" element={<Dashboard24h />} />
-          <Route path="/users" element={<UserManagement />} />
-          <Route path="/contratos" element={<Contratos />} />
-          <Route path="/mesa-operacoes" element={<MesaOperacoes />} />
-          <Route path="/chamados" element={<Chamados />} />
-          <Route path="/ordens-servico" element={<OrdensServico />} />
-          <Route path="/colaboradores" element={<Colaboradores />} />
-          <Route path="/escalas" element={<Escalas />} />
-          <Route path="/ativos" element={<Ativos />} />
-          <Route path="/estoque" element={<Estoque />} />
+          <Route path="/dashboard" element={<ProtectedRoute><Dashboard /></ProtectedRoute>} />
+          <Route path="/dashboard-24h" element={<ProtectedRoute><Dashboard24h /></ProtectedRoute>} />
+          <Route path="/users" element={<ProtectedRoute><UserManagement /></ProtectedRoute>} />
+          <Route path="/contratos" element={<ProtectedRoute><Contratos /></ProtectedRoute>} />
+          <Route path="/mesa-operacoes" element={<ProtectedRoute><MesaOperacoes /></ProtectedRoute>} />
+          <Route path="/chamados" element={<ProtectedRoute><Chamados /></ProtectedRoute>} />
+          <Route path="/ordens-servico" element={<ProtectedRoute><OrdensServico /></ProtectedRoute>} />
+          <Route path="/colaboradores" element={<ProtectedRoute><Colaboradores /></ProtectedRoute>} />
+          <Route path="/escalas" element={<ProtectedRoute><Escalas /></ProtectedRoute>} />
+          <Route path="/ativos" element={<ProtectedRoute><Ativos /></ProtectedRoute>} />
+          <Route path="/estoque" element={<ProtectedRoute><Estoque /></ProtectedRoute>} />
           {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
           <Route path="*" element={<NotFound />} />
         </Routes>
