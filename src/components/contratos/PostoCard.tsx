@@ -192,11 +192,15 @@ const PostoCard = ({ posto, unidade, onEdit, onDelete }: PostoCardProps) => {
     const hoje = new Date();
     const diasParaPreencher: Date[] = [];
     
+    // Define início e fim do mês corrente
+    const primeiroDiaMes = new Date(hoje.getFullYear(), hoje.getMonth(), 1);
+    const ultimoDiaMes = new Date(hoje.getFullYear(), hoje.getMonth() + 1, 0);
+    const totalDiasMes = ultimoDiaMes.getDate();
+    
     // Jornada 5x2: Trabalha de segunda a sexta, folga fim de semana
     if (diasTrabalhados === 5 && diasFolga === 2) {
-      for (let i = 0; i < 90; i++) {
-        const data = new Date(hoje);
-        data.setDate(hoje.getDate() + i);
+      for (let dia = 1; dia <= totalDiasMes; dia++) {
+        const data = new Date(hoje.getFullYear(), hoje.getMonth(), dia);
         const diaSemana = data.getDay();
         
         // 0 = domingo, 6 = sábado - trabalha de segunda (1) a sexta (5)
@@ -207,12 +211,13 @@ const PostoCard = ({ posto, unidade, onEdit, onDelete }: PostoCardProps) => {
     }
     // Jornada 12x36: Trabalha um dia sim, um dia não (dias alternados)
     else if (diasTrabalhados === 12 && diasFolga === 36) {
-      for (let i = 0; i < 90; i++) {
-        const data = new Date(hoje);
-        data.setDate(hoje.getDate() + i);
+      const diaAtual = hoje.getDate();
+      for (let dia = 1; dia <= totalDiasMes; dia++) {
+        const data = new Date(hoje.getFullYear(), hoje.getMonth(), dia);
         
-        // Alterna: dia par trabalha, dia ímpar folga (ou vice-versa)
-        if (i % 2 === 0) {
+        // Calcula se o dia trabalha baseado na distância do dia atual
+        const diferenca = dia - diaAtual;
+        if (diferenca % 2 === 0) {
           diasParaPreencher.push(data);
         }
       }
@@ -220,11 +225,13 @@ const PostoCard = ({ posto, unidade, onEdit, onDelete }: PostoCardProps) => {
     // Outras escalas: lógica genérica por ciclo
     else {
       const totalCiclo = diasTrabalhados + diasFolga;
-      for (let i = 0; i < 90; i++) {
-        const data = new Date(hoje);
-        data.setDate(hoje.getDate() + i);
+      for (let dia = 1; dia <= totalDiasMes; dia++) {
+        const data = new Date(hoje.getFullYear(), hoje.getMonth(), dia);
+        const diaAtual = hoje.getDate();
         
-        const posicaoNoCiclo = i % totalCiclo;
+        const diferenca = dia - diaAtual;
+        const posicaoNoCiclo = diferenca >= 0 ? diferenca % totalCiclo : (totalCiclo + (diferenca % totalCiclo)) % totalCiclo;
+        
         if (posicaoNoCiclo < diasTrabalhados) {
           diasParaPreencher.push(data);
         }
@@ -234,7 +241,7 @@ const PostoCard = ({ posto, unidade, onEdit, onDelete }: PostoCardProps) => {
     setDiasConfirmados(diasParaPreencher);
     toast({
       title: "Jornada confirmada",
-      description: `Jornada de ${posto.escala} confirmada com sucesso`,
+      description: `Jornada de ${posto.escala} confirmada para ${diasParaPreencher.length} dias do mês corrente`,
     });
   };
 
