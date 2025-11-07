@@ -3,6 +3,8 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Briefcase, Clock, Users, Trash2, Edit, UserCheck, UserX, Calendar as CalendarIcon } from "lucide-react";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { Label } from "@/components/ui/label";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "@/hooks/use-toast";
 import { Calendar } from "@/components/ui/calendar";
@@ -55,6 +57,7 @@ const PostoCard = ({ posto, unidade, onEdit, onDelete }: PostoCardProps) => {
   const [diasVagos, setDiasVagos] = useState<Date[]>([]);
   const [dayActionOpen, setDayActionOpen] = useState(false);
   const [selectedDayForAction, setSelectedDayForAction] = useState<Date | null>(null);
+  const [motivoVago, setMotivoVago] = useState<string>("");
 
   useEffect(() => {
     fetchColaboradores();
@@ -302,7 +305,14 @@ const PostoCard = ({ posto, unidade, onEdit, onDelete }: PostoCardProps) => {
   };
 
   const handleMarcarVago = async () => {
-    if (!selectedDayForAction) return;
+    if (!selectedDayForAction || !motivoVago) {
+      toast({
+        title: "Motivo obrigatório",
+        description: "Selecione um motivo para marcar o posto como vago",
+        variant: "destructive",
+      });
+      return;
+    }
     
     try {
       const { data: { user } } = await supabase.auth.getUser();
@@ -324,6 +334,7 @@ const PostoCard = ({ posto, unidade, onEdit, onDelete }: PostoCardProps) => {
           posto_servico_id: posto.id,
           colaborador_id: colabs?.id || null,
           data: selectedDayForAction.toISOString().split('T')[0],
+          motivo: motivoVago,
           created_by: user.id,
         });
 
@@ -338,6 +349,7 @@ const PostoCard = ({ posto, unidade, onEdit, onDelete }: PostoCardProps) => {
       }
       
       setDayActionOpen(false);
+      setMotivoVago("");
       toast({
         title: "Posto vago",
         description: `Posto marcado como vago para ${selectedDayForAction.toLocaleDateString('pt-BR')}`,
@@ -510,7 +522,7 @@ const PostoCard = ({ posto, unidade, onEdit, onDelete }: PostoCardProps) => {
               {selectedDayForAction && `Marcar dia ${selectedDayForAction.toLocaleDateString('pt-BR')}`}
             </DialogTitle>
           </DialogHeader>
-          <div className="flex flex-col gap-3">
+          <div className="flex flex-col gap-4">
             <Button 
               onClick={handleConfirmarPresenca}
               className="w-full bg-green-600 hover:bg-green-700"
@@ -518,10 +530,30 @@ const PostoCard = ({ posto, unidade, onEdit, onDelete }: PostoCardProps) => {
               <UserCheck className="h-4 w-4 mr-2" />
               Confirmar Presença
             </Button>
+            
+            <div className="space-y-2">
+              <Label htmlFor="motivo">Motivo da Ausência</Label>
+              <Select value={motivoVago} onValueChange={setMotivoVago}>
+                <SelectTrigger id="motivo">
+                  <SelectValue placeholder="Selecione o motivo" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="falta_justificada">Falta Justificada</SelectItem>
+                  <SelectItem value="falta_injustificada">Falta Injustificada</SelectItem>
+                  <SelectItem value="pedido">Pedido</SelectItem>
+                  <SelectItem value="afastamento_inss">Afastamento INSS</SelectItem>
+                  <SelectItem value="folga">Folga</SelectItem>
+                  <SelectItem value="ferias">Férias</SelectItem>
+                  <SelectItem value="suspensao">Suspensão</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+            
             <Button 
               onClick={handleMarcarVago}
               variant="destructive"
               className="w-full"
+              disabled={!motivoVago}
             >
               <UserX className="h-4 w-4 mr-2" />
               Posto Vago
