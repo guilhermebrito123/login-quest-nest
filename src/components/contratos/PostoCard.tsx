@@ -28,6 +28,7 @@ interface PostoCardProps {
     horario_inicio?: string;
     horario_fim?: string;
     efetivo_planejado?: number;
+    escala?: string;
   };
   unidade?: {
     nome: string;
@@ -203,6 +204,12 @@ const PostoCard = ({ posto, unidade, onEdit, onDelete }: PostoCardProps) => {
             <Users className="h-4 w-4 text-muted-foreground" />
             <span>{posto.funcao}</span>
           </div>
+          {posto.escala && (
+            <div className="flex items-center gap-2 text-sm text-muted-foreground">
+              <Briefcase className="h-4 w-4" />
+              <span>Escala: {posto.escala}</span>
+            </div>
+          )}
           <div className="flex items-center justify-between text-sm pt-2 border-t">
             <span className="text-muted-foreground">Colaboradores lotados:</span>
             <span className="font-semibold">
