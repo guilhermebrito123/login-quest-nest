@@ -228,14 +228,16 @@ export default function Colaboradores() {
                       >
                         <Calendar className="h-4 w-4" />
                       </Button>
-                      <Button
-                        variant="ghost"
-                        size="icon"
-                        onClick={() => setUnidadeColaborador(colaborador)}
-                        title="Atribuir Unidade/Posto"
-                      >
-                        <MapPin className="h-4 w-4" />
-                      </Button>
+                      {!colaborador.posto_servico_id && (
+                        <Button
+                          variant="ghost"
+                          size="icon"
+                          onClick={() => setUnidadeColaborador(colaborador)}
+                          title="Atribuir Unidade/Posto"
+                        >
+                          <MapPin className="h-4 w-4" />
+                        </Button>
+                      )}
                       {colaborador.posto_servico_id && (
                         <Button
                           variant="ghost"

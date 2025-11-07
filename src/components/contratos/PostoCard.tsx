@@ -42,14 +42,34 @@ const PostoCard = ({ posto, unidade, onEdit, onDelete }: PostoCardProps) => {
 
   useEffect(() => {
     fetchColaboradores();
+    
+    // Subscribe to realtime changes
+    const channel = supabase
+      .channel(`posto-${posto.id}-colaboradores`)
+      .on(
+        'postgres_changes',
+        {
+          event: '*',
+          schema: 'public',
+          table: 'colaboradores',
+          filter: `posto_servico_id=eq.${posto.id}`
+        },
+        () => {
+          fetchColaboradores();
+        }
+      )
+      .subscribe();
+
+    return () => {
+      supabase.removeChannel(channel);
+    };
   }, [posto.id]);
 
   const fetchColaboradores = async () => {
     const { data, error } = await supabase
       .from("colaboradores")
       .select("id, nome_completo, status")
-      .eq("posto_servico_id", posto.id)
-      .eq("status", "ativo");
+      .eq("posto_servico_id", posto.id);
 
     if (!error && data) {
       setColaboradoresLotados(data);
