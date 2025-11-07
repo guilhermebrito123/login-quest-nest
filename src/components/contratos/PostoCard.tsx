@@ -187,6 +187,16 @@ const PostoCard = ({ posto, unidade, onEdit, onDelete }: PostoCardProps) => {
   const calcularDiasJornada = () => {
     if (!posto.escala) return;
     
+    // Validação: só pode cadastrar jornada se o posto estiver ocupado
+    if (ocupacaoAtual === 'vago') {
+      toast({
+        title: "Posto vago",
+        description: "É necessário ter colaboradores lotados no posto para cadastrar a jornada",
+        variant: "destructive",
+      });
+      return;
+    }
+    
     const escalaMatch = posto.escala.match(/(\d+)x(\d+)/);
     if (!escalaMatch) return;
     
@@ -348,22 +358,29 @@ const PostoCard = ({ posto, unidade, onEdit, onDelete }: PostoCardProps) => {
                     />
                   </div>
                   {posto.escala && (
-                    <div className="flex justify-center gap-2">
-                      <Button 
-                        onClick={calcularDiasJornada}
-                        className="w-full"
-                        disabled={diasConfirmados.length > 0}
-                      >
-                        {diasConfirmados.length > 0 ? 'Jornada Confirmada' : 'Confirmar Jornada'}
-                      </Button>
-                      {diasConfirmados.length > 0 && (
-                        <Button 
-                          onClick={() => setDiasConfirmados([])}
-                          variant="outline"
-                        >
-                          Limpar
-                        </Button>
+                    <div className="space-y-2">
+                      {ocupacaoAtual === 'vago' && (
+                        <p className="text-sm text-destructive text-center">
+                          É necessário ter colaboradores lotados para cadastrar jornada
+                        </p>
                       )}
+                      <div className="flex justify-center gap-2">
+                        <Button 
+                          onClick={calcularDiasJornada}
+                          className="w-full"
+                          disabled={diasConfirmados.length > 0 || ocupacaoAtual === 'vago'}
+                        >
+                          {diasConfirmados.length > 0 ? 'Jornada Confirmada' : 'Confirmar Jornada'}
+                        </Button>
+                        {diasConfirmados.length > 0 && (
+                          <Button 
+                            onClick={() => setDiasConfirmados([])}
+                            variant="outline"
+                          >
+                            Limpar
+                          </Button>
+                        )}
+                      </div>
                     </div>
                   )}
                 </div>
