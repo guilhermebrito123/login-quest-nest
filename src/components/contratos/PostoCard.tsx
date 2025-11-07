@@ -51,6 +51,10 @@ const PostoCard = ({ posto, unidade, onEdit, onDelete }: PostoCardProps) => {
   const [selectedDate, setSelectedDate] = useState<Date>();
   const [calendarOpen, setCalendarOpen] = useState(false);
   const [diasConfirmados, setDiasConfirmados] = useState<Date[]>([]);
+  const [diasPresenca, setDiasPresenca] = useState<Date[]>([]);
+  const [diasVagos, setDiasVagos] = useState<Date[]>([]);
+  const [dayActionOpen, setDayActionOpen] = useState(false);
+  const [selectedDayForAction, setSelectedDayForAction] = useState<Date | null>(null);
 
   useEffect(() => {
     fetchColaboradores();
@@ -245,6 +249,50 @@ const PostoCard = ({ posto, unidade, onEdit, onDelete }: PostoCardProps) => {
     });
   };
 
+  const handleDayClick = (day: Date | undefined) => {
+    if (day) {
+      setSelectedDayForAction(day);
+      setDayActionOpen(true);
+    }
+  };
+
+  const handleConfirmarPresenca = () => {
+    if (!selectedDayForAction) return;
+    
+    // Remove dos dias vagos se estiver lá
+    setDiasVagos(prev => prev.filter(d => d.getTime() !== selectedDayForAction.getTime()));
+    
+    // Adiciona aos dias de presença se não estiver
+    if (!diasPresenca.some(d => d.getTime() === selectedDayForAction.getTime())) {
+      setDiasPresenca(prev => [...prev, selectedDayForAction]);
+    }
+    
+    setDayActionOpen(false);
+    toast({
+      title: "Presença confirmada",
+      description: `Presença confirmada para ${selectedDayForAction.toLocaleDateString('pt-BR')}`,
+    });
+  };
+
+  const handleMarcarVago = () => {
+    if (!selectedDayForAction) return;
+    
+    // Remove dos dias de presença se estiver lá
+    setDiasPresenca(prev => prev.filter(d => d.getTime() !== selectedDayForAction.getTime()));
+    
+    // Adiciona aos dias vagos se não estiver
+    if (!diasVagos.some(d => d.getTime() === selectedDayForAction.getTime())) {
+      setDiasVagos(prev => [...prev, selectedDayForAction]);
+    }
+    
+    setDayActionOpen(false);
+    toast({
+      title: "Posto vago",
+      description: `Posto marcado como vago para ${selectedDayForAction.toLocaleDateString('pt-BR')}`,
+      variant: "destructive",
+    });
+  };
+
   return (
     <Card className="hover:shadow-lg transition-shadow">
       <CardHeader>
@@ -274,15 +322,26 @@ const PostoCard = ({ posto, unidade, onEdit, onDelete }: PostoCardProps) => {
                     <Calendar
                       mode="single"
                       selected={selectedDate}
-                      onSelect={setSelectedDate}
+                      onSelect={handleDayClick}
                       className="rounded-md border pointer-events-auto"
                       modifiers={{
                         confirmado: diasConfirmados,
+                        presenca: diasPresenca,
+                        vago: diasVagos,
                       }}
                       modifiersStyles={{
                         confirmado: {
-                          backgroundColor: 'hsl(var(--primary))',
-                          color: 'hsl(var(--primary-foreground))',
+                          backgroundColor: 'hsl(var(--primary) / 0.2)',
+                          color: 'hsl(var(--foreground))',
+                        },
+                        presenca: {
+                          backgroundColor: 'hsl(142 76% 36%)',
+                          color: 'white',
+                          fontWeight: 'bold',
+                        },
+                        vago: {
+                          backgroundColor: 'hsl(0 84% 60%)',
+                          color: 'white',
                           fontWeight: 'bold',
                         },
                       }}
@@ -377,6 +436,33 @@ const PostoCard = ({ posto, unidade, onEdit, onDelete }: PostoCardProps) => {
           </AlertDialog>
         </div>
       </CardContent>
+
+      <Dialog open={dayActionOpen} onOpenChange={setDayActionOpen}>
+        <DialogContent className="sm:max-w-md">
+          <DialogHeader>
+            <DialogTitle>
+              {selectedDayForAction && `Marcar dia ${selectedDayForAction.toLocaleDateString('pt-BR')}`}
+            </DialogTitle>
+          </DialogHeader>
+          <div className="flex flex-col gap-3">
+            <Button 
+              onClick={handleConfirmarPresenca}
+              className="w-full bg-green-600 hover:bg-green-700"
+            >
+              <UserCheck className="h-4 w-4 mr-2" />
+              Confirmar Presença
+            </Button>
+            <Button 
+              onClick={handleMarcarVago}
+              variant="destructive"
+              className="w-full"
+            >
+              <UserX className="h-4 w-4 mr-2" />
+              Posto Vago
+            </Button>
+          </div>
+        </DialogContent>
+      </Dialog>
     </Card>
   );
 };
