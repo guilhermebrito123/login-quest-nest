@@ -82,6 +82,8 @@ const Contratos = () => {
   const [searchTerm, setSearchTerm] = useState("");
   const [activeTab, setActiveTab] = useState("clientes");
   const [filterUnidadeId, setFilterUnidadeId] = useState<string>("all");
+  const [filterOcupacao, setFilterOcupacao] = useState<string>("all");
+  const [colaboradoresPorPosto, setColaboradoresPorPosto] = useState<Record<string, number>>({});
   
   // State for entities
   const [clientes, setClientes] = useState<Cliente[]>([]);
@@ -177,6 +179,25 @@ const Contratos = () => {
     
     if (error) throw error;
     setPostos(data || []);
+    
+    // Load colaboradores count for each posto
+    if (data) {
+      const postoIds = data.map(p => p.id);
+      const { data: colaboradoresData } = await supabase
+        .from("colaboradores")
+        .select("posto_servico_id")
+        .in("posto_servico_id", postoIds);
+      
+      if (colaboradoresData) {
+        const countMap: Record<string, number> = {};
+        colaboradoresData.forEach(col => {
+          if (col.posto_servico_id) {
+            countMap[col.posto_servico_id] = (countMap[col.posto_servico_id] || 0) + 1;
+          }
+        });
+        setColaboradoresPorPosto(countMap);
+      }
+    }
   };
 
   const filteredClientes = clientes.filter(c => 
@@ -199,12 +220,33 @@ const Contratos = () => {
       );
 
   const filteredPostos = selectedUnidade
-    ? postos.filter(p => p.unidade_id === selectedUnidade)
+    ? postos.filter(p => {
+        const matchesUnidade = p.unidade_id === selectedUnidade;
+        const matchesSearch = p.nome.toLowerCase().includes(searchTerm.toLowerCase()) ||
+          p.codigo.toLowerCase().includes(searchTerm.toLowerCase());
+        
+        if (filterOcupacao === "all") return matchesUnidade && matchesSearch;
+        
+        const totalColaboradores = colaboradoresPorPosto[p.id] || 0;
+        const efetivoNecessario = (p as any).efetivo_planejado || 1;
+        const isOcupado = totalColaboradores >= efetivoNecessario;
+        const matchesOcupacao = filterOcupacao === "ocupado" ? isOcupado : !isOcupado;
+        
+        return matchesUnidade && matchesSearch && matchesOcupacao;
+      })
     : postos.filter(p => {
         const matchesSearch = p.nome.toLowerCase().includes(searchTerm.toLowerCase()) ||
           p.codigo.toLowerCase().includes(searchTerm.toLowerCase());
         const matchesUnidade = filterUnidadeId === "all" || p.unidade_id === filterUnidadeId;
-        return matchesSearch && matchesUnidade;
+        
+        if (filterOcupacao === "all") return matchesSearch && matchesUnidade;
+        
+        const totalColaboradores = colaboradoresPorPosto[p.id] || 0;
+        const efetivoNecessario = (p as any).efetivo_planejado || 1;
+        const isOcupado = totalColaboradores >= efetivoNecessario;
+        const matchesOcupacao = filterOcupacao === "ocupado" ? isOcupado : !isOcupado;
+        
+        return matchesSearch && matchesUnidade && matchesOcupacao;
       });
 
   if (loading) {
@@ -555,7 +597,7 @@ const Contratos = () => {
                     <SelectTrigger className="w-[250px]">
                       <SelectValue placeholder="Filtrar por unidade" />
                     </SelectTrigger>
-                    <SelectContent>
+                    <SelectContent className="bg-popover z-50">
                       <SelectItem value="all">Todas as unidades</SelectItem>
                       {unidades.map((unidade) => (
                         <SelectItem key={unidade.id} value={unidade.id}>
@@ -565,6 +607,16 @@ const Contratos = () => {
                     </SelectContent>
                   </Select>
                 )}
+                <Select value={filterOcupacao} onValueChange={setFilterOcupacao}>
+                  <SelectTrigger className="w-[200px]">
+                    <SelectValue placeholder="Filtrar por ocupação" />
+                  </SelectTrigger>
+                  <SelectContent className="bg-popover z-50">
+                    <SelectItem value="all">Todos os postos</SelectItem>
+                    <SelectItem value="ocupado">Ocupados</SelectItem>
+                    <SelectItem value="vago">Vagos</SelectItem>
+                  </SelectContent>
+                </Select>
               </div>
               <Button onClick={() => setShowPostoForm(true)}>
                 <Plus className="h-4 w-4 mr-2" />
