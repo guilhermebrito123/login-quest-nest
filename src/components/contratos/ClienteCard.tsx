@@ -34,6 +34,22 @@ interface ClienteCardProps {
 const ClienteCard = ({ cliente, onSelect, onEdit, onDelete }: ClienteCardProps) => {
   const handleDelete = async () => {
     try {
+      // Check for related contracts
+      const { data: contratos } = await supabase
+        .from("contratos")
+        .select("id")
+        .eq("cliente_id", cliente.id)
+        .limit(1);
+
+      if (contratos && contratos.length > 0) {
+        toast({
+          title: "Não é possível excluir",
+          description: "Este cliente possui contratos relacionados. Exclua os contratos primeiro.",
+          variant: "destructive",
+        });
+        return;
+      }
+
       const { error } = await supabase
         .from("clientes")
         .delete()

@@ -40,6 +40,37 @@ interface ContratoCardProps {
 const ContratoCard = ({ contrato, cliente, onSelect, onEdit, onDelete }: ContratoCardProps) => {
   const handleDelete = async () => {
     try {
+      // Check for related records
+      const { data: chamados } = await supabase
+        .from("chamados")
+        .select("id")
+        .eq("contrato_id", contrato.id)
+        .limit(1);
+
+      const { data: unidades } = await supabase
+        .from("unidades")
+        .select("id")
+        .eq("contrato_id", contrato.id)
+        .limit(1);
+
+      if (chamados && chamados.length > 0) {
+        toast({
+          title: "Não é possível excluir",
+          description: "Este contrato possui chamados relacionados. Exclua os chamados primeiro.",
+          variant: "destructive",
+        });
+        return;
+      }
+
+      if (unidades && unidades.length > 0) {
+        toast({
+          title: "Não é possível excluir",
+          description: "Este contrato possui unidades relacionadas. Exclua as unidades primeiro.",
+          variant: "destructive",
+        });
+        return;
+      }
+
       const { error } = await supabase
         .from("contratos")
         .delete()

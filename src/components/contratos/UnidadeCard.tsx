@@ -39,6 +39,67 @@ interface UnidadeCardProps {
 const UnidadeCard = ({ unidade, contrato, onSelect, onEdit, onDelete }: UnidadeCardProps) => {
   const handleDelete = async () => {
     try {
+      // Check for related records
+      const { data: postos } = await supabase
+        .from("postos_servico")
+        .select("id")
+        .eq("unidade_id", unidade.id)
+        .limit(1);
+
+      const { data: colaboradores } = await supabase
+        .from("colaboradores")
+        .select("id")
+        .eq("unidade_id", unidade.id)
+        .limit(1);
+
+      const { data: chamados } = await supabase
+        .from("chamados")
+        .select("id")
+        .eq("unidade_id", unidade.id)
+        .limit(1);
+
+      const { data: ordens } = await supabase
+        .from("ordens_servico")
+        .select("id")
+        .eq("unidade_id", unidade.id)
+        .limit(1);
+
+      if (postos && postos.length > 0) {
+        toast({
+          title: "Não é possível excluir",
+          description: "Esta unidade possui postos de serviço relacionados. Exclua os postos primeiro.",
+          variant: "destructive",
+        });
+        return;
+      }
+
+      if (colaboradores && colaboradores.length > 0) {
+        toast({
+          title: "Não é possível excluir",
+          description: "Esta unidade possui colaboradores relacionados. Remova a vinculação dos colaboradores primeiro.",
+          variant: "destructive",
+        });
+        return;
+      }
+
+      if (chamados && chamados.length > 0) {
+        toast({
+          title: "Não é possível excluir",
+          description: "Esta unidade possui chamados relacionados. Exclua os chamados primeiro.",
+          variant: "destructive",
+        });
+        return;
+      }
+
+      if (ordens && ordens.length > 0) {
+        toast({
+          title: "Não é possível excluir",
+          description: "Esta unidade possui ordens de serviço relacionadas. Exclua as ordens primeiro.",
+          variant: "destructive",
+        });
+        return;
+      }
+
       const { error } = await supabase
         .from("unidades")
         .delete()
