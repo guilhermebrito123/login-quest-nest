@@ -80,21 +80,7 @@ const PostoCard = ({ posto, unidade, onEdit, onDelete }: PostoCardProps) => {
   const calcularOcupacao = (totalColaboradores: number) => {
     const efetivoNecessario = posto.efetivo_planejado || 1;
     
-    // Verifica se está no horário de trabalho
-    const agora = new Date();
-    const horaAtual = agora.getHours() * 60 + agora.getMinutes();
-    
-    let dentroHorario = true;
-    if (posto.horario_inicio && posto.horario_fim) {
-      const [hIni, mIni] = posto.horario_inicio.split(':').map(Number);
-      const [hFim, mFim] = posto.horario_fim.split(':').map(Number);
-      const inicioMin = hIni * 60 + mIni;
-      const fimMin = hFim * 60 + mFim;
-      
-      dentroHorario = horaAtual >= inicioMin && horaAtual <= fimMin;
-    }
-
-    if (!dentroHorario || totalColaboradores === 0) {
+    if (totalColaboradores === 0) {
       setOcupacaoAtual('vago');
     } else if (totalColaboradores >= efetivoNecessario) {
       setOcupacaoAtual('ocupado');
