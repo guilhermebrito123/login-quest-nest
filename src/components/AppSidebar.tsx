@@ -8,7 +8,8 @@ import {
   LogOut,
   Calendar,
   MessageSquare,
-  Package
+  Package,
+  UserCircle
 } from "lucide-react";
 import { NavLink } from "@/components/NavLink";
 import { useLocation, useNavigate } from "react-router-dom";
@@ -35,6 +36,7 @@ const menuItems = [
   { title: "Chamados", url: "/chamados", icon: MessageSquare },
   { title: "Ordens de Serviço", url: "/ordens-servico", icon: ClipboardList },
   { title: "Colaboradores", url: "/colaboradores", icon: UserCheck },
+  { title: "Diaristas", url: "/diaristas", icon: UserCircle },
   { title: "Escalas", url: "/escalas", icon: Calendar },
   { title: "Ativos", url: "/ativos", icon: Package },
   { title: "Estoque", url: "/estoque", icon: Package },

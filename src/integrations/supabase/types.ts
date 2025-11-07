@@ -594,6 +594,48 @@ export type Database = {
           },
         ]
       }
+      diaristas: {
+        Row: {
+          cnh: string
+          created_at: string
+          email: string
+          endereco: string
+          id: string
+          nome_completo: string
+          possui_antecedente: boolean
+          rg: string
+          status: string | null
+          telefone: string
+          updated_at: string
+        }
+        Insert: {
+          cnh: string
+          created_at?: string
+          email: string
+          endereco: string
+          id?: string
+          nome_completo: string
+          possui_antecedente?: boolean
+          rg: string
+          status?: string | null
+          telefone: string
+          updated_at?: string
+        }
+        Update: {
+          cnh?: string
+          created_at?: string
+          email?: string
+          endereco?: string
+          id?: string
+          nome_completo?: string
+          possui_antecedente?: boolean
+          rg?: string
+          status?: string | null
+          telefone?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
       escalas: {
         Row: {
           created_at: string | null

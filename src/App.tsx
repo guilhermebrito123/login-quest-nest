@@ -18,6 +18,7 @@ import Colaboradores from "./pages/Colaboradores";
 import Escalas from "./pages/Escalas";
 import Ativos from "./pages/Ativos";
 import Estoque from "./pages/Estoque";
+import Diaristas from "./pages/Diaristas";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -43,6 +44,7 @@ const App = () => (
           <Route path="/escalas" element={<ProtectedRoute><Escalas /></ProtectedRoute>} />
           <Route path="/ativos" element={<ProtectedRoute><Ativos /></ProtectedRoute>} />
           <Route path="/estoque" element={<ProtectedRoute><Estoque /></ProtectedRoute>} />
+          <Route path="/diaristas" element={<ProtectedRoute><Diaristas /></ProtectedRoute>} />
           {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
           <Route path="*" element={<NotFound />} />
         </Routes>
