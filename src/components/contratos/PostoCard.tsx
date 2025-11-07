@@ -191,17 +191,43 @@ const PostoCard = ({ posto, unidade, onEdit, onDelete }: PostoCardProps) => {
     
     const hoje = new Date();
     const diasParaPreencher: Date[] = [];
-    const totalCiclo = diasTrabalhados + diasFolga;
     
-    // Preenche os próximos 90 dias baseado na escala
-    for (let i = 0; i < 90; i++) {
-      const data = new Date(hoje);
-      data.setDate(hoje.getDate() + i);
-      
-      // Verifica se o dia está dentro do período de trabalho do ciclo
-      const posicaoNoCiclo = i % totalCiclo;
-      if (posicaoNoCiclo < diasTrabalhados) {
-        diasParaPreencher.push(data);
+    // Jornada 5x2: Trabalha de segunda a sexta, folga fim de semana
+    if (diasTrabalhados === 5 && diasFolga === 2) {
+      for (let i = 0; i < 90; i++) {
+        const data = new Date(hoje);
+        data.setDate(hoje.getDate() + i);
+        const diaSemana = data.getDay();
+        
+        // 0 = domingo, 6 = sábado - trabalha de segunda (1) a sexta (5)
+        if (diaSemana >= 1 && diaSemana <= 5) {
+          diasParaPreencher.push(data);
+        }
+      }
+    }
+    // Jornada 12x36: Trabalha um dia sim, um dia não (dias alternados)
+    else if (diasTrabalhados === 12 && diasFolga === 36) {
+      for (let i = 0; i < 90; i++) {
+        const data = new Date(hoje);
+        data.setDate(hoje.getDate() + i);
+        
+        // Alterna: dia par trabalha, dia ímpar folga (ou vice-versa)
+        if (i % 2 === 0) {
+          diasParaPreencher.push(data);
+        }
+      }
+    }
+    // Outras escalas: lógica genérica por ciclo
+    else {
+      const totalCiclo = diasTrabalhados + diasFolga;
+      for (let i = 0; i < 90; i++) {
+        const data = new Date(hoje);
+        data.setDate(hoje.getDate() + i);
+        
+        const posicaoNoCiclo = i % totalCiclo;
+        if (posicaoNoCiclo < diasTrabalhados) {
+          diasParaPreencher.push(data);
+        }
       }
     }
     
