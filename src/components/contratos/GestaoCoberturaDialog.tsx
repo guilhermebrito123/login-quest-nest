@@ -37,6 +37,10 @@ interface PostoVago {
   unidade: {
     nome: string;
     codigo: string;
+    contrato: {
+      nome: string;
+      codigo: string;
+    } | null;
   };
 }
 
@@ -113,7 +117,11 @@ export function GestaoCoberturaDialog({ open, onClose }: GestaoCoberturaDialogPr
         efetivo_planejado,
         unidades (
           nome,
-          codigo
+          codigo,
+          contratos (
+            nome,
+            codigo
+          )
         )
       `)
       .eq("status", "ativo");
@@ -144,6 +152,12 @@ export function GestaoCoberturaDialog({ open, onClose }: GestaoCoberturaDialogPr
           unidade: {
             nome: posto.unidades?.nome || "Sem unidade",
             codigo: posto.unidades?.codigo || "",
+            contrato: posto.unidades?.contratos
+              ? {
+                  nome: posto.unidades.contratos.nome,
+                  codigo: posto.unidades.contratos.codigo,
+                }
+              : null,
           },
         });
       }
@@ -309,9 +323,16 @@ export function GestaoCoberturaDialog({ open, onClose }: GestaoCoberturaDialogPr
                               <h4 className="font-semibold">{posto.nome}</h4>
                               <Badge variant="outline">{posto.codigo}</Badge>
                             </div>
-                            <p className="text-sm text-muted-foreground mb-2">
-                              {posto.unidade.nome} • {posto.funcao}
-                            </p>
+                            <div className="space-y-1 mb-2">
+                              {posto.unidade.contrato && (
+                                <p className="text-sm text-muted-foreground">
+                                  <span className="font-medium">Contrato:</span> {posto.unidade.contrato.codigo} - {posto.unidade.contrato.nome}
+                                </p>
+                              )}
+                              <p className="text-sm text-muted-foreground">
+                                <span className="font-medium">Unidade:</span> {posto.unidade.nome} • {posto.funcao}
+                              </p>
+                            </div>
                             <div className="flex items-center gap-4">
                               <div className="text-sm">
                                 <span className="text-muted-foreground">Efetivo atual: </span>
