@@ -5,12 +5,11 @@ import { DashboardLayout } from "@/components/DashboardLayout";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { Plus, Calendar, Clock, MapPin } from "lucide-react";
+import { Calendar, Clock, MapPin } from "lucide-react";
 import { EscalaForm } from "@/components/colaboradores/EscalaForm";
 import { toast } from "sonner";
 
 export default function Escalas() {
-  const [showForm, setShowForm] = useState(false);
   const [editingEscala, setEditingEscala] = useState<any>(null);
 
   const { data: escalasComDetalhes, isLoading, refetch } = useQuery({
@@ -95,20 +94,11 @@ export default function Escalas() {
     <DashboardLayout>
       <div className="min-h-screen bg-background p-8">
         <div className="max-w-7xl mx-auto space-y-8">
-          <div className="flex items-center justify-between">
-            <div>
-              <h1 className="text-4xl font-bold text-foreground">Escalas</h1>
-              <p className="text-muted-foreground mt-2">
-                Gestão de escalas e turnos de trabalho
-              </p>
-            </div>
-            <Button onClick={() => {
-              setEditingEscala(null);
-              setShowForm(true);
-            }}>
-              <Plus className="mr-2 h-4 w-4" />
-              Nova Escala Modelo
-            </Button>
+          <div>
+            <h1 className="text-4xl font-bold text-foreground">Escalas</h1>
+            <p className="text-muted-foreground mt-2">
+              Gestão de escalas e turnos de trabalho
+            </p>
           </div>
 
           {/* Escalas dos Postos de Serviço */}
@@ -226,10 +216,7 @@ export default function Escalas() {
                         <Button
                           variant="outline"
                           size="sm"
-                          onClick={() => {
-                            setEditingEscala(escala);
-                            setShowForm(true);
-                          }}
+                          onClick={() => setEditingEscala(escala)}
                         >
                           Editar
                         </Button>
@@ -252,10 +239,6 @@ export default function Escalas() {
                   <p className="text-muted-foreground">
                     Nenhuma escala modelo cadastrada
                   </p>
-                  <Button onClick={() => setShowForm(true)} className="mt-4">
-                    <Plus className="mr-2 h-4 w-4" />
-                    Criar primeira escala modelo
-                  </Button>
                 </CardContent>
               </Card>
             )}
@@ -263,16 +246,12 @@ export default function Escalas() {
         </div>
       </div>
 
-      {showForm && (
+      {editingEscala && (
         <EscalaForm
           escala={editingEscala}
-          open={showForm}
-          onClose={() => {
-            setShowForm(false);
-            setEditingEscala(null);
-          }}
+          open={!!editingEscala}
+          onClose={() => setEditingEscala(null)}
           onSuccess={() => {
-            setShowForm(false);
             setEditingEscala(null);
             refetch();
           }}
