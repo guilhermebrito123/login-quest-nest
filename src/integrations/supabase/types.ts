@@ -749,6 +749,7 @@ export type Database = {
           created_at: string | null
           descricao: string
           id: string
+          nome: string
           quantidade_atual: number
           quantidade_minima: number
           sku: string
@@ -760,6 +761,7 @@ export type Database = {
           created_at?: string | null
           descricao: string
           id?: string
+          nome?: string
           quantidade_atual: number
           quantidade_minima: number
           sku: string
@@ -771,6 +773,7 @@ export type Database = {
           created_at?: string | null
           descricao?: string
           id?: string
+          nome?: string
           quantidade_atual?: number
           quantidade_minima?: number
           sku?: string

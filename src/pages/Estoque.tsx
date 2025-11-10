@@ -25,6 +25,7 @@ export default function Estoque() {
   useEffect(() => {
     const filtered = itens.filter(
       (item) =>
+        item.nome?.toLowerCase().includes(searchTerm.toLowerCase()) ||
         item.sku?.toLowerCase().includes(searchTerm.toLowerCase()) ||
         item.descricao?.toLowerCase().includes(searchTerm.toLowerCase())
     );
@@ -134,7 +135,7 @@ export default function Estoque() {
               <div className="relative flex-1">
                 <Search className="absolute left-2 top-2.5 h-4 w-4 text-muted-foreground" />
                 <Input
-                  placeholder="Buscar por SKU ou descrição..."
+                  placeholder="Buscar por nome, SKU ou descrição..."
                   value={searchTerm}
                   onChange={(e) => setSearchTerm(e.target.value)}
                   className="pl-8"
@@ -146,6 +147,7 @@ export default function Estoque() {
             <Table>
               <TableHeader>
                 <TableRow>
+                  <TableHead>Nome</TableHead>
                   <TableHead>SKU</TableHead>
                   <TableHead>Descrição</TableHead>
                   <TableHead>Unidade</TableHead>
@@ -159,7 +161,8 @@ export default function Estoque() {
               <TableBody>
                 {filteredItens.map((item) => (
                   <TableRow key={item.id}>
-                    <TableCell className="font-medium">{item.sku}</TableCell>
+                    <TableCell className="font-medium">{item.nome}</TableCell>
+                    <TableCell>{item.sku}</TableCell>
                     <TableCell>{item.descricao}</TableCell>
                     <TableCell>{item.unidades?.nome}</TableCell>
                     <TableCell>{item.unidade_medida}</TableCell>

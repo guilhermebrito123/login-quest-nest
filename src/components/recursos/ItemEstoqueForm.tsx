@@ -21,6 +21,7 @@ export function ItemEstoqueForm({ open, onOpenChange, item, onSuccess }: ItemEst
   const { register, handleSubmit, setValue, watch, reset } = useForm({
     defaultValues: {
       unidade_id: item?.unidade_id || "",
+      nome: item?.nome || "",
       sku: item?.sku || "",
       descricao: item?.descricao || "",
       unidade_medida: item?.unidade_medida || "",
@@ -37,6 +38,7 @@ export function ItemEstoqueForm({ open, onOpenChange, item, onSuccess }: ItemEst
     if (item) {
       reset({
         unidade_id: item.unidade_id || "",
+        nome: item.nome || "",
         sku: item.sku || "",
         descricao: item.descricao || "",
         unidade_medida: item.unidade_medida || "",
@@ -102,6 +104,11 @@ export function ItemEstoqueForm({ open, onOpenChange, item, onSuccess }: ItemEst
                 ))}
               </SelectContent>
             </Select>
+          </div>
+
+          <div className="space-y-2">
+            <Label htmlFor="nome">Nome *</Label>
+            <Input {...register("nome", { required: true })} />
           </div>
 
           <div className="space-y-2">
