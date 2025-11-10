@@ -744,6 +744,78 @@ export type Database = {
           },
         ]
       }
+      inspecoes: {
+        Row: {
+          acompanhamento_cliente: string | null
+          apresentacao_pessoal: string | null
+          colaborador_id: string | null
+          created_at: string | null
+          data_hora: string
+          disponibilidade_equipamentos: string | null
+          disponibilidade_recursos: string | null
+          id: string
+          inspetor: string
+          observacoes: string | null
+          outras_observacoes: string | null
+          posto_servico_id: string | null
+          problemas_po: string | null
+          status_inspecao: string | null
+          updated_at: string | null
+          uso_uniforme: string | null
+        }
+        Insert: {
+          acompanhamento_cliente?: string | null
+          apresentacao_pessoal?: string | null
+          colaborador_id?: string | null
+          created_at?: string | null
+          data_hora?: string
+          disponibilidade_equipamentos?: string | null
+          disponibilidade_recursos?: string | null
+          id?: string
+          inspetor: string
+          observacoes?: string | null
+          outras_observacoes?: string | null
+          posto_servico_id?: string | null
+          problemas_po?: string | null
+          status_inspecao?: string | null
+          updated_at?: string | null
+          uso_uniforme?: string | null
+        }
+        Update: {
+          acompanhamento_cliente?: string | null
+          apresentacao_pessoal?: string | null
+          colaborador_id?: string | null
+          created_at?: string | null
+          data_hora?: string
+          disponibilidade_equipamentos?: string | null
+          disponibilidade_recursos?: string | null
+          id?: string
+          inspetor?: string
+          observacoes?: string | null
+          outras_observacoes?: string | null
+          posto_servico_id?: string | null
+          problemas_po?: string | null
+          status_inspecao?: string | null
+          updated_at?: string | null
+          uso_uniforme?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "inspecoes_colaborador_id_fkey"
+            columns: ["colaborador_id"]
+            isOneToOne: false
+            referencedRelation: "colaboradores"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "inspecoes_posto_servico_id_fkey"
+            columns: ["posto_servico_id"]
+            isOneToOne: false
+            referencedRelation: "postos_servico"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       itens_estoque: {
         Row: {
           created_at: string | null
