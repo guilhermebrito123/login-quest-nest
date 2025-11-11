@@ -265,17 +265,11 @@ const PostoCard = ({ posto, unidade, onEdit, onDelete }: PostoCardProps) => {
         }
       }
     }
-    // Jornada 12x36: Trabalha um dia sim, um dia não (dias alternados)
+    // Jornada 12x36: Todos os dias devem ser preenchidos
     else if (diasTrabalhados === 12 && diasFolga === 36) {
-      const diaAtual = hoje.getDate();
       for (let dia = 1; dia <= totalDiasMes; dia++) {
         const data = new Date(hoje.getFullYear(), hoje.getMonth(), dia);
-        
-        // Calcula se o dia trabalha baseado na distância do dia atual
-        const diferenca = dia - diaAtual;
-        if (diferenca % 2 === 0) {
-          diasParaPreencher.push(data);
-        }
+        diasParaPreencher.push(data);
       }
     }
     // Outras escalas: lógica genérica por ciclo
