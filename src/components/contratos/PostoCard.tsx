@@ -136,7 +136,11 @@ const PostoCard = ({ posto, unidade, onEdit, onDelete }: PostoCardProps) => {
   };
 
   const calcularOcupacao = (totalColaboradores: number) => {
-    const efetivoNecessario = posto.efetivo_planejado || 1;
+    // Para jornada 12x36, são necessários 4 colaboradores
+    let efetivoNecessario = posto.efetivo_planejado || 1;
+    if (posto.escala === '12x36') {
+      efetivoNecessario = 4;
+    }
     
     if (totalColaboradores === 0) {
       setOcupacaoAtual('vago');
@@ -564,7 +568,7 @@ const PostoCard = ({ posto, unidade, onEdit, onDelete }: PostoCardProps) => {
           <div className="flex items-center justify-between text-sm pt-2 border-t">
             <span className="text-muted-foreground">Colaboradores lotados:</span>
             <span className="font-semibold">
-              {colaboradoresLotados.length}/{posto.efetivo_planejado || 1}
+              {colaboradoresLotados.length}/{posto.escala === '12x36' ? 4 : (posto.efetivo_planejado || 1)}
             </span>
           </div>
           {posto.horario_inicio && posto.horario_fim && (
