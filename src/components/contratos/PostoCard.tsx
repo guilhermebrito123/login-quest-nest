@@ -140,14 +140,20 @@ const PostoCard = ({ posto, unidade, onEdit, onDelete }: PostoCardProps) => {
     let efetivoNecessario = posto.efetivo_planejado || 1;
     if (posto.escala === '12x36') {
       efetivoNecessario = 4;
-    }
-    
-    if (totalColaboradores === 0) {
-      setOcupacaoAtual('vago');
-    } else if (totalColaboradores >= efetivoNecessario) {
-      setOcupacaoAtual('ocupado');
+      // Para 12x36, só há dois estados: vago ou ocupado (não há parcial)
+      if (totalColaboradores >= efetivoNecessario) {
+        setOcupacaoAtual('ocupado');
+      } else {
+        setOcupacaoAtual('vago');
+      }
     } else {
-      setOcupacaoAtual('parcial');
+      if (totalColaboradores === 0) {
+        setOcupacaoAtual('vago');
+      } else if (totalColaboradores >= efetivoNecessario) {
+        setOcupacaoAtual('ocupado');
+      } else {
+        setOcupacaoAtual('parcial');
+      }
     }
   };
 
