@@ -26,11 +26,7 @@ const signUpSchema = z.object({
     .trim()
     .min(1, { message: "Nome completo é obrigatório" })
     .max(100, { message: "Nome deve ter no máximo 100 caracteres" }),
-  phone: z
-    .string()
-    .trim()
-    .max(20, { message: "Telefone deve ter no máximo 20 caracteres" })
-    .optional(),
+  phone: z.string().trim().max(20, { message: "Telefone deve ter no máximo 20 caracteres" }).optional(),
 });
 
 const loginSchema = z.object({
@@ -63,7 +59,9 @@ const Auth = () => {
       }
     });
 
-    const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
+    const {
+      data: { subscription },
+    } = supabase.auth.onAuthStateChange((_event, session) => {
       if (session) {
         navigate("/dashboard");
       }
@@ -156,11 +154,9 @@ const Auth = () => {
             </div>
           </div>
           <CardTitle className="text-2xl font-bold bg-gradient-to-r from-primary to-accent bg-clip-text text-transparent">
-            Facilities Hub
+            Facilities Center
           </CardTitle>
-          <CardDescription>
-            {isLogin ? "Entre na sua conta" : "Crie sua conta"}
-          </CardDescription>
+          <CardDescription>{isLogin ? "Entre na sua conta" : "Crie sua conta"}</CardDescription>
         </CardHeader>
         <CardContent>
           <form onSubmit={handleAuth} className="space-y-4">
@@ -169,26 +165,26 @@ const Auth = () => {
                 <div className="space-y-2">
                   <Label htmlFor="fullName">Nome Completo</Label>
                   <Input
-                id="fullName"
-                type="text"
-                placeholder="João Silva"
-                value={fullName}
-                onChange={(e) => setFullName(e.target.value)}
-                required={!isLogin}
-                disabled={loading}
-                maxLength={100}
+                    id="fullName"
+                    type="text"
+                    placeholder="João Silva"
+                    value={fullName}
+                    onChange={(e) => setFullName(e.target.value)}
+                    required={!isLogin}
+                    disabled={loading}
+                    maxLength={100}
                   />
                 </div>
                 <div className="space-y-2">
                   <Label htmlFor="phone">Telefone</Label>
                   <Input
-                id="phone"
-                type="tel"
-                placeholder="(11) 99999-9999"
-                value={phone}
-                onChange={(e) => setPhone(e.target.value)}
-                disabled={loading}
-                maxLength={20}
+                    id="phone"
+                    type="tel"
+                    placeholder="(11) 99999-9999"
+                    value={phone}
+                    onChange={(e) => setPhone(e.target.value)}
+                    disabled={loading}
+                    maxLength={20}
                   />
                 </div>
               </>
@@ -220,11 +216,7 @@ const Auth = () => {
                 maxLength={72}
               />
             </div>
-            <Button
-              type="submit"
-              className="w-full"
-              disabled={loading}
-            >
+            <Button type="submit" className="w-full" disabled={loading}>
               {loading ? (
                 <>
                   <Loader2 className="mr-2 h-4 w-4 animate-spin" />
@@ -237,9 +229,7 @@ const Auth = () => {
               )}
             </Button>
           </form>
-          <div className="mt-4 text-center">
-            {isLogin && <ForgotPasswordDialog />}
-          </div>
+          <div className="mt-4 text-center">{isLogin && <ForgotPasswordDialog />}</div>
           <div className="mt-4 text-center text-sm">
             <button
               type="button"
@@ -247,9 +237,7 @@ const Auth = () => {
               className="text-primary hover:underline"
               disabled={loading}
             >
-              {isLogin
-                ? "Não tem uma conta? Cadastre-se"
-                : "Já tem uma conta? Faça login"}
+              {isLogin ? "Não tem uma conta? Cadastre-se" : "Já tem uma conta? Faça login"}
             </button>
           </div>
         </CardContent>
