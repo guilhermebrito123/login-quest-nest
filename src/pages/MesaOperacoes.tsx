@@ -204,13 +204,10 @@ const MesaOperacoes = () => {
 
     if (!postosData) return { total: 0, preenchidos: 0, porcentagem: 0 };
 
-    // Calculate total positions needed considering 12x36 scale
-    const total = postosData.reduce((sum, posto) => {
-      const efetivoNecessario = posto.escala === '12x36' ? 4 : (posto.efetivo_planejado || 1);
-      return sum + efetivoNecessario;
-    }, 0);
+    // Total number of postos (not colaboradores)
+    const total = postosData.length;
 
-    // Count filled positions
+    // Count how many postos are completely filled
     let preenchidos = 0;
     
     for (const posto of postosData) {
@@ -220,7 +217,13 @@ const MesaOperacoes = () => {
         .eq("posto_servico_id", posto.id)
         .eq("status", "ativo");
 
-      preenchidos += colabsData?.length || 0;
+      const colaboradoresAtivos = colabsData?.length || 0;
+      const efetivoNecessario = posto.escala === '12x36' ? 4 : (posto.efetivo_planejado || 1);
+
+      // Only count posto as filled if it has ALL required colaboradores
+      if (colaboradoresAtivos >= efetivoNecessario) {
+        preenchidos++;
+      }
     }
 
     const porcentagem = total > 0 ? Math.round((preenchidos / total) * 100) : 0;
