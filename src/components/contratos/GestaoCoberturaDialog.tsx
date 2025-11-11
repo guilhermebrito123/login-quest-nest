@@ -131,6 +131,7 @@ export function GestaoCoberturaDialog({ open, onClose }: GestaoCoberturaDialogPr
         codigo,
         funcao,
         efetivo_planejado,
+        escala,
         unidades (
           nome,
           codigo,
@@ -155,7 +156,8 @@ export function GestaoCoberturaDialog({ open, onClose }: GestaoCoberturaDialogPr
         .eq("status", "ativo");
 
       const efetivoAtual = colabsData?.length || 0;
-      const efetivoNecessario = posto.efetivo_planejado || 1;
+      // Para jornada 12x36, são necessários 4 colaboradores
+      const efetivoNecessario = posto.escala === '12x36' ? 4 : (posto.efetivo_planejado || 1);
 
       if (efetivoAtual < efetivoNecessario) {
         postosVagosData.push({

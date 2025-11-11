@@ -198,14 +198,17 @@ const MesaOperacoes = () => {
     // Get all postos for this unidade
     const { data: postosData } = await supabase
       .from("postos_servico")
-      .select("id, efetivo_planejado")
+      .select("id, efetivo_planejado, escala")
       .eq("unidade_id", unidadeId)
       .eq("status", "ativo");
 
     if (!postosData) return { total: 0, preenchidos: 0, porcentagem: 0 };
 
-    // Calculate total positions needed
-    const total = postosData.reduce((sum, posto) => sum + (posto.efetivo_planejado || 1), 0);
+    // Calculate total positions needed considering 12x36 scale
+    const total = postosData.reduce((sum, posto) => {
+      const efetivoNecessario = posto.escala === '12x36' ? 4 : (posto.efetivo_planejado || 1);
+      return sum + efetivoNecessario;
+    }, 0);
 
     // Count filled positions
     let preenchidos = 0;
