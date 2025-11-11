@@ -49,8 +49,23 @@ export function ItemEstoqueForm({ open, onOpenChange, item, onSuccess }: ItemEst
   }, [item, reset]);
 
   const fetchUnidades = async () => {
-    const { data } = await supabase.from("unidades").select("*").order("nome");
-    setUnidades(data || []);
+    try {
+      const { data, error } = await supabase
+        .from("unidades")
+        .select("*")
+        .order("nome");
+      
+      if (error) {
+        console.error("Erro ao buscar unidades:", error);
+        toast.error("Erro ao carregar unidades");
+        return;
+      }
+      
+      setUnidades(data || []);
+    } catch (error: any) {
+      console.error("Erro ao buscar unidades:", error);
+      toast.error("Erro ao carregar unidades");
+    }
   };
 
   const onSubmit = async (data: any) => {
