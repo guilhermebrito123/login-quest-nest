@@ -7,7 +7,7 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@
 import { Badge } from "@/components/ui/badge";
 import { Plus, Search, Edit, Trash2, Package } from "lucide-react";
 import { AtivoForm } from "@/components/recursos/AtivoForm";
-import { supabase } from "@/integrations/supabase/client-custom";
+import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 
 export default function Ativos() {
