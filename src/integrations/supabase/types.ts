@@ -262,48 +262,27 @@ export type Database = {
       }
       checklist: {
         Row: {
-          contrato_id: string | null
           created_at: string
           id: string
           nome: string
           periodicidade: Database["public"]["Enums"]["periodicidade_type"]
-          unidade_id: string | null
           updated_at: string
         }
         Insert: {
-          contrato_id?: string | null
           created_at?: string
           id?: string
           nome: string
           periodicidade: Database["public"]["Enums"]["periodicidade_type"]
-          unidade_id?: string | null
           updated_at?: string
         }
         Update: {
-          contrato_id?: string | null
           created_at?: string
           id?: string
           nome?: string
           periodicidade?: Database["public"]["Enums"]["periodicidade_type"]
-          unidade_id?: string | null
           updated_at?: string
         }
-        Relationships: [
-          {
-            foreignKeyName: "checklist_contrato_id_fkey"
-            columns: ["contrato_id"]
-            isOneToOne: false
-            referencedRelation: "contratos"
-            referencedColumns: ["id"]
-          },
-          {
-            foreignKeyName: "checklist_unidade_id_fkey"
-            columns: ["unidade_id"]
-            isOneToOne: false
-            referencedRelation: "unidades"
-            referencedColumns: ["id"]
-          },
-        ]
+        Relationships: []
       }
       checklist_item: {
         Row: {
@@ -590,32 +569,38 @@ export type Database = {
       execucao_checklist: {
         Row: {
           checklist_id: string
+          contrato_id: string | null
           created_at: string
           data_prevista: string
           finalizado_em: string | null
           id: string
           status: Database["public"]["Enums"]["status_execucao"]
           supervisor_id: string | null
+          unidade_id: string | null
           updated_at: string
         }
         Insert: {
           checklist_id: string
+          contrato_id?: string | null
           created_at?: string
           data_prevista: string
           finalizado_em?: string | null
           id: string
           status?: Database["public"]["Enums"]["status_execucao"]
           supervisor_id?: string | null
+          unidade_id?: string | null
           updated_at?: string
         }
         Update: {
           checklist_id?: string
+          contrato_id?: string | null
           created_at?: string
           data_prevista?: string
           finalizado_em?: string | null
           id?: string
           status?: Database["public"]["Enums"]["status_execucao"]
           supervisor_id?: string | null
+          unidade_id?: string | null
           updated_at?: string
         }
         Relationships: [
@@ -627,10 +612,24 @@ export type Database = {
             referencedColumns: ["id"]
           },
           {
+            foreignKeyName: "execucao_checklist_contrato_id_fkey"
+            columns: ["contrato_id"]
+            isOneToOne: false
+            referencedRelation: "contratos"
+            referencedColumns: ["id"]
+          },
+          {
             foreignKeyName: "execucao_checklist_supervisor_id_fkey"
             columns: ["supervisor_id"]
             isOneToOne: false
             referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "execucao_checklist_unidade_id_fkey"
+            columns: ["unidade_id"]
+            isOneToOne: false
+            referencedRelation: "unidades"
             referencedColumns: ["id"]
           },
         ]
@@ -638,6 +637,7 @@ export type Database = {
       execucao_checklist_item: {
         Row: {
           checklist_item_id: string
+          contrato_id: string | null
           created_at: string
           data_prevista: string
           execucao_checklist_id: string
@@ -647,10 +647,12 @@ export type Database = {
           resposta: string | null
           status: Database["public"]["Enums"]["status_execucao"]
           supervisor_id: string | null
+          unidade_id: string | null
           updated_at: string
         }
         Insert: {
           checklist_item_id: string
+          contrato_id?: string | null
           created_at?: string
           data_prevista: string
           execucao_checklist_id: string
@@ -660,10 +662,12 @@ export type Database = {
           resposta?: string | null
           status?: Database["public"]["Enums"]["status_execucao"]
           supervisor_id?: string | null
+          unidade_id?: string | null
           updated_at?: string
         }
         Update: {
           checklist_item_id?: string
+          contrato_id?: string | null
           created_at?: string
           data_prevista?: string
           execucao_checklist_id?: string
@@ -673,6 +677,7 @@ export type Database = {
           resposta?: string | null
           status?: Database["public"]["Enums"]["status_execucao"]
           supervisor_id?: string | null
+          unidade_id?: string | null
           updated_at?: string
         }
         Relationships: [
@@ -681,6 +686,13 @@ export type Database = {
             columns: ["checklist_item_id"]
             isOneToOne: false
             referencedRelation: "checklist_item"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "execucao_checklist_item_contrato_id_fkey"
+            columns: ["contrato_id"]
+            isOneToOne: false
+            referencedRelation: "contratos"
             referencedColumns: ["id"]
           },
           {
@@ -695,6 +707,13 @@ export type Database = {
             columns: ["supervisor_id"]
             isOneToOne: false
             referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "execucao_checklist_item_unidade_id_fkey"
+            columns: ["unidade_id"]
+            isOneToOne: false
+            referencedRelation: "unidades"
             referencedColumns: ["id"]
           },
         ]
