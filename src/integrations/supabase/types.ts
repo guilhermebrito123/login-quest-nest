@@ -603,7 +603,7 @@ export type Database = {
           created_at?: string
           data_prevista: string
           finalizado_em?: string | null
-          id?: string
+          id: string
           status?: Database["public"]["Enums"]["status_execucao"]
           supervisor_id?: string | null
           updated_at?: string
@@ -649,7 +649,7 @@ export type Database = {
           execucao_checklist_id: string
           finalizado_em?: string | null
           foto?: string | null
-          id?: string
+          id: string
           resposta?: string | null
           status?: Database["public"]["Enums"]["status_execucao"]
           supervisor_id?: string | null
