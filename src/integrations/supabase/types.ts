@@ -626,6 +626,13 @@ export type Database = {
             referencedRelation: "checklist"
             referencedColumns: ["id"]
           },
+          {
+            foreignKeyName: "execucao_checklist_supervisor_id_fkey"
+            columns: ["supervisor_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
         ]
       }
       execucao_checklist_item: {
@@ -681,6 +688,13 @@ export type Database = {
             columns: ["execucao_checklist_id"]
             isOneToOne: false
             referencedRelation: "execucao_checklist"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "execucao_checklist_item_supervisor_id_fkey"
+            columns: ["supervisor_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
             referencedColumns: ["id"]
           },
         ]
