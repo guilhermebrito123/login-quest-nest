@@ -307,45 +307,42 @@ export type Database = {
       }
       checklist_item: {
         Row: {
-          ativo_id: string | null
           checklist_id: string
           created_at: string
           descricao: string
           id: string
-          ordem: number
+          item_id: string | null
           periodicidade: Database["public"]["Enums"]["periodicidade_type"]
         }
         Insert: {
-          ativo_id?: string | null
           checklist_id: string
           created_at?: string
           descricao: string
           id?: string
-          ordem?: number
+          item_id?: string | null
           periodicidade: Database["public"]["Enums"]["periodicidade_type"]
         }
         Update: {
-          ativo_id?: string | null
           checklist_id?: string
           created_at?: string
           descricao?: string
           id?: string
-          ordem?: number
+          item_id?: string | null
           periodicidade?: Database["public"]["Enums"]["periodicidade_type"]
         }
         Relationships: [
-          {
-            foreignKeyName: "checklist_item_ativo_id_fkey"
-            columns: ["ativo_id"]
-            isOneToOne: false
-            referencedRelation: "ativos"
-            referencedColumns: ["id"]
-          },
           {
             foreignKeyName: "checklist_item_checklist_id_fkey"
             columns: ["checklist_id"]
             isOneToOne: false
             referencedRelation: "checklist"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "checklist_item_item_id_fkey"
+            columns: ["item_id"]
+            isOneToOne: false
+            referencedRelation: "itens_estoque"
             referencedColumns: ["id"]
           },
         ]
