@@ -1247,7 +1247,7 @@ export type Database = {
         Row: {
           codigo: string
           created_at: string | null
-          dias_semana: string[] | null
+          dias_semana: number[] | null
           escala: string | null
           funcao: string
           horario_fim: string | null
@@ -1264,7 +1264,7 @@ export type Database = {
         Insert: {
           codigo: string
           created_at?: string | null
-          dias_semana?: string[] | null
+          dias_semana?: number[] | null
           escala?: string | null
           funcao: string
           horario_fim?: string | null
@@ -1281,7 +1281,7 @@ export type Database = {
         Update: {
           codigo?: string
           created_at?: string | null
-          dias_semana?: string[] | null
+          dias_semana?: number[] | null
           escala?: string | null
           funcao?: string
           horario_fim?: string | null
