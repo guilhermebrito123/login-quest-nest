@@ -1207,18 +1207,17 @@ export type Database = {
           codigo: string
           created_at: string | null
           dias_semana: string[] | null
-          efetivo_planejado: number | null
+          efetivo_planejado: string | null
           escala: string | null
           funcao: string
           horario_fim: string | null
           horario_inicio: string | null
           id: string
           intervalo_refeicao: number | null
-          jornada: string | null
+          jornada: number | null
           nome: string
           observacoes: string | null
           status: string | null
-          turno: string | null
           unidade_id: string | null
           updated_at: string | null
         }
@@ -1226,18 +1225,17 @@ export type Database = {
           codigo: string
           created_at?: string | null
           dias_semana?: string[] | null
-          efetivo_planejado?: number | null
+          efetivo_planejado?: string | null
           escala?: string | null
           funcao: string
           horario_fim?: string | null
           horario_inicio?: string | null
           id?: string
           intervalo_refeicao?: number | null
-          jornada?: string | null
+          jornada?: number | null
           nome: string
           observacoes?: string | null
           status?: string | null
-          turno?: string | null
           unidade_id?: string | null
           updated_at?: string | null
         }
@@ -1245,22 +1243,28 @@ export type Database = {
           codigo?: string
           created_at?: string | null
           dias_semana?: string[] | null
-          efetivo_planejado?: number | null
+          efetivo_planejado?: string | null
           escala?: string | null
           funcao?: string
           horario_fim?: string | null
           horario_inicio?: string | null
           id?: string
           intervalo_refeicao?: number | null
-          jornada?: string | null
+          jornada?: number | null
           nome?: string
           observacoes?: string | null
           status?: string | null
-          turno?: string | null
           unidade_id?: string | null
           updated_at?: string | null
         }
         Relationships: [
+          {
+            foreignKeyName: "postos_servico_efetivo_planejado_fkey"
+            columns: ["efetivo_planejado"]
+            isOneToOne: false
+            referencedRelation: "colaboradores"
+            referencedColumns: ["id"]
+          },
           {
             foreignKeyName: "postos_servico_unidade_id_fkey"
             columns: ["unidade_id"]
