@@ -37,12 +37,11 @@ const PostoForm = ({ postoId, unidadeId, onClose, onSuccess }: PostoFormProps) =
     codigo: "",
     funcao: "",
     escala: "",
-    turno: "",
     jornada: "",
     horario_inicio: "",
     horario_fim: "",
     intervalo_refeicao: "",
-    efetivo_planejado: "1",
+    dias_semana: [] as number[],
     status: "ativo",
     observacoes: "",
   });
@@ -67,9 +66,10 @@ const PostoForm = ({ postoId, unidadeId, onClose, onSuccess }: PostoFormProps) =
     try {
       const dataToSave = {
         ...formData,
-        efetivo_planejado: parseInt(formData.efetivo_planejado),
+        jornada: formData.jornada ? parseInt(formData.jornada) : null,
         intervalo_refeicao: formData.intervalo_refeicao ? parseInt(formData.intervalo_refeicao) : null,
         observacoes: formData.observacoes || null,
+        dias_semana: formData.dias_semana.length > 0 ? formData.dias_semana : null,
       };
 
       if (postoId) {

@@ -217,7 +217,7 @@ export default function Dashboard24h() {
 
       // For each posto, check how many colaboradores are assigned
       for (const posto of postos) {
-        const efetivoNecessario = posto.efetivo_planejado || 1;
+        const efetivoNecessario = posto.escala === '12x36' ? 4 : 1;
         totalPostos += efetivoNecessario;
 
         const { count: colaboradoresCount } = await supabase
@@ -314,7 +314,7 @@ export default function Dashboard24h() {
 
       if (postos) {
         for (const posto of postos) {
-          const efetivo = posto.efetivo_planejado || 1;
+          const efetivo = posto.escala === '12x36' ? 4 : 1;
           totalPostos += efetivo;
 
           const { count } = await supabase

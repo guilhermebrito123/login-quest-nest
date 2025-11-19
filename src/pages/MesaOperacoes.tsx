@@ -218,7 +218,7 @@ const MesaOperacoes = () => {
         .eq("status", "ativo");
 
       const colaboradoresAtivos = colabsData?.length || 0;
-      const efetivoNecessario = posto.escala === '12x36' ? 4 : (posto.efetivo_planejado || 1);
+      const efetivoNecessario = posto.escala === '12x36' ? 4 : 1;
 
       // Only count posto as filled if it has ALL required colaboradores
       if (colaboradoresAtivos >= efetivoNecessario) {

@@ -42,7 +42,6 @@ export default function Escalas() {
           if (!escalasMap.has(posto.escala)) {
             escalasMap.set(posto.escala, {
               escala: posto.escala,
-              turno: posto.turno,
               jornada: posto.jornada,
               horario_inicio: posto.horario_inicio,
               horario_fim: posto.horario_fim,
