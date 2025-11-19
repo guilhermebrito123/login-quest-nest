@@ -1207,7 +1207,6 @@ export type Database = {
           codigo: string
           created_at: string | null
           dias_semana: string[] | null
-          efetivo_planejado: string | null
           escala: string | null
           funcao: string
           horario_fim: string | null
@@ -1225,7 +1224,6 @@ export type Database = {
           codigo: string
           created_at?: string | null
           dias_semana?: string[] | null
-          efetivo_planejado?: string | null
           escala?: string | null
           funcao: string
           horario_fim?: string | null
@@ -1243,7 +1241,6 @@ export type Database = {
           codigo?: string
           created_at?: string | null
           dias_semana?: string[] | null
-          efetivo_planejado?: string | null
           escala?: string | null
           funcao?: string
           horario_fim?: string | null
@@ -1258,13 +1255,6 @@ export type Database = {
           updated_at?: string | null
         }
         Relationships: [
-          {
-            foreignKeyName: "postos_servico_efetivo_planejado_fkey"
-            columns: ["efetivo_planejado"]
-            isOneToOne: false
-            referencedRelation: "colaboradores"
-            referencedColumns: ["id"]
-          },
           {
             foreignKeyName: "postos_servico_unidade_id_fkey"
             columns: ["unidade_id"]
