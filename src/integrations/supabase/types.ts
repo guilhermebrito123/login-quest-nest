@@ -535,6 +535,7 @@ export type Database = {
       }
       dias_trabalho: {
         Row: {
+          colaborador_id: string | null
           created_at: string | null
           data: string
           horario_fim: string | null
@@ -545,6 +546,7 @@ export type Database = {
           updated_at: string | null
         }
         Insert: {
+          colaborador_id?: string | null
           created_at?: string | null
           data: string
           horario_fim?: string | null
@@ -555,6 +557,7 @@ export type Database = {
           updated_at?: string | null
         }
         Update: {
+          colaborador_id?: string | null
           created_at?: string | null
           data?: string
           horario_fim?: string | null
@@ -565,6 +568,13 @@ export type Database = {
           updated_at?: string | null
         }
         Relationships: [
+          {
+            foreignKeyName: "dias_trabalho_colaborador_id_fkey"
+            columns: ["colaborador_id"]
+            isOneToOne: false
+            referencedRelation: "colaboradores"
+            referencedColumns: ["id"]
+          },
           {
             foreignKeyName: "dias_trabalho_posto_servico_id_fkey"
             columns: ["posto_servico_id"]
