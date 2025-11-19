@@ -533,6 +533,47 @@ export type Database = {
         }
         Relationships: []
       }
+      dias_trabalho: {
+        Row: {
+          created_at: string | null
+          data: string
+          horario_fim: string | null
+          horario_inicio: string | null
+          id: string
+          intervalo_refeicao: number | null
+          posto_servico_id: string
+          updated_at: string | null
+        }
+        Insert: {
+          created_at?: string | null
+          data: string
+          horario_fim?: string | null
+          horario_inicio?: string | null
+          id?: string
+          intervalo_refeicao?: number | null
+          posto_servico_id: string
+          updated_at?: string | null
+        }
+        Update: {
+          created_at?: string | null
+          data?: string
+          horario_fim?: string | null
+          horario_inicio?: string | null
+          id?: string
+          intervalo_refeicao?: number | null
+          posto_servico_id?: string
+          updated_at?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "dias_trabalho_posto_servico_id_fkey"
+            columns: ["posto_servico_id"]
+            isOneToOne: false
+            referencedRelation: "postos_servico"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       escalas: {
         Row: {
           created_at: string | null
