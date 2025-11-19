@@ -37,12 +37,10 @@ const PostoForm = ({ postoId, unidadeId, onClose, onSuccess }: PostoFormProps) =
     codigo: "",
     funcao: "",
     escala: "",
-    turno: "",
     jornada: "",
     horario_inicio: "",
     horario_fim: "",
     intervalo_refeicao: "",
-    efetivo_planejado: "1",
     status: "ativo",
     observacoes: "",
   });
@@ -67,7 +65,7 @@ const PostoForm = ({ postoId, unidadeId, onClose, onSuccess }: PostoFormProps) =
     try {
       const dataToSave = {
         ...formData,
-        efetivo_planejado: parseInt(formData.efetivo_planejado),
+        jornada: formData.jornada ? parseInt(formData.jornada) : null,
         intervalo_refeicao: formData.intervalo_refeicao ? parseInt(formData.intervalo_refeicao) : null,
         observacoes: formData.observacoes || null,
       };
@@ -182,45 +180,37 @@ const PostoForm = ({ postoId, unidadeId, onClose, onSuccess }: PostoFormProps) =
 
             <div className="space-y-2">
               <Label htmlFor="escala">Escala</Label>
-              <Input
-                id="escala"
-                value={formData.escala}
-                onChange={(e) =>
-                  setFormData({ ...formData, escala: e.target.value })
-                }
-                placeholder="Ex: 12x36"
-              />
-            </div>
-
-            <div className="space-y-2">
-              <Label htmlFor="turno">Turno</Label>
               <Select
-                value={formData.turno}
+                value={formData.escala}
                 onValueChange={(value) =>
-                  setFormData({ ...formData, turno: value })
+                  setFormData({ ...formData, escala: value })
                 }
               >
                 <SelectTrigger>
-                  <SelectValue placeholder="Selecione o turno" />
+                  <SelectValue placeholder="Selecione a escala" />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="manha">Manhã</SelectItem>
-                  <SelectItem value="tarde">Tarde</SelectItem>
-                  <SelectItem value="noite">Noite</SelectItem>
-                  <SelectItem value="integral">Integral</SelectItem>
+                  <SelectItem value="5x1">5x1</SelectItem>
+                  <SelectItem value="5x2">5x2</SelectItem>
+                  <SelectItem value="4x2">4x2</SelectItem>
+                  <SelectItem value="6x1">6x1</SelectItem>
+                  <SelectItem value="12x36">12x36</SelectItem>
+                  <SelectItem value="18x36">18x36</SelectItem>
+                  <SelectItem value="24x48">24x48</SelectItem>
                 </SelectContent>
               </Select>
             </div>
 
             <div className="space-y-2">
-              <Label htmlFor="jornada">Jornada</Label>
+              <Label htmlFor="jornada">Jornada (horas)</Label>
               <Input
                 id="jornada"
+                type="number"
                 value={formData.jornada}
                 onChange={(e) =>
                   setFormData({ ...formData, jornada: e.target.value })
                 }
-                placeholder="Ex: 44h semanais"
+                placeholder="Ex: 44"
               />
             </div>
 
@@ -258,19 +248,6 @@ const PostoForm = ({ postoId, unidadeId, onClose, onSuccess }: PostoFormProps) =
                   setFormData({ ...formData, intervalo_refeicao: e.target.value })
                 }
                 placeholder="60"
-              />
-            </div>
-
-            <div className="space-y-2">
-              <Label htmlFor="efetivo_planejado">Efetivo Planejado *</Label>
-              <Input
-                id="efetivo_planejado"
-                type="number"
-                value={formData.efetivo_planejado}
-                onChange={(e) =>
-                  setFormData({ ...formData, efetivo_planejado: e.target.value })
-                }
-                required
               />
             </div>
 

@@ -202,7 +202,7 @@ export default function Dashboard24h() {
       // Get all postos for this unit
       const { data: postos, error: postosError } = await supabase
         .from("postos_servico")
-        .select("id, efetivo_planejado")
+        .select("id, escala")
         .eq("unidade_id", unidadeId)
         .eq("status", "ativo");
 
@@ -217,7 +217,7 @@ export default function Dashboard24h() {
 
       // For each posto, check how many colaboradores are assigned
       for (const posto of postos) {
-        const efetivoNecessario = posto.efetivo_planejado || 1;
+        const efetivoNecessario = posto.escala === '12x36' ? 4 : 1;
         totalPostos += efetivoNecessario;
 
         const { count: colaboradoresCount } = await supabase
@@ -306,7 +306,7 @@ export default function Dashboard24h() {
       // Postos cobertos
       const { data: postos } = await supabase
         .from("postos_servico")
-        .select("id, efetivo_planejado")
+        .select("id, escala")
         .eq("status", "ativo");
 
       let totalPostos = 0;
@@ -314,7 +314,7 @@ export default function Dashboard24h() {
 
       if (postos) {
         for (const posto of postos) {
-          const efetivo = posto.efetivo_planejado || 1;
+          const efetivo = posto.escala === '12x36' ? 4 : 1;
           totalPostos += efetivo;
 
           const { count } = await supabase
