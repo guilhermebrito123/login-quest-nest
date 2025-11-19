@@ -23,7 +23,6 @@ export default function Escalas() {
           nome,
           codigo,
           escala,
-          turno,
           jornada,
           horario_inicio,
           horario_fim,
@@ -42,7 +41,6 @@ export default function Escalas() {
           if (!escalasMap.has(posto.escala)) {
             escalasMap.set(posto.escala, {
               escala: posto.escala,
-              turno: posto.turno,
               jornada: posto.jornada,
               horario_inicio: posto.horario_inicio,
               horario_fim: posto.horario_fim,
@@ -123,9 +121,6 @@ export default function Escalas() {
                             {escalaInfo.postos.length} posto(s) de serviço
                           </CardDescription>
                         </div>
-                        {escalaInfo.turno && (
-                          <Badge variant="outline">{escalaInfo.turno}</Badge>
-                        )}
                       </div>
                     </CardHeader>
                     <CardContent className="space-y-4">
