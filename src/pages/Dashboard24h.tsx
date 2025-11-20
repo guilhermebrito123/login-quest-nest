@@ -204,7 +204,7 @@ export default function Dashboard24h() {
         .from("postos_servico")
         .select("id, escala")
         .eq("unidade_id", unidadeId)
-        .eq("status", "ativo");
+        .in("status", ["ocupado", "ocupado_temporariamente"]);
 
       if (postosError) throw postosError;
 
@@ -307,7 +307,7 @@ export default function Dashboard24h() {
       const { data: postos } = await supabase
         .from("postos_servico")
         .select("id, escala")
-        .eq("status", "ativo");
+        .in("status", ["ocupado", "ocupado_temporariamente"]);
 
       let totalPostos = 0;
       let postosCobertos = 0;

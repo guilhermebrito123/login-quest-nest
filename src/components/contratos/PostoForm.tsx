@@ -41,7 +41,7 @@ const PostoForm = ({ postoId, unidadeId, onClose, onSuccess }: PostoFormProps) =
     horario_inicio: "",
     horario_fim: "",
     intervalo_refeicao: "",
-    status: "ativo",
+    status: "vago",
     observacoes: "",
   });
 
@@ -68,6 +68,7 @@ const PostoForm = ({ postoId, unidadeId, onClose, onSuccess }: PostoFormProps) =
         jornada: formData.jornada ? parseInt(formData.jornada) : null,
         intervalo_refeicao: formData.intervalo_refeicao ? parseInt(formData.intervalo_refeicao) : null,
         observacoes: formData.observacoes || null,
+        status: formData.status as "vago" | "ocupado" | "vago_temporariamente" | "ocupado_temporariamente",
       };
 
       if (postoId) {
@@ -263,9 +264,10 @@ const PostoForm = ({ postoId, unidadeId, onClose, onSuccess }: PostoFormProps) =
                   <SelectValue />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="ativo">Ativo</SelectItem>
-                  <SelectItem value="inativo">Inativo</SelectItem>
                   <SelectItem value="vago">Vago</SelectItem>
+                  <SelectItem value="ocupado">Ocupado</SelectItem>
+                  <SelectItem value="vago_temporariamente">Vago Temporariamente</SelectItem>
+                  <SelectItem value="ocupado_temporariamente">Ocupado Temporariamente</SelectItem>
                 </SelectContent>
               </Select>
             </div>

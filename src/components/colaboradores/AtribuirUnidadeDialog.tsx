@@ -40,7 +40,7 @@ export function AtribuirUnidadeDialog({ colaborador, open, onClose, onSuccess }:
         .from("postos_servico")
         .select("id, nome, codigo")
         .eq("unidade_id", unidadeId)
-        .eq("status", "ativo")
+        .in("status", ["ocupado", "ocupado_temporariamente"])
         .order("nome");
       if (error) throw error;
       return data;

@@ -1270,7 +1270,7 @@ export type Database = {
           jornada: number | null
           nome: string
           observacoes: string | null
-          status: string | null
+          status: Database["public"]["Enums"]["status_posto"] | null
           unidade_id: string | null
           updated_at: string | null
         }
@@ -1287,7 +1287,7 @@ export type Database = {
           jornada?: number | null
           nome: string
           observacoes?: string | null
-          status?: string | null
+          status?: Database["public"]["Enums"]["status_posto"] | null
           unidade_id?: string | null
           updated_at?: string | null
         }
@@ -1304,7 +1304,7 @@ export type Database = {
           jornada?: number | null
           nome?: string
           observacoes?: string | null
-          status?: string | null
+          status?: Database["public"]["Enums"]["status_posto"] | null
           unidade_id?: string | null
           updated_at?: string | null
         }
@@ -1634,6 +1634,11 @@ export type Database = {
         | "semestral"
         | "anual"
       status_execucao: "ativo" | "concluido" | "atrasado" | "cancelado"
+      status_posto:
+        | "vago"
+        | "ocupado"
+        | "vago_temporariamente"
+        | "ocupado_temporariamente"
     }
     CompositeTypes: {
       [_ in never]: never
@@ -1779,6 +1784,12 @@ export const Constants = {
         "anual",
       ],
       status_execucao: ["ativo", "concluido", "atrasado", "cancelado"],
+      status_posto: [
+        "vago",
+        "ocupado",
+        "vago_temporariamente",
+        "ocupado_temporariamente",
+      ],
     },
   },
 } as const
