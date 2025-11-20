@@ -543,7 +543,7 @@ export type Database = {
           id: string
           intervalo_refeicao: number | null
           posto_servico_id: string
-          status: string | null
+          status: Database["public"]["Enums"]["status_posto"] | null
           updated_at: string | null
         }
         Insert: {
@@ -555,7 +555,7 @@ export type Database = {
           id?: string
           intervalo_refeicao?: number | null
           posto_servico_id: string
-          status?: string | null
+          status?: Database["public"]["Enums"]["status_posto"] | null
           updated_at?: string | null
         }
         Update: {
@@ -567,7 +567,7 @@ export type Database = {
           id?: string
           intervalo_refeicao?: number | null
           posto_servico_id?: string
-          status?: string | null
+          status?: Database["public"]["Enums"]["status_posto"] | null
           updated_at?: string | null
         }
         Relationships: [
