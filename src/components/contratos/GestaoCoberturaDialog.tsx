@@ -114,7 +114,7 @@ export function GestaoCoberturaDialog({ open, onClose }: GestaoCoberturaDialogPr
     const { data, error } = await supabase
       .from("postos_servico")
       .select("id, nome, codigo")
-      .eq("status", "ativo")
+      .in("status", ["ocupado", "ocupado_temporariamente"])
       .order("nome");
 
     if (error) throw error;
@@ -140,7 +140,7 @@ export function GestaoCoberturaDialog({ open, onClose }: GestaoCoberturaDialogPr
           )
         )
       `)
-      .eq("status", "ativo");
+      .in("status", ["ocupado", "ocupado_temporariamente"]);
 
     if (postosError) throw postosError;
 

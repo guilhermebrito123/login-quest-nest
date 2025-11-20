@@ -213,8 +213,10 @@ const PostoCard = ({ posto, unidade, onEdit, onDelete }: PostoCardProps) => {
 
   const getStatusColor = (status: string) => {
     switch (status) {
-      case "ativo": return "default";
+      case "ocupado": return "default";
+      case "ocupado_temporariamente": return "default";
       case "vago": return "secondary";
+      case "vago_temporariamente": return "secondary";
       default: return "outline";
     }
   };

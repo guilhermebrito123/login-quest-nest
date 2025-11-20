@@ -29,7 +29,7 @@ export default function Escalas() {
           dias_semana,
           unidade:unidades(nome, codigo)
         `)
-        .eq("status", "ativo")
+        .in("status", ["ocupado", "ocupado_temporariamente"])
         .order("escala");
 
       if (error) throw error;

@@ -200,7 +200,7 @@ const MesaOperacoes = () => {
       .from("postos_servico")
       .select("id, escala")
       .eq("unidade_id", unidadeId)
-      .eq("status", "ativo");
+      .in("status", ["ocupado", "ocupado_temporariamente"]);
 
     if (!postosData) return { total: 0, preenchidos: 0, porcentagem: 0 };
 
