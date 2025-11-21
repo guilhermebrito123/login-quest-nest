@@ -578,6 +578,47 @@ export type Database = {
         }
         Relationships: []
       }
+      diaristas_anexos: {
+        Row: {
+          caminho_storage: string
+          created_at: string
+          diarista_id: string
+          id: string
+          nome_arquivo: string
+          tamanho_bytes: number | null
+          tipo_arquivo: string | null
+          uploaded_by: string
+        }
+        Insert: {
+          caminho_storage: string
+          created_at?: string
+          diarista_id: string
+          id?: string
+          nome_arquivo: string
+          tamanho_bytes?: number | null
+          tipo_arquivo?: string | null
+          uploaded_by: string
+        }
+        Update: {
+          caminho_storage?: string
+          created_at?: string
+          diarista_id?: string
+          id?: string
+          nome_arquivo?: string
+          tamanho_bytes?: number | null
+          tipo_arquivo?: string | null
+          uploaded_by?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "diaristas_anexos_diarista_id_fkey"
+            columns: ["diarista_id"]
+            isOneToOne: false
+            referencedRelation: "diaristas"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       dias_trabalho: {
         Row: {
           colaborador_id: string | null
