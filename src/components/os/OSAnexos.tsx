@@ -1,9 +1,9 @@
-import { useState, useRef } from "react";
+import { useState, useRef, useEffect } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
-import { Upload, Download, Trash2, File, FileText, Image as ImageIcon } from "lucide-react";
+import { Upload, Download, Trash2, File, FileText, Image as ImageIcon, Eye } from "lucide-react";
 import { toast } from "sonner";
 import {
   AlertDialog,
@@ -23,6 +23,8 @@ interface OSAnexosProps {
 export function OSAnexos({ osId }: OSAnexosProps) {
   const [uploading, setUploading] = useState(false);
   const [deleteId, setDeleteId] = useState<string | null>(null);
+  const [previewUrl, setPreviewUrl] = useState<string | null>(null);
+  const [previewName, setPreviewName] = useState<string>("");
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   const { data: anexos, refetch } = useQuery({
@@ -98,7 +100,11 @@ export function OSAnexos({ osId }: OSAnexosProps) {
         .from("os-anexos")
         .download(anexo.caminho_storage);
 
-      if (error) throw error;
+      if (error) {
+        console.error("Download error:", error);
+        toast.error("Erro ao baixar arquivo: " + error.message);
+        return;
+      }
 
       const url = URL.createObjectURL(data);
       const a = document.createElement("a");
@@ -108,10 +114,47 @@ export function OSAnexos({ osId }: OSAnexosProps) {
       a.click();
       document.body.removeChild(a);
       URL.revokeObjectURL(url);
+      toast.success("Arquivo baixado com sucesso");
     } catch (error: any) {
+      console.error("Download error:", error);
       toast.error("Erro ao baixar arquivo: " + error.message);
     }
   };
+
+  const handlePreview = async (anexo: any) => {
+    try {
+      // Fechar preview anterior
+      if (previewUrl) {
+        URL.revokeObjectURL(previewUrl);
+      }
+
+      const { data, error } = await supabase.storage
+        .from("os-anexos")
+        .download(anexo.caminho_storage);
+
+      if (error) {
+        console.error("Preview error:", error);
+        toast.error("Erro ao visualizar arquivo: " + error.message);
+        return;
+      }
+
+      const url = URL.createObjectURL(data);
+      setPreviewUrl(url);
+      setPreviewName(anexo.nome_arquivo);
+    } catch (error: any) {
+      console.error("Preview error:", error);
+      toast.error("Erro ao visualizar arquivo: " + error.message);
+    }
+  };
+
+  // Cleanup preview URL on unmount
+  useEffect(() => {
+    return () => {
+      if (previewUrl) {
+        URL.revokeObjectURL(previewUrl);
+      }
+    };
+  }, [previewUrl]);
 
   const handleDelete = async () => {
     if (!deleteId) return;
@@ -189,10 +232,21 @@ export function OSAnexos({ osId }: OSAnexosProps) {
                     </div>
                   </div>
                   <div className="flex gap-1">
+                    {anexo.tipo_arquivo?.startsWith("image/") && (
+                      <Button
+                        variant="ghost"
+                        size="icon"
+                        onClick={() => handlePreview(anexo)}
+                        title="Visualizar"
+                      >
+                        <Eye className="h-4 w-4" />
+                      </Button>
+                    )}
                     <Button
                       variant="ghost"
                       size="icon"
                       onClick={() => handleDownload(anexo)}
+                      title="Baixar"
                     >
                       <Download className="h-4 w-4" />
                     </Button>
@@ -200,6 +254,7 @@ export function OSAnexos({ osId }: OSAnexosProps) {
                       variant="ghost"
                       size="icon"
                       onClick={() => setDeleteId(anexo.id)}
+                      title="Excluir"
                     >
                       <Trash2 className="h-4 w-4 text-destructive" />
                     </Button>
@@ -230,6 +285,31 @@ export function OSAnexos({ osId }: OSAnexosProps) {
             <AlertDialogAction onClick={handleDelete} className="bg-destructive text-destructive-foreground">
               Excluir
             </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
+
+      {/* Preview Modal */}
+      <AlertDialog open={!!previewUrl} onOpenChange={() => {
+        if (previewUrl) URL.revokeObjectURL(previewUrl);
+        setPreviewUrl(null);
+        setPreviewName("");
+      }}>
+        <AlertDialogContent className="max-w-4xl">
+          <AlertDialogHeader>
+            <AlertDialogTitle>{previewName}</AlertDialogTitle>
+          </AlertDialogHeader>
+          <div className="max-h-[70vh] overflow-auto">
+            {previewUrl && (
+              <img 
+                src={previewUrl} 
+                alt={previewName}
+                className="w-full h-auto rounded-md"
+              />
+            )}
+          </div>
+          <AlertDialogFooter>
+            <AlertDialogCancel>Fechar</AlertDialogCancel>
           </AlertDialogFooter>
         </AlertDialogContent>
       </AlertDialog>
