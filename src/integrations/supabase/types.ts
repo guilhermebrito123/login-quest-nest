@@ -542,6 +542,7 @@ export type Database = {
           horario_inicio: string | null
           id: string
           intervalo_refeicao: number | null
+          motivo_vago: Database["public"]["Enums"]["motivo_vago_type"] | null
           posto_servico_id: string
           status: Database["public"]["Enums"]["status_posto"] | null
           updated_at: string | null
@@ -554,6 +555,7 @@ export type Database = {
           horario_inicio?: string | null
           id?: string
           intervalo_refeicao?: number | null
+          motivo_vago?: Database["public"]["Enums"]["motivo_vago_type"] | null
           posto_servico_id: string
           status?: Database["public"]["Enums"]["status_posto"] | null
           updated_at?: string | null
@@ -566,6 +568,7 @@ export type Database = {
           horario_inicio?: string | null
           id?: string
           intervalo_refeicao?: number | null
+          motivo_vago?: Database["public"]["Enums"]["motivo_vago_type"] | null
           posto_servico_id?: string
           status?: Database["public"]["Enums"]["status_posto"] | null
           updated_at?: string | null
@@ -1625,6 +1628,13 @@ export type Database = {
         | "analista_centro_controle"
         | "tecnico"
         | "cliente_view"
+      motivo_vago_type:
+        | "falta justificada"
+        | "falta injustificada"
+        | "afastamento INSS"
+        | "férias"
+        | "suspensão"
+        | "Posto vago"
       periodicidade_type:
         | "diaria"
         | "semanal"
@@ -1773,6 +1783,14 @@ export const Constants = {
         "analista_centro_controle",
         "tecnico",
         "cliente_view",
+      ],
+      motivo_vago_type: [
+        "falta justificada",
+        "falta injustificada",
+        "afastamento INSS",
+        "férias",
+        "suspensão",
+        "Posto vago",
       ],
       periodicidade_type: [
         "diaria",
