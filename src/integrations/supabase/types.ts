@@ -488,6 +488,51 @@ export type Database = {
           },
         ]
       }
+      diarias: {
+        Row: {
+          created_at: string
+          diarista_id: string
+          id: string
+          posto_dia_vago_id: string
+          status: Database["public"]["Enums"]["status_diaria"]
+          updated_at: string
+          valor: number
+        }
+        Insert: {
+          created_at?: string
+          diarista_id: string
+          id?: string
+          posto_dia_vago_id: string
+          status?: Database["public"]["Enums"]["status_diaria"]
+          updated_at?: string
+          valor: number
+        }
+        Update: {
+          created_at?: string
+          diarista_id?: string
+          id?: string
+          posto_dia_vago_id?: string
+          status?: Database["public"]["Enums"]["status_diaria"]
+          updated_at?: string
+          valor?: number
+        }
+        Relationships: [
+          {
+            foreignKeyName: "diarias_diarista_id_fkey"
+            columns: ["diarista_id"]
+            isOneToOne: false
+            referencedRelation: "diaristas"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "diarias_posto_dia_vago_id_fkey"
+            columns: ["posto_dia_vago_id"]
+            isOneToOne: false
+            referencedRelation: "posto_dias_vagos"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       diaristas: {
         Row: {
           cidade: string | null
@@ -1643,6 +1688,13 @@ export type Database = {
         | "trimestral"
         | "semestral"
         | "anual"
+      status_diaria:
+        | "Aguardando confirmacao"
+        | "Confirmada"
+        | "Aprovada"
+        | "Lançada para pagamento"
+        | "Aprovada para pagamento"
+        | "Cancelada"
       status_execucao: "ativo" | "concluido" | "atrasado" | "cancelado"
       status_posto:
         | "vago"
@@ -1800,6 +1852,14 @@ export const Constants = {
         "trimestral",
         "semestral",
         "anual",
+      ],
+      status_diaria: [
+        "Aguardando confirmacao",
+        "Confirmada",
+        "Aprovada",
+        "Lançada para pagamento",
+        "Aprovada para pagamento",
+        "Cancelada",
       ],
       status_execucao: ["ativo", "concluido", "atrasado", "cancelado"],
       status_posto: [
