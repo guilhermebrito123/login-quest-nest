@@ -1868,6 +1868,7 @@ export type Database = {
         | "vago_temporariamente"
         | "ocupado_temporariamente"
         | "presenca_confirmada"
+        | "ocupacao_agendada"
     }
     CompositeTypes: {
       [_ in never]: never
@@ -2035,6 +2036,7 @@ export const Constants = {
         "vago_temporariamente",
         "ocupado_temporariamente",
         "presenca_confirmada",
+        "ocupacao_agendada",
       ],
     },
   },
