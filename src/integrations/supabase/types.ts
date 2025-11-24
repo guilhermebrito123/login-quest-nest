@@ -362,6 +362,70 @@ export type Database = {
         }
         Relationships: []
       }
+      colaborador_movimentacoes_posto: {
+        Row: {
+          colaborador_id: string
+          created_at: string
+          created_by: string
+          data_desvinculacao: string | null
+          data_vinculacao: string | null
+          id: string
+          motivo: string | null
+          posto_servico_id_destino: string | null
+          posto_servico_id_origem: string | null
+          status: string
+          updated_at: string
+        }
+        Insert: {
+          colaborador_id: string
+          created_at?: string
+          created_by: string
+          data_desvinculacao?: string | null
+          data_vinculacao?: string | null
+          id?: string
+          motivo?: string | null
+          posto_servico_id_destino?: string | null
+          posto_servico_id_origem?: string | null
+          status?: string
+          updated_at?: string
+        }
+        Update: {
+          colaborador_id?: string
+          created_at?: string
+          created_by?: string
+          data_desvinculacao?: string | null
+          data_vinculacao?: string | null
+          id?: string
+          motivo?: string | null
+          posto_servico_id_destino?: string | null
+          posto_servico_id_origem?: string | null
+          status?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "colaborador_movimentacoes_posto_colaborador_id_fkey"
+            columns: ["colaborador_id"]
+            isOneToOne: false
+            referencedRelation: "colaboradores"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "colaborador_movimentacoes_posto_posto_servico_id_destino_fkey"
+            columns: ["posto_servico_id_destino"]
+            isOneToOne: false
+            referencedRelation: "postos_servico"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "colaborador_movimentacoes_posto_posto_servico_id_origem_fkey"
+            columns: ["posto_servico_id_origem"]
+            isOneToOne: false
+            referencedRelation: "postos_servico"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       colaboradores: {
         Row: {
           cargo: string | null
@@ -1744,6 +1808,7 @@ export type Database = {
       is_admin: { Args: { _user_id: string }; Returns: boolean }
       limpar_posto_dias_vagos_antigos: { Args: never; Returns: undefined }
       limpar_presencas_antigas: { Args: never; Returns: undefined }
+      processar_movimentacoes_agendadas: { Args: never; Returns: undefined }
     }
     Enums: {
       app_role:
