@@ -1716,6 +1716,13 @@ export type Database = {
         Args: { execucao_item_id: string }
         Returns: undefined
       }
+      confirmar_presenca: {
+        Args: {
+          p_dia_trabalho_id: string
+          p_novo_status: Database["public"]["Enums"]["status_posto"]
+        }
+        Returns: undefined
+      }
       gerar_dias_trabalho_proximo_mes: { Args: never; Returns: undefined }
       has_role: {
         Args: {
