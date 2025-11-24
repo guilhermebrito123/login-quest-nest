@@ -1743,6 +1743,7 @@ export type Database = {
       }
       is_admin: { Args: { _user_id: string }; Returns: boolean }
       limpar_posto_dias_vagos_antigos: { Args: never; Returns: undefined }
+      limpar_presencas_antigas: { Args: never; Returns: undefined }
     }
     Enums: {
       app_role:
