@@ -1347,6 +1347,7 @@ export type Database = {
       }
       postos_servico: {
         Row: {
+          beneficios: string[] | null
           codigo: string
           created_at: string | null
           dias_semana: number[] | null
@@ -1359,11 +1360,13 @@ export type Database = {
           jornada: number | null
           nome: string
           observacoes: string | null
+          primeiro_dia_atividade: string | null
           status: Database["public"]["Enums"]["status_posto"] | null
           unidade_id: string | null
           updated_at: string | null
         }
         Insert: {
+          beneficios?: string[] | null
           codigo: string
           created_at?: string | null
           dias_semana?: number[] | null
@@ -1376,11 +1379,13 @@ export type Database = {
           jornada?: number | null
           nome: string
           observacoes?: string | null
+          primeiro_dia_atividade?: string | null
           status?: Database["public"]["Enums"]["status_posto"] | null
           unidade_id?: string | null
           updated_at?: string | null
         }
         Update: {
+          beneficios?: string[] | null
           codigo?: string
           created_at?: string | null
           dias_semana?: number[] | null
@@ -1393,6 +1398,7 @@ export type Database = {
           jornada?: number | null
           nome?: string
           observacoes?: string | null
+          primeiro_dia_atividade?: string | null
           status?: Database["public"]["Enums"]["status_posto"] | null
           unidade_id?: string | null
           updated_at?: string | null
