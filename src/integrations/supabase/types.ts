@@ -424,6 +424,27 @@ export type Database = {
             referencedRelation: "postos_servico"
             referencedColumns: ["id"]
           },
+          {
+            foreignKeyName: "fk_movimentacoes_colaborador"
+            columns: ["colaborador_id"]
+            isOneToOne: false
+            referencedRelation: "colaboradores"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "fk_movimentacoes_posto_destino"
+            columns: ["posto_servico_id_destino"]
+            isOneToOne: false
+            referencedRelation: "postos_servico"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "fk_movimentacoes_posto_origem"
+            columns: ["posto_servico_id_origem"]
+            isOneToOne: false
+            referencedRelation: "postos_servico"
+            referencedColumns: ["id"]
+          },
         ]
       }
       colaboradores: {
