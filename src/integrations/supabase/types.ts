@@ -1695,6 +1695,18 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
+      calcular_dias_escala: {
+        Args: {
+          p_data_fim: string
+          p_data_inicio: string
+          p_dias_semana: number[]
+          p_escala: string
+          p_primeiro_dia_atividade: string
+        }
+        Returns: {
+          data_trabalho: string
+        }[]
+      }
       cancelar_execucao_checklist: {
         Args: { execucao_id: string }
         Returns: undefined
@@ -1703,6 +1715,7 @@ export type Database = {
         Args: { execucao_item_id: string }
         Returns: undefined
       }
+      gerar_dias_trabalho_proximo_mes: { Args: never; Returns: undefined }
       has_role: {
         Args: {
           _role: Database["public"]["Enums"]["app_role"]
@@ -1748,6 +1761,7 @@ export type Database = {
         | "ocupado"
         | "vago_temporariamente"
         | "ocupado_temporariamente"
+        | "presenca_confirmada"
     }
     CompositeTypes: {
       [_ in never]: never
@@ -1914,6 +1928,7 @@ export const Constants = {
         "ocupado",
         "vago_temporariamente",
         "ocupado_temporariamente",
+        "presenca_confirmada",
       ],
     },
   },
