@@ -1695,6 +1695,7 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
+      arquivar_dias_trabalho_em_presencas: { Args: never; Returns: undefined }
       calcular_dias_escala: {
         Args: {
           p_data_fim: string
