@@ -1724,6 +1724,7 @@ export type Database = {
         Returns: boolean
       }
       is_admin: { Args: { _user_id: string }; Returns: boolean }
+      limpar_posto_dias_vagos_antigos: { Args: never; Returns: undefined }
     }
     Enums: {
       app_role:
