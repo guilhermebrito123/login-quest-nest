@@ -1422,6 +1422,7 @@ export type Database = {
           horario_saida: string | null
           id: string
           observacao: string | null
+          posto_servico_id: string | null
           registrado_por: string
           tipo: string
           updated_at: string
@@ -1434,6 +1435,7 @@ export type Database = {
           horario_saida?: string | null
           id?: string
           observacao?: string | null
+          posto_servico_id?: string | null
           registrado_por: string
           tipo: string
           updated_at?: string
@@ -1446,6 +1448,7 @@ export type Database = {
           horario_saida?: string | null
           id?: string
           observacao?: string | null
+          posto_servico_id?: string | null
           registrado_por?: string
           tipo?: string
           updated_at?: string
@@ -1456,6 +1459,13 @@ export type Database = {
             columns: ["colaborador_id"]
             isOneToOne: false
             referencedRelation: "colaboradores"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "presencas_posto_servico_id_fkey"
+            columns: ["posto_servico_id"]
+            isOneToOne: false
+            referencedRelation: "postos_servico"
             referencedColumns: ["id"]
           },
         ]

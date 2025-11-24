@@ -35,6 +35,7 @@ export function PresencaDialog({ colaborador, open, onClose, onSuccess }: Presen
 
       const payload = {
         colaborador_id: colaborador.id,
+        posto_servico_id: colaborador.posto_servico_id || null,
         data: formData.data,
         tipo: formData.tipo,
         horario_entrada: formData.horario_entrada ? new Date(`${formData.data}T${formData.horario_entrada}`).toISOString() : null,
