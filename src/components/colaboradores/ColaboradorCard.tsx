@@ -31,8 +31,6 @@ export function ColaboradorCard({ colaborador, onEdit, onDelete, onPresenca, onE
     switch (status) {
       case "ativo": return "bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-100";
       case "inativo": return "bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-100";
-      case "ferias": return "bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-100";
-      case "afastado": return "bg-yellow-100 text-yellow-800 dark:bg-yellow-900 dark:text-yellow-100";
       default: return "bg-gray-100 text-gray-800 dark:bg-gray-900 dark:text-gray-100";
     }
   };
@@ -49,14 +47,14 @@ export function ColaboradorCard({ colaborador, onEdit, onDelete, onPresenca, onE
             <div className="space-y-1 flex-1">
               <div className="flex items-center gap-2 flex-wrap">
                 <h3 className="text-lg font-semibold">{colaborador.nome_completo}</h3>
-                <Badge className={getStatusColor(colaborador.status)}>{colaborador.status}</Badge>
+                <Badge className={getStatusColor(colaborador.status_colaborador)}>{colaborador.status_colaborador}</Badge>
                 {colaborador.cargo && (
                   <Badge variant="outline">{colaborador.cargo}</Badge>
                 )}
               </div>
             </div>
             <div className="flex gap-1 flex-shrink-0">
-              {colaborador.status === "ativo" && (
+              {colaborador.status_colaborador === "ativo" && (
                 <>
                   <Button variant="ghost" size="icon" onClick={() => onPresenca(colaborador)} title="Registrar Presença">
                     <CalendarCheck className="h-4 w-4" />

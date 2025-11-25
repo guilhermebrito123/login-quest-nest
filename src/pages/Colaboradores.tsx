@@ -52,7 +52,7 @@ export default function Colaboradores() {
         .order("nome_completo");
 
       if (statusFilter !== "all") {
-        query = query.eq("status", statusFilter);
+        query = query.eq("status_colaborador", statusFilter as "ativo" | "inativo");
       }
       if (unidadeFilter !== "all") {
         query = query.eq("unidade_id", unidadeFilter);
@@ -160,9 +160,7 @@ export default function Colaboradores() {
             <SelectContent>
               <SelectItem value="all">Todos Status</SelectItem>
               <SelectItem value="ativo">Ativo</SelectItem>
-              <SelectItem value="afastado">Afastado</SelectItem>
-              <SelectItem value="ferias">Férias</SelectItem>
-              <SelectItem value="desligado">Desligado</SelectItem>
+              <SelectItem value="inativo">Inativo</SelectItem>
             </SelectContent>
           </Select>
           <Select value={unidadeFilter} onValueChange={setUnidadeFilter}>
@@ -207,14 +205,12 @@ export default function Colaboradores() {
                   <TableCell>
                     <Badge
                       variant={
-                        colaborador.status === "ativo"
+                        colaborador.status_colaborador === "ativo"
                           ? "default"
-                          : colaborador.status === "ferias"
-                          ? "secondary"
                           : "outline"
                       }
                     >
-                      {colaborador.status}
+                      {colaborador.status_colaborador}
                     </Badge>
                   </TableCell>
                   <TableCell>{colaborador.unidade?.nome || "-"}</TableCell>
