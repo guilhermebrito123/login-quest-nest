@@ -1793,6 +1793,15 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
+      agendar_ocupacao_posto: {
+        Args: {
+          p_colaborador_id: string
+          p_data: string
+          p_posto_servico_id: string
+          p_usuario_id?: string
+        }
+        Returns: undefined
+      }
       arquivar_dias_trabalho_em_presencas: { Args: never; Returns: undefined }
       calcular_dias_escala: {
         Args: {
