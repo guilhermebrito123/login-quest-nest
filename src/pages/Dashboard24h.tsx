@@ -224,7 +224,7 @@ export default function Dashboard24h() {
           .from("colaboradores")
           .select("id", { count: "exact", head: true })
           .eq("posto_servico_id", posto.id)
-          .eq("status", "ativo");
+          .eq("status_colaborador", "ativo");
 
         const vagos = Math.max(0, efetivoNecessario - (colaboradoresCount || 0));
         totalVagos += vagos;
@@ -321,7 +321,7 @@ export default function Dashboard24h() {
             .from("colaboradores")
             .select("*", { count: "exact", head: true })
             .eq("posto_servico_id", posto.id)
-            .eq("status", "ativo");
+            .eq("status_colaborador", "ativo");
 
           postosCobertos += Math.min(efetivo, count || 0);
         }

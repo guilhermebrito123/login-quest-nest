@@ -152,7 +152,7 @@ export function GestaoCoberturaDialog({ open, onClose }: GestaoCoberturaDialogPr
         .from("colaboradores")
         .select("id")
         .eq("posto_servico_id", posto.id)
-        .eq("status", "ativo");
+        .eq("status_colaborador", "ativo");
 
       const efetivoAtual = colabsData?.length || 0;
       // Para jornada 12x36, são necessários 4 colaboradores
@@ -244,7 +244,7 @@ export function GestaoCoberturaDialog({ open, onClose }: GestaoCoberturaDialogPr
       .from("colaboradores")
       .select("id, nome_completo, cargo")
       .is("posto_servico_id", null)
-      .eq("status", "ativo")
+      .eq("status_colaborador", "ativo")
       .order("nome_completo");
 
     if (error) throw error;
