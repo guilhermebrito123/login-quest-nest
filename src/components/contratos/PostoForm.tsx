@@ -37,17 +37,63 @@ const PostoForm = ({ postoId, unidadeId, onClose, onSuccess }: PostoFormProps) =
     codigo: "",
     funcao: "",
     escala: "",
+    dias_semana: [] as number[],
+    primeiro_dia_atividade: "",
+    ultimo_dia_atividade: "",
     jornada: "",
     horario_inicio: "",
     horario_fim: "",
     intervalo_refeicao: "",
+    beneficios: [] as string[],
     status: "vago",
     observacoes: "",
   });
 
   useEffect(() => {
     loadUnidades();
-  }, []);
+    if (postoId) {
+      loadPosto();
+    }
+  }, [postoId]);
+
+  const loadPosto = async () => {
+    if (!postoId) return;
+    
+    const { data: posto, error } = await supabase
+      .from("postos_servico")
+      .select("*")
+      .eq("id", postoId)
+      .single();
+
+    if (error) {
+      toast({
+        title: "Erro ao carregar posto",
+        description: error.message,
+        variant: "destructive",
+      });
+      return;
+    }
+
+    if (posto) {
+      setFormData({
+        unidade_id: posto.unidade_id || "",
+        nome: posto.nome || "",
+        codigo: posto.codigo || "",
+        funcao: posto.funcao || "",
+        escala: posto.escala || "",
+        dias_semana: posto.dias_semana || [],
+        primeiro_dia_atividade: posto.primeiro_dia_atividade || "",
+        ultimo_dia_atividade: posto.ultimo_dia_atividade || "",
+        jornada: posto.jornada?.toString() || "",
+        horario_inicio: posto.horario_inicio || "",
+        horario_fim: posto.horario_fim || "",
+        intervalo_refeicao: posto.intervalo_refeicao?.toString() || "",
+        beneficios: posto.beneficios || [],
+        status: posto.status || "vago",
+        observacoes: posto.observacoes || "",
+      });
+    }
+  };
 
   const loadUnidades = async () => {
     const { data } = await supabase
@@ -65,10 +111,14 @@ const PostoForm = ({ postoId, unidadeId, onClose, onSuccess }: PostoFormProps) =
     try {
       const dataToSave = {
         ...formData,
+        dias_semana: formData.dias_semana.length > 0 ? formData.dias_semana : null,
+        primeiro_dia_atividade: formData.primeiro_dia_atividade || null,
+        ultimo_dia_atividade: formData.ultimo_dia_atividade || null,
         jornada: formData.jornada ? parseInt(formData.jornada) : null,
         intervalo_refeicao: formData.intervalo_refeicao ? parseInt(formData.intervalo_refeicao) : null,
+        beneficios: formData.beneficios.length > 0 ? formData.beneficios : null,
         observacoes: formData.observacoes || null,
-        status: formData.status as "vago" | "ocupado" | "vago_temporariamente" | "ocupado_temporariamente",
+        status: formData.status as "vago" | "ocupado" | "vago_temporariamente" | "ocupado_temporariamente" | "inativo",
       };
 
       if (postoId) {
@@ -253,6 +303,30 @@ const PostoForm = ({ postoId, unidadeId, onClose, onSuccess }: PostoFormProps) =
             </div>
 
             <div className="space-y-2">
+              <Label htmlFor="primeiro_dia_atividade">Primeiro Dia de Atividade</Label>
+              <Input
+                id="primeiro_dia_atividade"
+                type="date"
+                value={formData.primeiro_dia_atividade}
+                onChange={(e) =>
+                  setFormData({ ...formData, primeiro_dia_atividade: e.target.value })
+                }
+              />
+            </div>
+
+            <div className="space-y-2">
+              <Label htmlFor="ultimo_dia_atividade">Último Dia de Atividade (Opcional)</Label>
+              <Input
+                id="ultimo_dia_atividade"
+                type="date"
+                value={formData.ultimo_dia_atividade}
+                onChange={(e) =>
+                  setFormData({ ...formData, ultimo_dia_atividade: e.target.value })
+                }
+              />
+            </div>
+
+            <div className="space-y-2">
               <Label htmlFor="status">Status</Label>
               <Select
                 value={formData.status}
@@ -268,6 +342,7 @@ const PostoForm = ({ postoId, unidadeId, onClose, onSuccess }: PostoFormProps) =
                   <SelectItem value="ocupado">Ocupado</SelectItem>
                   <SelectItem value="vago_temporariamente">Vago Temporariamente</SelectItem>
                   <SelectItem value="ocupado_temporariamente">Ocupado Temporariamente</SelectItem>
+                  <SelectItem value="inativo">Inativo</SelectItem>
                 </SelectContent>
               </Select>
             </div>
