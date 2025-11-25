@@ -1447,6 +1447,7 @@ export type Database = {
           observacoes: string | null
           primeiro_dia_atividade: string | null
           status: Database["public"]["Enums"]["status_posto"] | null
+          ultimo_dia_atividade: string | null
           unidade_id: string | null
           updated_at: string | null
         }
@@ -1466,6 +1467,7 @@ export type Database = {
           observacoes?: string | null
           primeiro_dia_atividade?: string | null
           status?: Database["public"]["Enums"]["status_posto"] | null
+          ultimo_dia_atividade?: string | null
           unidade_id?: string | null
           updated_at?: string | null
         }
@@ -1485,6 +1487,7 @@ export type Database = {
           observacoes?: string | null
           primeiro_dia_atividade?: string | null
           status?: Database["public"]["Enums"]["status_posto"] | null
+          ultimo_dia_atividade?: string | null
           unidade_id?: string | null
           updated_at?: string | null
         }
@@ -1869,6 +1872,7 @@ export type Database = {
         | "ocupado_temporariamente"
         | "presenca_confirmada"
         | "ocupacao_agendada"
+        | "inativo"
     }
     CompositeTypes: {
       [_ in never]: never
@@ -2037,6 +2041,7 @@ export const Constants = {
         "ocupado_temporariamente",
         "presenca_confirmada",
         "ocupacao_agendada",
+        "inativo",
       ],
     },
   },
