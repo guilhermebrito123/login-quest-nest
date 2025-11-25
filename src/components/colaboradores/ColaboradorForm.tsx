@@ -18,7 +18,17 @@ interface ColaboradorFormProps {
 
 export function ColaboradorForm({ colaborador, open, onClose, onSuccess }: ColaboradorFormProps) {
   const [loading, setLoading] = useState(false);
-  const [formData, setFormData] = useState({
+  const [formData, setFormData] = useState<{
+    nome_completo: string;
+    cpf: string;
+    telefone: string;
+    email: string;
+    data_admissao: string;
+    data_desligamento: string;
+    cargo: string;
+    status_colaborador: "ativo" | "inativo";
+    observacoes: string;
+  }>({
     nome_completo: "",
     cpf: "",
     telefone: "",
@@ -26,7 +36,7 @@ export function ColaboradorForm({ colaborador, open, onClose, onSuccess }: Colab
     data_admissao: "",
     data_desligamento: "",
     cargo: "",
-    status: "ativo",
+    status_colaborador: "ativo",
     observacoes: "",
   });
 
@@ -40,7 +50,7 @@ export function ColaboradorForm({ colaborador, open, onClose, onSuccess }: Colab
         data_admissao: colaborador.data_admissao || "",
         data_desligamento: colaborador.data_desligamento || "",
         cargo: colaborador.cargo || "",
-        status: colaborador.status || "ativo",
+        status_colaborador: colaborador.status_colaborador || "ativo",
         observacoes: colaborador.observacoes || "",
       });
     }
@@ -138,22 +148,20 @@ export function ColaboradorForm({ colaborador, open, onClose, onSuccess }: Colab
               />
             </div>
             <div className="space-y-2">
-              <Label htmlFor="status">Status *</Label>
-              <Select value={formData.status} onValueChange={(value) => setFormData({ ...formData, status: value })}>
+              <Label htmlFor="status_colaborador">Status *</Label>
+              <Select value={formData.status_colaborador} onValueChange={(value: "ativo" | "inativo") => setFormData({ ...formData, status_colaborador: value })}>
                 <SelectTrigger>
                   <SelectValue />
                 </SelectTrigger>
                 <SelectContent>
                   <SelectItem value="ativo">Ativo</SelectItem>
                   <SelectItem value="inativo">Inativo</SelectItem>
-                  <SelectItem value="ferias">Férias</SelectItem>
-                  <SelectItem value="afastado">Afastado</SelectItem>
                 </SelectContent>
               </Select>
             </div>
           </div>
 
-          {formData.status === "inativo" && (
+          {formData.status_colaborador === "inativo" && (
             <div className="space-y-2">
               <Label htmlFor="data_desligamento">Data de Desligamento</Label>
               <Input

@@ -460,7 +460,7 @@ export type Database = {
           nome_completo: string
           observacoes: string | null
           posto_servico_id: string | null
-          status: string | null
+          status_colaborador: Database["public"]["Enums"]["status_colaborador"]
           telefone: string | null
           unidade_id: string | null
           updated_at: string | null
@@ -477,7 +477,7 @@ export type Database = {
           nome_completo: string
           observacoes?: string | null
           posto_servico_id?: string | null
-          status?: string | null
+          status_colaborador?: Database["public"]["Enums"]["status_colaborador"]
           telefone?: string | null
           unidade_id?: string | null
           updated_at?: string | null
@@ -494,7 +494,7 @@ export type Database = {
           nome_completo?: string
           observacoes?: string | null
           posto_servico_id?: string | null
-          status?: string | null
+          status_colaborador?: Database["public"]["Enums"]["status_colaborador"]
           telefone?: string | null
           unidade_id?: string | null
           updated_at?: string | null
@@ -1857,6 +1857,7 @@ export type Database = {
         | "trimestral"
         | "semestral"
         | "anual"
+      status_colaborador: "ativo" | "inativo"
       status_diaria:
         | "Aguardando confirmacao"
         | "Confirmada"
@@ -2025,6 +2026,7 @@ export const Constants = {
         "semestral",
         "anual",
       ],
+      status_colaborador: ["ativo", "inativo"],
       status_diaria: [
         "Aguardando confirmacao",
         "Confirmada",
