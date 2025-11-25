@@ -1823,6 +1823,28 @@ export type Database = {
         Args: { execucao_item_id: string }
         Returns: undefined
       }
+      cancelar_ocupacao_posto: {
+        Args: { p_data: string; p_posto_servico_id: string }
+        Returns: {
+          colaborador_id: string | null
+          created_at: string | null
+          data: string
+          horario_fim: string | null
+          horario_inicio: string | null
+          id: string
+          intervalo_refeicao: number | null
+          motivo_vago: Database["public"]["Enums"]["motivo_vago_type"] | null
+          posto_servico_id: string
+          status: Database["public"]["Enums"]["status_posto"] | null
+          updated_at: string | null
+        }
+        SetofOptions: {
+          from: "*"
+          to: "dias_trabalho"
+          isOneToOne: true
+          isSetofReturn: false
+        }
+      }
       confirmar_presenca: {
         Args: {
           p_dia_trabalho_id: string
