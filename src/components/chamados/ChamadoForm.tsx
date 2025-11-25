@@ -137,7 +137,7 @@ export function ChamadoForm({ open, onOpenChange, chamado, onSuccess }: ChamadoF
       const { data, error } = await supabase
         .from("colaboradores")
         .select("id, nome_completo, cpf")
-        .eq("status", "ativo")
+        .eq("status_colaborador", "ativo")
         .order("nome_completo");
       if (error) throw error;
       return data;

@@ -398,7 +398,7 @@ const PostoCard = ({ posto, unidade, onEdit, onDelete }: PostoCardProps) => {
         .from("colaboradores")
         .select("id")
         .eq("posto_servico_id", posto.id)
-        .eq("status", "ativo")
+        .eq("status_colaborador", "ativo")
         .limit(1)
         .single();
 

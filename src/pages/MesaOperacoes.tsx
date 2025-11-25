@@ -215,7 +215,7 @@ const MesaOperacoes = () => {
         .from("colaboradores")
         .select("id")
         .eq("posto_servico_id", posto.id)
-        .eq("status", "ativo");
+        .eq("status_colaborador", "ativo");
 
       const colaboradoresAtivos = colabsData?.length || 0;
       const efetivoNecessario = posto.escala === '12x36' ? 4 : 1;
