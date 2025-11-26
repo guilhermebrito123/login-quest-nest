@@ -626,6 +626,7 @@ export type Database = {
           anexo_dados_bancarios: string
           anexo_possui_antecedente: string
           banco: string
+          cep: string
           cidade: string
           created_at: string
           email: string
@@ -647,6 +648,7 @@ export type Database = {
           anexo_dados_bancarios: string
           anexo_possui_antecedente: string
           banco?: string
+          cep: string
           cidade: string
           created_at?: string
           email: string
@@ -668,6 +670,7 @@ export type Database = {
           anexo_dados_bancarios?: string
           anexo_possui_antecedente?: string
           banco?: string
+          cep?: string
           cidade?: string
           created_at?: string
           email?: string
