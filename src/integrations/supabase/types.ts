@@ -578,6 +578,8 @@ export type Database = {
           created_at: string
           diarista_id: string
           id: string
+          motivo_cancelamento: string | null
+          motivo_reprovacao: string | null
           posto_dia_vago_id: string
           status: Database["public"]["Enums"]["status_diaria"]
           updated_at: string
@@ -587,6 +589,8 @@ export type Database = {
           created_at?: string
           diarista_id: string
           id?: string
+          motivo_cancelamento?: string | null
+          motivo_reprovacao?: string | null
           posto_dia_vago_id: string
           status?: Database["public"]["Enums"]["status_diaria"]
           updated_at?: string
@@ -596,6 +600,8 @@ export type Database = {
           created_at?: string
           diarista_id?: string
           id?: string
+          motivo_cancelamento?: string | null
+          motivo_reprovacao?: string | null
           posto_dia_vago_id?: string
           status?: Database["public"]["Enums"]["status_diaria"]
           updated_at?: string
@@ -1920,6 +1926,7 @@ export type Database = {
         | "Lançada para pagamento"
         | "Aprovada para pagamento"
         | "Cancelada"
+        | "Reprovada"
       status_diarista: "ativo" | "inativo" | "desligado"
       status_execucao: "ativo" | "concluido" | "atrasado" | "cancelado"
       status_posto:
@@ -2091,6 +2098,7 @@ export const Constants = {
         "Lançada para pagamento",
         "Aprovada para pagamento",
         "Cancelada",
+        "Reprovada",
       ],
       status_diarista: ["ativo", "inativo", "desligado"],
       status_execucao: ["ativo", "concluido", "atrasado", "cancelado"],
