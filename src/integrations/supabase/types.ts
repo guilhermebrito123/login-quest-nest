@@ -620,45 +620,66 @@ export type Database = {
       }
       diaristas: {
         Row: {
-          cidade: string | null
-          cnh: string
+          agencia: string
+          anexo_comprovante_endereco: string | null
+          anexo_cpf: string | null
+          anexo_dados_bancarios: string | null
+          anexo_possui_antecedente: string | null
+          banco: string
+          cidade: string
           created_at: string
           email: string
           endereco: string
           id: string
           nome_completo: string
+          numero_conta: string
+          pix: string
           possui_antecedente: boolean
-          rg: string
-          status: string | null
+          status: Database["public"]["Enums"]["status_diarista"]
           telefone: string
+          tipo_conta: Database["public"]["Enums"]["tipo_conta_bancaria"]
           updated_at: string
         }
         Insert: {
-          cidade?: string | null
-          cnh: string
+          agencia?: string
+          anexo_comprovante_endereco?: string | null
+          anexo_cpf?: string | null
+          anexo_dados_bancarios?: string | null
+          anexo_possui_antecedente?: string | null
+          banco?: string
+          cidade: string
           created_at?: string
           email: string
           endereco: string
           id?: string
           nome_completo: string
+          numero_conta?: string
+          pix?: string
           possui_antecedente?: boolean
-          rg: string
-          status?: string | null
+          status?: Database["public"]["Enums"]["status_diarista"]
           telefone: string
+          tipo_conta?: Database["public"]["Enums"]["tipo_conta_bancaria"]
           updated_at?: string
         }
         Update: {
-          cidade?: string | null
-          cnh?: string
+          agencia?: string
+          anexo_comprovante_endereco?: string | null
+          anexo_cpf?: string | null
+          anexo_dados_bancarios?: string | null
+          anexo_possui_antecedente?: string | null
+          banco?: string
+          cidade?: string
           created_at?: string
           email?: string
           endereco?: string
           id?: string
           nome_completo?: string
+          numero_conta?: string
+          pix?: string
           possui_antecedente?: boolean
-          rg?: string
-          status?: string | null
+          status?: Database["public"]["Enums"]["status_diarista"]
           telefone?: string
+          tipo_conta?: Database["public"]["Enums"]["tipo_conta_bancaria"]
           updated_at?: string
         }
         Relationships: []
@@ -1896,6 +1917,7 @@ export type Database = {
         | "Lançada para pagamento"
         | "Aprovada para pagamento"
         | "Cancelada"
+      status_diarista: "ativo" | "inativo" | "desligado"
       status_execucao: "ativo" | "concluido" | "atrasado" | "cancelado"
       status_posto:
         | "vago"
@@ -1905,6 +1927,7 @@ export type Database = {
         | "presenca_confirmada"
         | "ocupacao_agendada"
         | "inativo"
+      tipo_conta_bancaria: "conta corrente" | "conta poupança" | "conta salário"
     }
     CompositeTypes: {
       [_ in never]: never
@@ -2066,6 +2089,7 @@ export const Constants = {
         "Aprovada para pagamento",
         "Cancelada",
       ],
+      status_diarista: ["ativo", "inativo", "desligado"],
       status_execucao: ["ativo", "concluido", "atrasado", "cancelado"],
       status_posto: [
         "vago",
@@ -2075,6 +2099,11 @@ export const Constants = {
         "presenca_confirmada",
         "ocupacao_agendada",
         "inativo",
+      ],
+      tipo_conta_bancaria: [
+        "conta corrente",
+        "conta poupança",
+        "conta salário",
       ],
     },
   },

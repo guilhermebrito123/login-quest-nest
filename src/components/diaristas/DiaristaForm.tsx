@@ -27,42 +27,71 @@ interface DiaristaFormProps {
 
 export function DiaristaForm({ open, onClose, onSuccess, diarista }: DiaristaFormProps) {
   const [loading, setLoading] = useState(false);
-  const [formData, setFormData] = useState({
+  const [formData, setFormData] = useState<{
+    nome_completo: string;
+    endereco: string;
+    cidade: string;
+    telefone: string;
+    email: string;
+    possui_antecedente: boolean;
+    status: "ativo" | "inativo" | "desligado";
+    agencia: string;
+    banco: string;
+    tipo_conta: "conta corrente" | "conta poupança" | "conta salário";
+    numero_conta: string;
+    pix: string;
+  }>({
     nome_completo: "",
-    rg: "",
-    cnh: "",
     endereco: "",
     cidade: "",
     telefone: "",
     email: "",
     possui_antecedente: false,
     status: "ativo",
+    agencia: "",
+    banco: "",
+    tipo_conta: "conta corrente",
+    numero_conta: "",
+    pix: "",
+  });
+  
+  const [anexos, setAnexos] = useState({
+    anexo_dados_bancarios: null as File | null,
+    anexo_cpf: null as File | null,
+    anexo_comprovante_endereco: null as File | null,
+    anexo_possui_antecedente: null as File | null,
   });
 
   useEffect(() => {
     if (diarista) {
       setFormData({
         nome_completo: diarista.nome_completo || "",
-        rg: diarista.rg || "",
-        cnh: diarista.cnh || "",
         endereco: diarista.endereco || "",
         cidade: diarista.cidade || "",
         telefone: diarista.telefone || "",
         email: diarista.email || "",
         possui_antecedente: diarista.possui_antecedente || false,
-        status: diarista.status || "ativo",
+        status: (diarista.status || "ativo") as "ativo" | "inativo" | "desligado",
+        agencia: diarista.agencia || "",
+        banco: diarista.banco || "",
+        tipo_conta: (diarista.tipo_conta || "conta corrente") as "conta corrente" | "conta poupança" | "conta salário",
+        numero_conta: diarista.numero_conta || "",
+        pix: diarista.pix || "",
       });
     } else {
       setFormData({
         nome_completo: "",
-        rg: "",
-        cnh: "",
         endereco: "",
         cidade: "",
         telefone: "",
         email: "",
         possui_antecedente: false,
         status: "ativo",
+        agencia: "",
+        banco: "",
+        tipo_conta: "conta corrente",
+        numero_conta: "",
+        pix: "",
       });
     }
   }, [diarista, open]);
@@ -78,6 +107,9 @@ export function DiaristaForm({ open, onClose, onSuccess, diarista }: DiaristaFor
     setLoading(true);
 
     try {
+      let diaristaId = diarista?.id;
+      
+      // Salvar dados básicos
       if (diarista) {
         const { error } = await supabase
           .from("diaristas")
@@ -85,16 +117,42 @@ export function DiaristaForm({ open, onClose, onSuccess, diarista }: DiaristaFor
           .eq("id", diarista.id);
 
         if (error) throw error;
-        toast.success("Diarista atualizado com sucesso");
       } else {
-        const { error } = await supabase
+        const { data, error } = await supabase
           .from("diaristas")
-          .insert([formData]);
+          .insert([formData])
+          .select()
+          .single();
 
         if (error) throw error;
-        toast.success("Diarista cadastrado com sucesso");
+        diaristaId = data.id;
       }
 
+      // Upload de anexos se houver
+      const anexoFields = ['anexo_dados_bancarios', 'anexo_cpf', 'anexo_comprovante_endereco', 'anexo_possui_antecedente'];
+      
+      for (const field of anexoFields) {
+        const file = anexos[field as keyof typeof anexos];
+        if (file) {
+          const filePath = `${diaristaId}/${field}_${Date.now()}_${file.name}`;
+          
+          const { error: uploadError } = await supabase.storage
+            .from('diaristas-anexos')
+            .upload(filePath, file);
+
+          if (uploadError) {
+            console.error(`Erro ao fazer upload de ${field}:`, uploadError);
+          } else {
+            // Atualizar referência do arquivo na tabela
+            await supabase
+              .from("diaristas")
+              .update({ [field]: filePath })
+              .eq("id", diaristaId);
+          }
+        }
+      }
+
+      toast.success(diarista ? "Diarista atualizado com sucesso" : "Diarista cadastrado com sucesso");
       onSuccess();
     } catch (error: any) {
       toast.error("Erro ao salvar diarista: " + error.message);
@@ -126,30 +184,6 @@ export function DiaristaForm({ open, onClose, onSuccess, diarista }: DiaristaFor
               />
             </div>
 
-            <div className="space-y-2">
-              <Label htmlFor="rg">RG *</Label>
-              <Input
-                id="rg"
-                value={formData.rg}
-                onChange={(e) =>
-                  setFormData({ ...formData, rg: e.target.value })
-                }
-                required
-              />
-            </div>
-
-            <div className="space-y-2">
-              <Label htmlFor="cnh">CNH *</Label>
-              <Input
-                id="cnh"
-                value={formData.cnh}
-                onChange={(e) =>
-                  setFormData({ ...formData, cnh: e.target.value })
-                }
-                required
-              />
-            </div>
-
             <div className="space-y-2 col-span-2">
               <Label htmlFor="endereco">Endereço *</Label>
               <Input
@@ -163,13 +197,14 @@ export function DiaristaForm({ open, onClose, onSuccess, diarista }: DiaristaFor
             </div>
 
             <div className="space-y-2">
-              <Label htmlFor="cidade">Cidade</Label>
+              <Label htmlFor="cidade">Cidade *</Label>
               <Input
                 id="cidade"
                 value={formData.cidade}
                 onChange={(e) =>
                   setFormData({ ...formData, cidade: e.target.value })
                 }
+                required
               />
             </div>
 
@@ -222,7 +257,7 @@ export function DiaristaForm({ open, onClose, onSuccess, diarista }: DiaristaFor
               <Select
                 value={formData.status}
                 onValueChange={(value) =>
-                  setFormData({ ...formData, status: value })
+                  setFormData({ ...formData, status: value as "ativo" | "inativo" | "desligado" })
                 }
               >
                 <SelectTrigger>
@@ -231,8 +266,132 @@ export function DiaristaForm({ open, onClose, onSuccess, diarista }: DiaristaFor
                 <SelectContent>
                   <SelectItem value="ativo">Ativo</SelectItem>
                   <SelectItem value="inativo">Inativo</SelectItem>
+                  <SelectItem value="desligado">Desligado</SelectItem>
                 </SelectContent>
               </Select>
+            </div>
+
+            <div className="space-y-2 col-span-2">
+              <h3 className="text-lg font-semibold">Dados Bancários</h3>
+            </div>
+
+            <div className="space-y-2">
+              <Label htmlFor="banco">Banco *</Label>
+              <Input
+                id="banco"
+                value={formData.banco}
+                onChange={(e) =>
+                  setFormData({ ...formData, banco: e.target.value })
+                }
+                required
+              />
+            </div>
+
+            <div className="space-y-2">
+              <Label htmlFor="agencia">Agência *</Label>
+              <Input
+                id="agencia"
+                value={formData.agencia}
+                onChange={(e) =>
+                  setFormData({ ...formData, agencia: e.target.value })
+                }
+                required
+              />
+            </div>
+
+            <div className="space-y-2">
+              <Label htmlFor="tipo_conta">Tipo de Conta *</Label>
+              <Select
+                value={formData.tipo_conta}
+                onValueChange={(value) =>
+                  setFormData({ ...formData, tipo_conta: value as "conta corrente" | "conta poupança" | "conta salário" })
+                }
+              >
+                <SelectTrigger>
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="conta corrente">Conta Corrente</SelectItem>
+                  <SelectItem value="conta poupança">Conta Poupança</SelectItem>
+                  <SelectItem value="conta salário">Conta Salário</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+
+            <div className="space-y-2">
+              <Label htmlFor="numero_conta">Número da Conta *</Label>
+              <Input
+                id="numero_conta"
+                value={formData.numero_conta}
+                onChange={(e) =>
+                  setFormData({ ...formData, numero_conta: e.target.value })
+                }
+                required
+              />
+            </div>
+
+            <div className="space-y-2">
+              <Label htmlFor="pix">Chave PIX *</Label>
+              <Input
+                id="pix"
+                value={formData.pix}
+                onChange={(e) =>
+                  setFormData({ ...formData, pix: e.target.value })
+                }
+                required
+              />
+            </div>
+
+            <div className="space-y-2 col-span-2">
+              <h3 className="text-lg font-semibold">Anexos</h3>
+            </div>
+
+            <div className="space-y-2">
+              <Label htmlFor="anexo_dados_bancarios">Dados Bancários *</Label>
+              <Input
+                id="anexo_dados_bancarios"
+                type="file"
+                onChange={(e) =>
+                  setAnexos({ ...anexos, anexo_dados_bancarios: e.target.files?.[0] || null })
+                }
+                accept=".pdf,.jpg,.jpeg,.png"
+              />
+            </div>
+
+            <div className="space-y-2">
+              <Label htmlFor="anexo_cpf">CPF *</Label>
+              <Input
+                id="anexo_cpf"
+                type="file"
+                onChange={(e) =>
+                  setAnexos({ ...anexos, anexo_cpf: e.target.files?.[0] || null })
+                }
+                accept=".pdf,.jpg,.jpeg,.png"
+              />
+            </div>
+
+            <div className="space-y-2">
+              <Label htmlFor="anexo_comprovante_endereco">Comprovante de Endereço *</Label>
+              <Input
+                id="anexo_comprovante_endereco"
+                type="file"
+                onChange={(e) =>
+                  setAnexos({ ...anexos, anexo_comprovante_endereco: e.target.files?.[0] || null })
+                }
+                accept=".pdf,.jpg,.jpeg,.png"
+              />
+            </div>
+
+            <div className="space-y-2">
+              <Label htmlFor="anexo_possui_antecedente">Certidão de Antecedentes *</Label>
+              <Input
+                id="anexo_possui_antecedente"
+                type="file"
+                onChange={(e) =>
+                  setAnexos({ ...anexos, anexo_possui_antecedente: e.target.files?.[0] || null })
+                }
+                accept=".pdf,.jpg,.jpeg,.png"
+              />
             </div>
           </div>
 

@@ -50,7 +50,8 @@ export default function Diaristas() {
   const filteredDiaristas = diaristas?.filter((diarista) =>
     diarista.nome_completo.toLowerCase().includes(searchTerm.toLowerCase()) ||
     diarista.email.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    diarista.telefone.includes(searchTerm)
+    diarista.telefone.includes(searchTerm) ||
+    diarista.cidade?.toLowerCase().includes(searchTerm.toLowerCase())
   );
 
   const handleEdit = (diarista: any) => {
@@ -104,12 +105,11 @@ export default function Diaristas() {
           <Table>
             <TableHeader>
               <TableRow>
-              <TableHead>Nome</TableHead>
-                <TableHead>RG</TableHead>
-                <TableHead>CNH</TableHead>
+                <TableHead>Nome</TableHead>
                 <TableHead>Cidade</TableHead>
                 <TableHead>Telefone</TableHead>
                 <TableHead>Email</TableHead>
+                <TableHead>Banco</TableHead>
                 <TableHead>Status</TableHead>
                 <TableHead className="text-right">Ações</TableHead>
               </TableRow>
@@ -117,13 +117,13 @@ export default function Diaristas() {
             <TableBody>
               {isLoading ? (
                 <TableRow>
-                  <TableCell colSpan={8} className="text-center">
+                  <TableCell colSpan={7} className="text-center">
                     Carregando...
                   </TableCell>
                 </TableRow>
               ) : filteredDiaristas?.length === 0 ? (
                 <TableRow>
-                  <TableCell colSpan={8} className="text-center">
+                  <TableCell colSpan={7} className="text-center">
                     Nenhum diarista encontrado
                   </TableCell>
                 </TableRow>
@@ -133,11 +133,10 @@ export default function Diaristas() {
                     <TableCell className="font-medium">
                       {diarista.nome_completo}
                     </TableCell>
-                    <TableCell>{diarista.rg}</TableCell>
-                    <TableCell>{diarista.cnh}</TableCell>
                     <TableCell>{diarista.cidade || "-"}</TableCell>
                     <TableCell>{diarista.telefone}</TableCell>
                     <TableCell>{diarista.email}</TableCell>
+                    <TableCell>{diarista.banco || "-"}</TableCell>
                     <TableCell>
                       <Badge
                         variant={
