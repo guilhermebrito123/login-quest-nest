@@ -621,10 +621,10 @@ export type Database = {
       diaristas: {
         Row: {
           agencia: string
-          anexo_comprovante_endereco: string | null
-          anexo_cpf: string | null
-          anexo_dados_bancarios: string | null
-          anexo_possui_antecedente: string | null
+          anexo_comprovante_endereco: string
+          anexo_cpf: string
+          anexo_dados_bancarios: string
+          anexo_possui_antecedente: string
           banco: string
           cidade: string
           created_at: string
@@ -642,10 +642,10 @@ export type Database = {
         }
         Insert: {
           agencia?: string
-          anexo_comprovante_endereco?: string | null
-          anexo_cpf?: string | null
-          anexo_dados_bancarios?: string | null
-          anexo_possui_antecedente?: string | null
+          anexo_comprovante_endereco: string
+          anexo_cpf: string
+          anexo_dados_bancarios: string
+          anexo_possui_antecedente: string
           banco?: string
           cidade: string
           created_at?: string
@@ -663,10 +663,10 @@ export type Database = {
         }
         Update: {
           agencia?: string
-          anexo_comprovante_endereco?: string | null
-          anexo_cpf?: string | null
-          anexo_dados_bancarios?: string | null
-          anexo_possui_antecedente?: string | null
+          anexo_comprovante_endereco?: string
+          anexo_cpf?: string
+          anexo_dados_bancarios?: string
+          anexo_possui_antecedente?: string
           banco?: string
           cidade?: string
           created_at?: string

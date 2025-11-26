@@ -104,10 +104,31 @@ export function DiaristaForm({ open, onClose, onSuccess, diarista }: DiaristaFor
       return;
     }
 
+    // Validar anexos obrigatórios para novos cadastros
+    if (!diarista) {
+      if (!anexos.anexo_dados_bancarios || !anexos.anexo_cpf || 
+          !anexos.anexo_comprovante_endereco || !anexos.anexo_possui_antecedente) {
+        toast.error("Todos os anexos são obrigatórios");
+        return;
+      }
+    }
+
     setLoading(true);
 
     try {
       let diaristaId = diarista?.id;
+      
+      // Preparar dados para salvar
+      const dataToSave = {
+        ...formData,
+        // Se for novo cadastro, adicionar valores temporários para anexos
+        ...((!diarista) && {
+          anexo_dados_bancarios: "pending",
+          anexo_cpf: "pending",
+          anexo_comprovante_endereco: "pending",
+          anexo_possui_antecedente: "pending",
+        }),
+      };
       
       // Salvar dados básicos
       if (diarista) {
@@ -120,7 +141,7 @@ export function DiaristaForm({ open, onClose, onSuccess, diarista }: DiaristaFor
       } else {
         const { data, error } = await supabase
           .from("diaristas")
-          .insert([formData])
+          .insert([dataToSave])
           .select()
           .single();
 
@@ -355,6 +376,7 @@ export function DiaristaForm({ open, onClose, onSuccess, diarista }: DiaristaFor
                   setAnexos({ ...anexos, anexo_dados_bancarios: e.target.files?.[0] || null })
                 }
                 accept=".pdf,.jpg,.jpeg,.png"
+                required={!diarista}
               />
             </div>
 
@@ -367,6 +389,7 @@ export function DiaristaForm({ open, onClose, onSuccess, diarista }: DiaristaFor
                   setAnexos({ ...anexos, anexo_cpf: e.target.files?.[0] || null })
                 }
                 accept=".pdf,.jpg,.jpeg,.png"
+                required={!diarista}
               />
             </div>
 
@@ -379,6 +402,7 @@ export function DiaristaForm({ open, onClose, onSuccess, diarista }: DiaristaFor
                   setAnexos({ ...anexos, anexo_comprovante_endereco: e.target.files?.[0] || null })
                 }
                 accept=".pdf,.jpg,.jpeg,.png"
+                required={!diarista}
               />
             </div>
 
@@ -391,6 +415,7 @@ export function DiaristaForm({ open, onClose, onSuccess, diarista }: DiaristaFor
                   setAnexos({ ...anexos, anexo_possui_antecedente: e.target.files?.[0] || null })
                 }
                 accept=".pdf,.jpg,.jpeg,.png"
+                required={!diarista}
               />
             </div>
           </div>
