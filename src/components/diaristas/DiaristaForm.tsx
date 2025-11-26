@@ -30,6 +30,7 @@ export function DiaristaForm({ open, onClose, onSuccess, diarista }: DiaristaFor
   const [formData, setFormData] = useState<{
     nome_completo: string;
     endereco: string;
+    cep: string;
     cidade: string;
     telefone: string;
     email: string;
@@ -43,6 +44,7 @@ export function DiaristaForm({ open, onClose, onSuccess, diarista }: DiaristaFor
   }>({
     nome_completo: "",
     endereco: "",
+    cep: "",
     cidade: "",
     telefone: "",
     email: "",
@@ -67,6 +69,7 @@ export function DiaristaForm({ open, onClose, onSuccess, diarista }: DiaristaFor
       setFormData({
         nome_completo: diarista.nome_completo || "",
         endereco: diarista.endereco || "",
+        cep: diarista.cep || "",
         cidade: diarista.cidade || "",
         telefone: diarista.telefone || "",
         email: diarista.email || "",
@@ -82,6 +85,7 @@ export function DiaristaForm({ open, onClose, onSuccess, diarista }: DiaristaFor
       setFormData({
         nome_completo: "",
         endereco: "",
+        cep: "",
         cidade: "",
         telefone: "",
         email: "",
@@ -213,6 +217,19 @@ export function DiaristaForm({ open, onClose, onSuccess, diarista }: DiaristaFor
                 onChange={(e) =>
                   setFormData({ ...formData, endereco: e.target.value })
                 }
+                required
+              />
+            </div>
+
+            <div className="space-y-2">
+              <Label htmlFor="cep">CEP *</Label>
+              <Input
+                id="cep"
+                value={formData.cep}
+                onChange={(e) =>
+                  setFormData({ ...formData, cep: e.target.value })
+                }
+                placeholder="00000-000"
                 required
               />
             </div>
