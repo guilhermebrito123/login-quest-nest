@@ -1480,6 +1480,7 @@ export type Database = {
           ultimo_dia_atividade: string | null
           unidade_id: string | null
           updated_at: string | null
+          valor_diaria: number
         }
         Insert: {
           beneficios?: string[] | null
@@ -1500,6 +1501,7 @@ export type Database = {
           ultimo_dia_atividade?: string | null
           unidade_id?: string | null
           updated_at?: string | null
+          valor_diaria?: number
         }
         Update: {
           beneficios?: string[] | null
@@ -1520,6 +1522,7 @@ export type Database = {
           ultimo_dia_atividade?: string | null
           unidade_id?: string | null
           updated_at?: string | null
+          valor_diaria?: number
         }
         Relationships: [
           {
