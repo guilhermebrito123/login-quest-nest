@@ -32,13 +32,10 @@ const ContratoForm = ({ contratoId, clienteId, onClose, onSuccess }: ContratoFor
   const [clientes, setClientes] = useState<any[]>([]);
   const [formData, setFormData] = useState({
     cliente_id: clienteId || "",
-    nome: "",
-    codigo: "",
+    negocio: "",
     data_inicio: "",
     data_fim: "",
-    sla_alvo_pct: "95",
-    nps_meta: "",
-    status: "ativo",
+    conq_perd: new Date().getFullYear().toString(),
   });
 
   useEffect(() => {
@@ -60,8 +57,7 @@ const ContratoForm = ({ contratoId, clienteId, onClose, onSuccess }: ContratoFor
     try {
       const dataToSave = {
         ...formData,
-        sla_alvo_pct: parseFloat(formData.sla_alvo_pct),
-        nps_meta: formData.nps_meta ? parseFloat(formData.nps_meta) : null,
+        conq_perd: parseInt(formData.conq_perd),
         data_fim: formData.data_fim || null,
       };
 
@@ -137,24 +133,27 @@ const ContratoForm = ({ contratoId, clienteId, onClose, onSuccess }: ContratoFor
             </div>
 
             <div className="space-y-2">
-              <Label htmlFor="nome">Nome do Contrato *</Label>
+              <Label htmlFor="negocio">Negócio *</Label>
               <Input
-                id="nome"
-                value={formData.nome}
+                id="negocio"
+                value={formData.negocio}
                 onChange={(e) =>
-                  setFormData({ ...formData, nome: e.target.value })
+                  setFormData({ ...formData, negocio: e.target.value })
                 }
                 required
               />
             </div>
 
             <div className="space-y-2">
-              <Label htmlFor="codigo">Código *</Label>
+              <Label htmlFor="conq_perd">Ano Conquista/Perda *</Label>
               <Input
-                id="codigo"
-                value={formData.codigo}
+                id="conq_perd"
+                type="number"
+                min="1900"
+                max="2100"
+                value={formData.conq_perd}
                 onChange={(e) =>
-                  setFormData({ ...formData, codigo: e.target.value })
+                  setFormData({ ...formData, conq_perd: e.target.value })
                 }
                 required
               />
@@ -183,51 +182,6 @@ const ContratoForm = ({ contratoId, clienteId, onClose, onSuccess }: ContratoFor
                   setFormData({ ...formData, data_fim: e.target.value })
                 }
               />
-            </div>
-
-            <div className="space-y-2">
-              <Label htmlFor="sla_alvo_pct">SLA Alvo (%)</Label>
-              <Input
-                id="sla_alvo_pct"
-                type="number"
-                step="0.01"
-                value={formData.sla_alvo_pct}
-                onChange={(e) =>
-                  setFormData({ ...formData, sla_alvo_pct: e.target.value })
-                }
-              />
-            </div>
-
-            <div className="space-y-2">
-              <Label htmlFor="nps_meta">NPS Meta</Label>
-              <Input
-                id="nps_meta"
-                type="number"
-                step="0.01"
-                value={formData.nps_meta}
-                onChange={(e) =>
-                  setFormData({ ...formData, nps_meta: e.target.value })
-                }
-              />
-            </div>
-
-            <div className="space-y-2">
-              <Label htmlFor="status">Status</Label>
-              <Select
-                value={formData.status}
-                onValueChange={(value) =>
-                  setFormData({ ...formData, status: value })
-                }
-              >
-                <SelectTrigger>
-                  <SelectValue />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="ativo">Ativo</SelectItem>
-                  <SelectItem value="inativo">Inativo</SelectItem>
-                  <SelectItem value="suspenso">Suspenso</SelectItem>
-                </SelectContent>
-              </Select>
             </div>
           </div>
 

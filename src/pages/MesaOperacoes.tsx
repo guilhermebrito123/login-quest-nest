@@ -21,8 +21,7 @@ interface UnidadeComSLA {
   uf: string;
   criticidade: string;
   contrato: {
-    nome: string;
-    sla_alvo_pct: number;
+    negocio: string;
   };
   sla_atual: number;
   postos_total: number;
@@ -145,8 +144,8 @@ const MesaOperacoes = () => {
           status,
           contrato_id,
           contratos (
-            nome,
-            sla_alvo_pct
+            negocio,
+            conq_perd
           )
         `)
         .eq("status", "ativo")
@@ -171,8 +170,7 @@ const MesaOperacoes = () => {
             uf: unidade.uf || "",
             criticidade: unidade.criticidade,
             contrato: {
-              nome: unidade.contratos?.nome || "Sem contrato",
-              sla_alvo_pct: Number(unidade.contratos?.sla_alvo_pct || 95),
+              negocio: unidade.contratos?.negocio || "Sem contrato",
             },
             sla_atual: sla,
             postos_total: postosInfo.total,
@@ -578,7 +576,7 @@ const MesaOperacoes = () => {
 
               <div>
                 <p className="text-sm font-medium mb-1">Contrato</p>
-                <p className="text-sm text-muted-foreground">{selectedUnidade.contrato.nome}</p>
+                <p className="text-sm text-muted-foreground">{selectedUnidade.contrato.negocio}</p>
               </div>
 
               <div>
@@ -597,9 +595,6 @@ const MesaOperacoes = () => {
                     {selectedUnidade.sla_atual}%
                   </Badge>
                 </div>
-                <p className="text-xs text-muted-foreground mt-1">
-                  Meta: {selectedUnidade.contrato.sla_alvo_pct}%
-                </p>
               </div>
 
               <div>

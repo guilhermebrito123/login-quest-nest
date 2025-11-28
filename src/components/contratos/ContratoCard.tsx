@@ -21,13 +21,10 @@ interface ContratoCardProps {
   contrato: {
     id: string;
     cliente_id: string;
-    nome: string;
-    codigo: string;
+    negocio: string;
     data_inicio: string;
     data_fim: string | null;
-    sla_alvo_pct: number;
-    nps_meta: number | null;
-    status: string;
+    conq_perd: number;
   };
   cliente?: {
     razao_social: string;
@@ -101,13 +98,10 @@ const ContratoCard = ({ contrato, cliente, onSelect, onEdit, onDelete }: Contrat
               <FileText className="h-4 w-4 text-primary" />
             </div>
             <div>
-              <CardTitle className="text-base">{contrato.nome}</CardTitle>
-              <p className="text-sm text-muted-foreground">{contrato.codigo}</p>
+              <CardTitle className="text-base">{contrato.negocio}</CardTitle>
+              <p className="text-sm text-muted-foreground">Ano: {contrato.conq_perd}</p>
             </div>
           </div>
-          <Badge variant={contrato.status === "ativo" ? "default" : "secondary"}>
-            {contrato.status}
-          </Badge>
         </div>
       </CardHeader>
       <CardContent>
@@ -123,11 +117,6 @@ const ContratoCard = ({ contrato, cliente, onSelect, onEdit, onDelete }: Contrat
               {format(new Date(contrato.data_inicio), "dd/MM/yyyy")}
               {contrato.data_fim && ` - ${format(new Date(contrato.data_fim), "dd/MM/yyyy")}`}
             </span>
-          </div>
-          <div className="flex items-center gap-2 text-sm">
-            <TrendingUp className="h-4 w-4 text-muted-foreground" />
-            <span>SLA: {contrato.sla_alvo_pct}%</span>
-            {contrato.nps_meta && <span>• NPS: {contrato.nps_meta}</span>}
           </div>
         </div>
 
