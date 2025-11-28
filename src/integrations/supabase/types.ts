@@ -332,33 +332,33 @@ export type Database = {
           contato_email: string | null
           contato_nome: string | null
           contato_telefone: string | null
-          created_at: string | null
+          created_at: string
           id: string
-          nome_fantasia: string | null
+          nome_fantasia: string
           razao_social: string
-          updated_at: string | null
+          updated_at: string
         }
         Insert: {
           cnpj: string
           contato_email?: string | null
           contato_nome?: string | null
           contato_telefone?: string | null
-          created_at?: string | null
+          created_at?: string
           id: string
-          nome_fantasia?: string | null
+          nome_fantasia?: string
           razao_social: string
-          updated_at?: string | null
+          updated_at?: string
         }
         Update: {
           cnpj?: string
           contato_email?: string | null
           contato_nome?: string | null
           contato_telefone?: string | null
-          created_at?: string | null
+          created_at?: string
           id?: string
-          nome_fantasia?: string | null
+          nome_fantasia?: string
           razao_social?: string
-          updated_at?: string | null
+          updated_at?: string
         }
         Relationships: []
       }
