@@ -104,13 +104,14 @@ const ClienteForm = ({ clienteId, onClose, onSuccess }: ClienteFormProps) => {
             </div>
 
             <div className="space-y-2">
-              <Label htmlFor="nome_fantasia">Nome Fantasia</Label>
+              <Label htmlFor="nome_fantasia">Nome Fantasia *</Label>
               <Input
                 id="nome_fantasia"
                 value={formData.nome_fantasia}
                 onChange={(e) =>
                   setFormData({ ...formData, nome_fantasia: e.target.value })
                 }
+                required
               />
             </div>
 
