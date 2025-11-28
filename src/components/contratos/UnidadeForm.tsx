@@ -54,9 +54,8 @@ const UnidadeForm = ({ unidadeId, contratoId, onClose, onSuccess }: UnidadeFormP
   const loadContratos = async () => {
     const { data } = await supabase
       .from("contratos")
-      .select("id, nome")
-      .eq("status", "ativo")
-      .order("nome");
+      .select("id, negocio")
+      .order("negocio");
     setContratos(data || []);
   };
 

@@ -525,42 +525,33 @@ export type Database = {
       }
       contratos: {
         Row: {
-          cliente_id: string | null
-          codigo: string
+          cliente_id: string
+          conq_perd: number
           created_at: string | null
           data_fim: string | null
           data_inicio: string
           id: string
-          nome: string
-          nps_meta: number | null
-          sla_alvo_pct: number | null
-          status: string | null
+          negocio: string
           updated_at: string | null
         }
         Insert: {
-          cliente_id?: string | null
-          codigo: string
+          cliente_id: string
+          conq_perd: number
           created_at?: string | null
           data_fim?: string | null
           data_inicio: string
           id?: string
-          nome: string
-          nps_meta?: number | null
-          sla_alvo_pct?: number | null
-          status?: string | null
+          negocio: string
           updated_at?: string | null
         }
         Update: {
-          cliente_id?: string | null
-          codigo?: string
+          cliente_id?: string
+          conq_perd?: number
           created_at?: string | null
           data_fim?: string | null
           data_inicio?: string
           id?: string
-          nome?: string
-          nps_meta?: number | null
-          sla_alvo_pct?: number | null
-          status?: string | null
+          negocio?: string
           updated_at?: string | null
         }
         Relationships: [

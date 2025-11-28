@@ -46,13 +46,10 @@ interface Cliente {
 interface Contrato {
   id: string;
   cliente_id: string;
-  nome: string;
-  codigo: string;
+  negocio: string;
   data_inicio: string;
   data_fim: string | null;
-  sla_alvo_pct: number;
-  nps_meta: number | null;
-  status: string;
+  conq_perd: number;
 }
 
 interface Unidade {
@@ -208,8 +205,7 @@ const Contratos = () => {
   const filteredContratos = selectedCliente 
     ? contratos.filter(c => c.cliente_id === selectedCliente)
     : contratos.filter(c => 
-        c.nome.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        c.codigo.toLowerCase().includes(searchTerm.toLowerCase())
+        c.negocio.toLowerCase().includes(searchTerm.toLowerCase())
       );
 
   const filteredUnidades = selectedContrato
@@ -369,7 +365,7 @@ const Contratos = () => {
                     setActiveTab("unidades");
                   }}
                 >
-                  {contratos.find(c => c.id === selectedContrato)?.nome}
+                  {contratos.find(c => c.id === selectedContrato)?.negocio}
                 </Button>
               </>
             )}

@@ -29,7 +29,7 @@ interface UnidadeCardProps {
     status: string;
   };
   contrato?: {
-    nome: string;
+    negocio: string;
   };
   onSelect: () => void;
   onEdit: () => void;
@@ -157,7 +157,7 @@ const UnidadeCard = ({ unidade, contrato, onSelect, onEdit, onDelete }: UnidadeC
         <div className="space-y-2">
           {contrato && (
             <p className="text-sm text-muted-foreground">
-              Contrato: {contrato.nome}
+              Contrato: {contrato.negocio}
             </p>
           )}
           {unidade.endereco && (

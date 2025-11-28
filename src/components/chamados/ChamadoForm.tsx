@@ -105,9 +105,8 @@ export function ChamadoForm({ open, onOpenChange, chamado, onSuccess }: ChamadoF
     queryFn: async () => {
       const { data, error } = await supabase
         .from("contratos")
-        .select("id, nome, codigo")
-        .eq("status", "ativo")
-        .order("nome");
+        .select("id, negocio, conq_perd")
+        .order("negocio");
       if (error) throw error;
       return data;
     },
@@ -417,7 +416,7 @@ export function ChamadoForm({ open, onOpenChange, chamado, onSuccess }: ChamadoF
                       <SelectContent>
                         {contratos?.map((contrato) => (
                           <SelectItem key={contrato.id} value={contrato.id}>
-                            {contrato.codigo} - {contrato.nome}
+                            {contrato.negocio}
                           </SelectItem>
                         ))}
                       </SelectContent>
