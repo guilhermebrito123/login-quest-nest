@@ -24,7 +24,7 @@ interface ClienteCardProps {
     contato_nome: string | null;
     contato_email: string | null;
     contato_telefone: string | null;
-    status: string;
+    nome_fantasia: string | null;
   };
   onSelect: () => void;
   onEdit: () => void;
@@ -81,12 +81,12 @@ const ClienteCard = ({ cliente, onSelect, onEdit, onDelete }: ClienteCardProps) 
             </div>
             <div>
               <CardTitle className="text-base">{cliente.razao_social}</CardTitle>
+              {cliente.nome_fantasia && (
+                <p className="text-sm text-muted-foreground font-medium">{cliente.nome_fantasia}</p>
+              )}
               <p className="text-sm text-muted-foreground">{cliente.cnpj}</p>
             </div>
           </div>
-          <Badge variant={cliente.status === "ativo" ? "default" : "secondary"}>
-            {cliente.status}
-          </Badge>
         </div>
       </CardHeader>
       <CardContent>

@@ -40,7 +40,7 @@ interface Cliente {
   contato_nome: string | null;
   contato_email: string | null;
   contato_telefone: string | null;
-  status: string;
+  nome_fantasia: string | null;
 }
 
 interface Contrato {
