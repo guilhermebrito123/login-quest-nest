@@ -30,11 +30,11 @@ const ClienteForm = ({ clienteId, onClose, onSuccess }: ClienteFormProps) => {
   const [loading, setLoading] = useState(false);
   const [formData, setFormData] = useState({
     razao_social: "",
+    nome_fantasia: "",
     cnpj: "",
     contato_nome: "",
     contato_email: "",
     contato_telefone: "",
-    status: "ativo",
   });
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -104,6 +104,17 @@ const ClienteForm = ({ clienteId, onClose, onSuccess }: ClienteFormProps) => {
             </div>
 
             <div className="space-y-2">
+              <Label htmlFor="nome_fantasia">Nome Fantasia</Label>
+              <Input
+                id="nome_fantasia"
+                value={formData.nome_fantasia}
+                onChange={(e) =>
+                  setFormData({ ...formData, nome_fantasia: e.target.value })
+                }
+              />
+            </div>
+
+            <div className="space-y-2">
               <Label htmlFor="cnpj">CNPJ *</Label>
               <Input
                 id="cnpj"
@@ -149,24 +160,6 @@ const ClienteForm = ({ clienteId, onClose, onSuccess }: ClienteFormProps) => {
                 }
                 placeholder="(00) 00000-0000"
               />
-            </div>
-
-            <div className="space-y-2">
-              <Label htmlFor="status">Status</Label>
-              <Select
-                value={formData.status}
-                onValueChange={(value) =>
-                  setFormData({ ...formData, status: value })
-                }
-              >
-                <SelectTrigger>
-                  <SelectValue />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="ativo">Ativo</SelectItem>
-                  <SelectItem value="inativo">Inativo</SelectItem>
-                </SelectContent>
-              </Select>
             </div>
           </div>
 

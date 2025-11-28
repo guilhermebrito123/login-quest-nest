@@ -49,7 +49,6 @@ const ContratoForm = ({ contratoId, clienteId, onClose, onSuccess }: ContratoFor
     const { data } = await supabase
       .from("clientes")
       .select("id, razao_social")
-      .eq("status", "ativo")
       .order("razao_social");
     setClientes(data || []);
   };
