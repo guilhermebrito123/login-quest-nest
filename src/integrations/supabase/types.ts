@@ -344,7 +344,7 @@ export type Database = {
           contato_nome?: string | null
           contato_telefone?: string | null
           created_at?: string | null
-          id?: string
+          id: string
           nome_fantasia?: string | null
           razao_social: string
           updated_at?: string | null

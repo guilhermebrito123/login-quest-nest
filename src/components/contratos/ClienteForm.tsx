@@ -57,7 +57,7 @@ const ClienteForm = ({ clienteId, onClose, onSuccess }: ClienteFormProps) => {
       } else {
         const { error } = await supabase
           .from("clientes")
-          .insert([formData]);
+          .insert([{ ...formData, id: formData.cnpj }]);
 
         if (error) throw error;
 
