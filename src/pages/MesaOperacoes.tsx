@@ -14,12 +14,10 @@ import "mapbox-gl/dist/mapbox-gl.css";
 interface UnidadeComSLA {
   id: string;
   nome: string;
-  codigo: string;
   latitude: number;
   longitude: number;
   cidade: string;
   uf: string;
-  criticidade: string;
   contrato: {
     negocio: string;
   };
@@ -135,20 +133,16 @@ const MesaOperacoes = () => {
         .select(`
           id,
           nome,
-          codigo,
           latitude,
           longitude,
           cidade,
           uf,
-          criticidade,
-          status,
           contrato_id,
           contratos (
             negocio,
             conq_perd
           )
         `)
-        .eq("status", "ativo")
         .not("latitude", "is", null)
         .not("longitude", "is", null);
 
@@ -163,12 +157,10 @@ const MesaOperacoes = () => {
           return {
             id: unidade.id,
             nome: unidade.nome,
-            codigo: unidade.codigo,
             latitude: Number(unidade.latitude),
             longitude: Number(unidade.longitude),
             cidade: unidade.cidade || "",
             uf: unidade.uf || "",
-            criticidade: unidade.criticidade,
             contrato: {
               negocio: unidade.contratos?.negocio || "Sem contrato",
             },
@@ -331,7 +323,6 @@ const MesaOperacoes = () => {
     slaVerde: unidades.filter((u) => u.sla_atual >= 100).length,
     slaAmarelo: unidades.filter((u) => u.sla_atual >= 90 && u.sla_atual < 100).length,
     slaVermelho: unidades.filter((u) => u.sla_atual < 90).length,
-    criticas: unidades.filter((u) => u.criticidade === "critica").length,
   };
 
   // Agrupar unidades por cidade e calcular ocupação
@@ -484,17 +475,6 @@ const MesaOperacoes = () => {
               </CardContent>
             </Card>
 
-            <Card className="border-orange-500/50">
-              <CardContent className="p-4">
-                <div className="flex items-center gap-2">
-                  <AlertCircle className="h-4 w-4 text-orange-500" />
-                  <div>
-                    <p className="text-2xl font-bold text-orange-500">{statsData.criticas}</p>
-                    <p className="text-xs text-muted-foreground">Unidades Críticas</p>
-                  </div>
-                </div>
-              </CardContent>
-            </Card>
           </div>
 
           {/* Cards de Ocupação por Cidade */}
@@ -559,7 +539,6 @@ const MesaOperacoes = () => {
             <div className="flex items-start justify-between mb-4">
               <div>
                 <h2 className="text-xl font-bold">{selectedUnidade.nome}</h2>
-                <p className="text-sm text-muted-foreground">{selectedUnidade.codigo}</p>
               </div>
               <Button variant="ghost" size="sm" onClick={() => setSelectedUnidade(null)}>
                 ✕
@@ -595,13 +574,6 @@ const MesaOperacoes = () => {
                     {selectedUnidade.sla_atual}%
                   </Badge>
                 </div>
-              </div>
-
-              <div>
-                <p className="text-sm font-medium mb-1">Criticidade</p>
-                <Badge variant={selectedUnidade.criticidade === "critica" ? "destructive" : "default"}>
-                  {selectedUnidade.criticidade}
-                </Badge>
               </div>
 
               <div>

@@ -56,12 +56,9 @@ interface Unidade {
   id: string;
   contrato_id: string;
   nome: string;
-  codigo: string;
   endereco: string | null;
   cidade: string | null;
   uf: string | null;
-  criticidade: string;
-  status: string;
 }
 
 interface Posto {
@@ -211,8 +208,7 @@ const Contratos = () => {
   const filteredUnidades = selectedContrato
     ? unidades.filter(u => u.contrato_id === selectedContrato)
     : unidades.filter(u => 
-        u.nome.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        u.codigo.toLowerCase().includes(searchTerm.toLowerCase())
+        u.nome.toLowerCase().includes(searchTerm.toLowerCase())
       );
 
   const filteredPostos = selectedUnidade

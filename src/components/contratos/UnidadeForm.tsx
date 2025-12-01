@@ -33,15 +33,12 @@ const UnidadeForm = ({ unidadeId, contratoId, onClose, onSuccess }: UnidadeFormP
   const [formData, setFormData] = useState({
     contrato_id: contratoId || "",
     nome: "",
-    codigo: "",
     endereco: "",
     cidade: "",
     uf: "",
     cep: "",
     latitude: "",
     longitude: "",
-    criticidade: "media",
-    status: "ativo",
   });
 
   useEffect(() => {
@@ -81,15 +78,12 @@ const UnidadeForm = ({ unidadeId, contratoId, onClose, onSuccess }: UnidadeFormP
       setFormData({
         contrato_id: data.contrato_id || "",
         nome: data.nome,
-        codigo: data.codigo,
         endereco: data.endereco || "",
         cidade: data.cidade || "",
         uf: data.uf || "",
         cep: data.cep || "",
         latitude: data.latitude ? String(data.latitude) : "",
         longitude: data.longitude ? String(data.longitude) : "",
-        criticidade: data.criticidade || "media",
-        status: data.status || "ativo",
       });
     }
   };
@@ -177,25 +171,13 @@ const UnidadeForm = ({ unidadeId, contratoId, onClose, onSuccess }: UnidadeFormP
               </Select>
             </div>
 
-            <div className="space-y-2">
+            <div className="space-y-2 col-span-2">
               <Label htmlFor="nome">Nome da Unidade *</Label>
               <Input
                 id="nome"
                 value={formData.nome}
                 onChange={(e) =>
                   setFormData({ ...formData, nome: e.target.value })
-                }
-                required
-              />
-            </div>
-
-            <div className="space-y-2">
-              <Label htmlFor="codigo">Código *</Label>
-              <Input
-                id="codigo"
-                value={formData.codigo}
-                onChange={(e) =>
-                  setFormData({ ...formData, codigo: e.target.value })
                 }
                 required
               />
@@ -276,43 +258,6 @@ const UnidadeForm = ({ unidadeId, contratoId, onClose, onSuccess }: UnidadeFormP
               />
             </div>
 
-            <div className="space-y-2">
-              <Label htmlFor="criticidade">Criticidade</Label>
-              <Select
-                value={formData.criticidade}
-                onValueChange={(value) =>
-                  setFormData({ ...formData, criticidade: value })
-                }
-              >
-                <SelectTrigger>
-                  <SelectValue />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="baixa">Baixa</SelectItem>
-                  <SelectItem value="media">Média</SelectItem>
-                  <SelectItem value="alta">Alta</SelectItem>
-                  <SelectItem value="critica">Crítica</SelectItem>
-                </SelectContent>
-              </Select>
-            </div>
-
-            <div className="space-y-2">
-              <Label htmlFor="status">Status</Label>
-              <Select
-                value={formData.status}
-                onValueChange={(value) =>
-                  setFormData({ ...formData, status: value })
-                }
-              >
-                <SelectTrigger>
-                  <SelectValue />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="ativo">Ativo</SelectItem>
-                  <SelectItem value="inativo">Inativo</SelectItem>
-                </SelectContent>
-              </Select>
-            </div>
           </div>
 
           <div className="flex justify-end gap-2">

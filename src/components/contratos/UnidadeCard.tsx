@@ -21,12 +21,9 @@ interface UnidadeCardProps {
     id: string;
     contrato_id: string;
     nome: string;
-    codigo: string;
     endereco: string | null;
     cidade: string | null;
     uf: string | null;
-    criticidade: string;
-    status: string;
   };
   contrato?: {
     negocio: string;
@@ -121,14 +118,6 @@ const UnidadeCard = ({ unidade, contrato, onSelect, onEdit, onDelete }: UnidadeC
     }
   };
 
-  const getCriticidadeColor = (criticidade: string) => {
-    switch (criticidade) {
-      case "critica": return "destructive";
-      case "alta": return "default";
-      case "media": return "secondary";
-      default: return "outline";
-    }
-  };
 
   return (
     <Card className="hover:shadow-lg transition-shadow cursor-pointer">
@@ -140,16 +129,7 @@ const UnidadeCard = ({ unidade, contrato, onSelect, onEdit, onDelete }: UnidadeC
             </div>
             <div>
               <CardTitle className="text-base">{unidade.nome}</CardTitle>
-              <p className="text-sm text-muted-foreground">{unidade.codigo}</p>
             </div>
-          </div>
-          <div className="flex gap-1">
-            <Badge variant={getCriticidadeColor(unidade.criticidade)}>
-              {unidade.criticidade}
-            </Badge>
-            <Badge variant={unidade.status === "ativo" ? "default" : "secondary"}>
-              {unidade.status}
-            </Badge>
           </div>
         </div>
       </CardHeader>
