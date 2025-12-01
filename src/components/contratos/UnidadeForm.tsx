@@ -39,6 +39,7 @@ const UnidadeForm = ({ unidadeId, contratoId, onClose, onSuccess }: UnidadeFormP
     cep: "",
     latitude: "",
     longitude: "",
+    faturamento_vendido: "",
   });
 
   useEffect(() => {
@@ -84,6 +85,7 @@ const UnidadeForm = ({ unidadeId, contratoId, onClose, onSuccess }: UnidadeFormP
         cep: data.cep || "",
         latitude: data.latitude ? String(data.latitude) : "",
         longitude: data.longitude ? String(data.longitude) : "",
+        faturamento_vendido: data.faturamento_vendido ? String(data.faturamento_vendido) : "",
       });
     }
   };
@@ -98,6 +100,7 @@ const UnidadeForm = ({ unidadeId, contratoId, onClose, onSuccess }: UnidadeFormP
         ...formData,
         latitude: formData.latitude ? parseFloat(formData.latitude) : null,
         longitude: formData.longitude ? parseFloat(formData.longitude) : null,
+        faturamento_vendido: parseFloat(formData.faturamento_vendido),
       };
 
       if (unidadeId) {
@@ -259,6 +262,22 @@ const UnidadeForm = ({ unidadeId, contratoId, onClose, onSuccess }: UnidadeFormP
                   setFormData({ ...formData, longitude: e.target.value })
                 }
                 placeholder="-47.9292"
+                required
+              />
+            </div>
+
+            <div className="space-y-2 col-span-2">
+              <Label htmlFor="faturamento_vendido">Faturamento Vendido (R$) *</Label>
+              <Input
+                id="faturamento_vendido"
+                type="number"
+                step="0.01"
+                min="0"
+                value={formData.faturamento_vendido}
+                onChange={(e) =>
+                  setFormData({ ...formData, faturamento_vendido: e.target.value })
+                }
+                placeholder="0.00"
                 required
               />
             </div>

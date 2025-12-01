@@ -1739,6 +1739,7 @@ export type Database = {
           contrato_id: string
           created_at: string
           endereco: string
+          faturamento_vendido: number
           id: string
           latitude: number
           longitude: number
@@ -1752,6 +1753,7 @@ export type Database = {
           contrato_id: string
           created_at?: string
           endereco: string
+          faturamento_vendido: number
           id?: string
           latitude: number
           longitude: number
@@ -1765,6 +1767,7 @@ export type Database = {
           contrato_id?: string
           created_at?: string
           endereco?: string
+          faturamento_vendido?: number
           id?: string
           latitude?: number
           longitude?: number
