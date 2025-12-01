@@ -184,29 +184,31 @@ const UnidadeForm = ({ unidadeId, contratoId, onClose, onSuccess }: UnidadeFormP
             </div>
 
             <div className="space-y-2 col-span-2">
-              <Label htmlFor="endereco">Endereço</Label>
+              <Label htmlFor="endereco">Endereço *</Label>
               <Input
                 id="endereco"
                 value={formData.endereco}
                 onChange={(e) =>
                   setFormData({ ...formData, endereco: e.target.value })
                 }
+                required
               />
             </div>
 
             <div className="space-y-2">
-              <Label htmlFor="cidade">Cidade</Label>
+              <Label htmlFor="cidade">Cidade *</Label>
               <Input
                 id="cidade"
                 value={formData.cidade}
                 onChange={(e) =>
                   setFormData({ ...formData, cidade: e.target.value })
                 }
+                required
               />
             </div>
 
             <div className="space-y-2">
-              <Label htmlFor="uf">UF</Label>
+              <Label htmlFor="uf">UF *</Label>
               <Input
                 id="uf"
                 value={formData.uf}
@@ -215,6 +217,7 @@ const UnidadeForm = ({ unidadeId, contratoId, onClose, onSuccess }: UnidadeFormP
                 }
                 maxLength={2}
                 placeholder="SP"
+                required
               />
             </div>
 
@@ -231,7 +234,7 @@ const UnidadeForm = ({ unidadeId, contratoId, onClose, onSuccess }: UnidadeFormP
             </div>
 
             <div className="space-y-2">
-              <Label htmlFor="latitude">Latitude</Label>
+              <Label htmlFor="latitude">Latitude *</Label>
               <Input
                 id="latitude"
                 type="number"
@@ -241,11 +244,12 @@ const UnidadeForm = ({ unidadeId, contratoId, onClose, onSuccess }: UnidadeFormP
                   setFormData({ ...formData, latitude: e.target.value })
                 }
                 placeholder="-15.7801"
+                required
               />
             </div>
 
             <div className="space-y-2">
-              <Label htmlFor="longitude">Longitude</Label>
+              <Label htmlFor="longitude">Longitude *</Label>
               <Input
                 id="longitude"
                 type="number"
@@ -255,6 +259,7 @@ const UnidadeForm = ({ unidadeId, contratoId, onClose, onSuccess }: UnidadeFormP
                   setFormData({ ...formData, longitude: e.target.value })
                 }
                 placeholder="-47.9292"
+                required
               />
             </div>
 

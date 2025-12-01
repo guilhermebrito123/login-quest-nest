@@ -70,7 +70,6 @@ export default function Colaboradores() {
       const { data, error } = await supabase
         .from("unidades")
         .select("id, nome")
-        .eq("status", "ativo")
         .order("nome");
       if (error) throw error;
       return data;

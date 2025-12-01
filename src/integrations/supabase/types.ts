@@ -1735,42 +1735,42 @@ export type Database = {
       unidades: {
         Row: {
           cep: string | null
-          cidade: string | null
-          contrato_id: string | null
-          created_at: string | null
-          endereco: string | null
+          cidade: string
+          contrato_id: string
+          created_at: string
+          endereco: string
           id: string
-          latitude: number | null
-          longitude: number | null
+          latitude: number
+          longitude: number
           nome: string
-          uf: string | null
-          updated_at: string | null
+          uf: string
+          updated_at: string
         }
         Insert: {
           cep?: string | null
-          cidade?: string | null
-          contrato_id?: string | null
-          created_at?: string | null
-          endereco?: string | null
+          cidade: string
+          contrato_id: string
+          created_at?: string
+          endereco: string
           id?: string
-          latitude?: number | null
-          longitude?: number | null
+          latitude: number
+          longitude: number
           nome: string
-          uf?: string | null
-          updated_at?: string | null
+          uf: string
+          updated_at?: string
         }
         Update: {
           cep?: string | null
-          cidade?: string | null
-          contrato_id?: string | null
-          created_at?: string | null
-          endereco?: string | null
+          cidade?: string
+          contrato_id?: string
+          created_at?: string
+          endereco?: string
           id?: string
-          latitude?: number | null
-          longitude?: number | null
+          latitude?: number
+          longitude?: number
           nome?: string
-          uf?: string | null
-          updated_at?: string | null
+          uf?: string
+          updated_at?: string
         }
         Relationships: [
           {
