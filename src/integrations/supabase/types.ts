@@ -1736,48 +1736,39 @@ export type Database = {
         Row: {
           cep: string | null
           cidade: string | null
-          codigo: string
           contrato_id: string | null
           created_at: string | null
-          criticidade: string | null
           endereco: string | null
           id: string
           latitude: number | null
           longitude: number | null
           nome: string
-          status: string | null
           uf: string | null
           updated_at: string | null
         }
         Insert: {
           cep?: string | null
           cidade?: string | null
-          codigo: string
           contrato_id?: string | null
           created_at?: string | null
-          criticidade?: string | null
           endereco?: string | null
           id?: string
           latitude?: number | null
           longitude?: number | null
           nome: string
-          status?: string | null
           uf?: string | null
           updated_at?: string | null
         }
         Update: {
           cep?: string | null
           cidade?: string | null
-          codigo?: string
           contrato_id?: string | null
           created_at?: string | null
-          criticidade?: string | null
           endereco?: string | null
           id?: string
           latitude?: number | null
           longitude?: number | null
           nome?: string
-          status?: string | null
           uf?: string | null
           updated_at?: string | null
         }

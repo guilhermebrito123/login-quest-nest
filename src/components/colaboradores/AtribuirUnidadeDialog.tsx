@@ -24,8 +24,7 @@ export function AtribuirUnidadeDialog({ colaborador, open, onClose, onSuccess }:
     queryFn: async () => {
       const { data, error } = await supabase
         .from("unidades")
-        .select("id, nome, codigo")
-        .eq("status", "ativo")
+        .select("id, nome")
         .order("nome");
       if (error) throw error;
       return data;
@@ -104,7 +103,7 @@ export function AtribuirUnidadeDialog({ colaborador, open, onClose, onSuccess }:
                 <SelectContent>
                   {unidades.map((unidade) => (
                     <SelectItem key={unidade.id} value={unidade.id}>
-                      {unidade.codigo} - {unidade.nome}
+                      {unidade.nome}
                     </SelectItem>
                   ))}
                 </SelectContent>

@@ -134,22 +134,19 @@ export default function Dashboard24h() {
         .select(`
           id,
           nome,
-          codigo,
           latitude,
           longitude,
           cidade,
           uf,
-          criticidade,
           contrato_id,
           contratos (
-            nome,
+            negocio,
             cliente_id,
             clientes (
               razao_social
             )
           )
         `)
-        .eq("status", "ativo")
         .not("latitude", "is", null)
         .not("longitude", "is", null);
 

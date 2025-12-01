@@ -36,7 +36,6 @@ interface PostoVago {
   efetivo_atual: number;
   unidade: {
     nome: string;
-    codigo: string;
     contrato: {
       negocio: string;
       conq_perd: number;
@@ -133,7 +132,6 @@ export function GestaoCoberturaDialog({ open, onClose }: GestaoCoberturaDialogPr
         escala,
         unidades (
           nome,
-          codigo,
           contratos (
             negocio,
             conq_perd
@@ -168,7 +166,6 @@ export function GestaoCoberturaDialog({ open, onClose }: GestaoCoberturaDialogPr
           efetivo_atual: efetivoAtual,
           unidade: {
             nome: posto.unidades?.nome || "Sem unidade",
-            codigo: posto.unidades?.codigo || "",
             contrato: posto.unidades?.contratos
               ? {
                   negocio: posto.unidades.contratos.negocio,

@@ -40,7 +40,7 @@ export default function Chamados() {
         .from("chamados")
         .select(`
           *,
-          unidade:unidades(nome, codigo)
+          unidade:unidades(nome)
         `)
         .order("data_abertura", { ascending: false });
 

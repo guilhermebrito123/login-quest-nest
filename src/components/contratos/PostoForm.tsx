@@ -99,7 +99,6 @@ const PostoForm = ({ postoId, unidadeId, onClose, onSuccess }: PostoFormProps) =
     const { data } = await supabase
       .from("unidades")
       .select("id, nome")
-      .eq("status", "ativo")
       .order("nome");
     setUnidades(data || []);
   };
