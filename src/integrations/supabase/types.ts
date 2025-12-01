@@ -615,6 +615,70 @@ export type Database = {
           },
         ]
       }
+      diarias_temporarias: {
+        Row: {
+          colaborador_ausente: string | null
+          created_at: string
+          data_diaria: string
+          diarista_id: string
+          id: number
+          motivo_cancelamento: string | null
+          motivo_reprovacao: string | null
+          posto_servico_id: string
+          status: Database["public"]["Enums"]["status_diaria"]
+          updated_at: string
+          valor_diaria: number
+        }
+        Insert: {
+          colaborador_ausente?: string | null
+          created_at?: string
+          data_diaria: string
+          diarista_id: string
+          id?: number
+          motivo_cancelamento?: string | null
+          motivo_reprovacao?: string | null
+          posto_servico_id: string
+          status?: Database["public"]["Enums"]["status_diaria"]
+          updated_at?: string
+          valor_diaria: number
+        }
+        Update: {
+          colaborador_ausente?: string | null
+          created_at?: string
+          data_diaria?: string
+          diarista_id?: string
+          id?: number
+          motivo_cancelamento?: string | null
+          motivo_reprovacao?: string | null
+          posto_servico_id?: string
+          status?: Database["public"]["Enums"]["status_diaria"]
+          updated_at?: string
+          valor_diaria?: number
+        }
+        Relationships: [
+          {
+            foreignKeyName: "diarias_temporarias_colaborador_ausente_fkey"
+            columns: ["colaborador_ausente"]
+            isOneToOne: false
+            referencedRelation: "colaboradores"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "diarias_temporarias_diarista_id_fkey"
+            columns: ["diarista_id"]
+            isOneToOne: false
+            referencedRelation: "diaristas"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "diarias_temporarias_posto_servico_id_fkey"
+            columns: ["posto_servico_id"]
+            isOneToOne: false
+            referencedRelation: "postos_servico"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       diaristas: {
         Row: {
           agencia: string
