@@ -1454,7 +1454,6 @@ export type Database = {
       postos_servico: {
         Row: {
           beneficios: string[] | null
-          codigo: string
           created_at: string | null
           dias_semana: number[] | null
           escala: string | null
@@ -1475,7 +1474,6 @@ export type Database = {
         }
         Insert: {
           beneficios?: string[] | null
-          codigo: string
           created_at?: string | null
           dias_semana?: number[] | null
           escala?: string | null
@@ -1496,7 +1494,6 @@ export type Database = {
         }
         Update: {
           beneficios?: string[] | null
-          codigo?: string
           created_at?: string | null
           dias_semana?: number[] | null
           escala?: string | null

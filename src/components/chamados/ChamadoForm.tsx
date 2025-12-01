@@ -119,7 +119,7 @@ export function ChamadoForm({ open, onOpenChange, chamado, onSuccess }: ChamadoF
       if (!selectedUnidadeId) return [];
       const { data, error } = await supabase
         .from("postos_servico")
-        .select("id, nome, codigo")
+        .select("id, nome")
         .eq("unidade_id", selectedUnidadeId)
         .in("status", ["ocupado", "ocupado_temporariamente"])
         .order("nome");
@@ -465,7 +465,7 @@ export function ChamadoForm({ open, onOpenChange, chamado, onSuccess }: ChamadoF
                       <SelectContent>
                         {postos?.map((posto) => (
                           <SelectItem key={posto.id} value={posto.id}>
-                            {posto.codigo} - {posto.nome}
+                            {posto.nome}
                           </SelectItem>
                         ))}
                       </SelectContent>

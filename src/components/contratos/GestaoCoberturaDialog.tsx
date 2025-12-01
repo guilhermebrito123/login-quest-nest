@@ -30,7 +30,6 @@ interface GestaoCoberturaDialogProps {
 interface PostoVago {
   id: string;
   nome: string;
-  codigo: string;
   funcao: string;
   efetivo_planejado: number;
   efetivo_atual: number;
@@ -49,7 +48,6 @@ interface DiaVago {
   motivo: string | null;
   posto: {
     nome: string;
-    codigo: string;
     unidade: {
       nome: string;
       contrato: {
@@ -86,7 +84,7 @@ export function GestaoCoberturaDialog({ open, onClose }: GestaoCoberturaDialogPr
   const [diaristas, setDiaristas] = useState<Diarista[]>([]);
   const [filterPosto, setFilterPosto] = useState<string>("all");
   const [filterData, setFilterData] = useState<Date | undefined>(undefined);
-  const [postos, setPostos] = useState<{ id: string; nome: string; codigo: string }[]>([]);
+  const [postos, setPostos] = useState<{ id: string; nome: string }[]>([]);
 
   useEffect(() => {
     if (open) {
@@ -112,7 +110,7 @@ export function GestaoCoberturaDialog({ open, onClose }: GestaoCoberturaDialogPr
   const loadPostos = async () => {
     const { data, error } = await supabase
       .from("postos_servico")
-      .select("id, nome, codigo")
+      .select("id, nome")
       .in("status", ["ocupado", "ocupado_temporariamente"])
       .order("nome");
 
@@ -127,7 +125,6 @@ export function GestaoCoberturaDialog({ open, onClose }: GestaoCoberturaDialogPr
       .select(`
         id,
         nome,
-        codigo,
         funcao,
         escala,
         unidades (
@@ -160,7 +157,6 @@ export function GestaoCoberturaDialog({ open, onClose }: GestaoCoberturaDialogPr
         postosVagosData.push({
           id: posto.id,
           nome: posto.nome,
-          codigo: posto.codigo,
           funcao: posto.funcao,
           efetivo_planejado: efetivoNecessario,
           efetivo_atual: efetivoAtual,
@@ -189,7 +185,6 @@ export function GestaoCoberturaDialog({ open, onClose }: GestaoCoberturaDialogPr
         motivo,
         postos_servico (
           nome,
-          codigo,
           unidades (
             nome,
             contratos (
@@ -214,7 +209,6 @@ export function GestaoCoberturaDialog({ open, onClose }: GestaoCoberturaDialogPr
       motivo: item.motivo,
       posto: {
         nome: item.postos_servico?.nome || "Desconhecido",
-        codigo: item.postos_servico?.codigo || "",
         unidade: {
           nome: item.postos_servico?.unidades?.nome || "Sem unidade",
           contrato: item.postos_servico?.unidades?.contratos
@@ -276,7 +270,7 @@ export function GestaoCoberturaDialog({ open, onClose }: GestaoCoberturaDialogPr
   const filteredDiasVagos = diasVagos.filter((dia) => {
     if (filterPosto !== "all") {
       const postoMatch = postos.find((p) => p.id === filterPosto);
-      if (postoMatch && dia.posto.codigo !== postoMatch.codigo) return false;
+      if (postoMatch && dia.posto.nome !== postoMatch.nome) return false;
     }
     if (filterData) {
       const diaDate = new Date(dia.data);
@@ -321,7 +315,7 @@ export function GestaoCoberturaDialog({ open, onClose }: GestaoCoberturaDialogPr
                     <SelectItem value="all">Todos os postos</SelectItem>
                     {postos.map((posto) => (
                       <SelectItem key={posto.id} value={posto.id}>
-                        {posto.codigo} - {posto.nome}
+                        {posto.nome}
                       </SelectItem>
                     ))}
                   </SelectContent>
@@ -367,7 +361,6 @@ export function GestaoCoberturaDialog({ open, onClose }: GestaoCoberturaDialogPr
                           <div className="flex-1">
                             <div className="flex items-center gap-2 mb-1">
                               <h4 className="font-semibold">{posto.nome}</h4>
-                              <Badge variant="outline">{posto.codigo}</Badge>
                             </div>
                             <div className="space-y-1 mb-2">
                               {posto.unidade.contrato && (
@@ -468,7 +461,6 @@ export function GestaoCoberturaDialog({ open, onClose }: GestaoCoberturaDialogPr
                                   locale: ptBR,
                                 })}
                               </h4>
-                              <Badge variant="outline">{dia.posto.codigo}</Badge>
                             </div>
                             <div className="space-y-1 mb-2">
                               {dia.posto.unidade.contrato && (

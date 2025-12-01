@@ -65,7 +65,6 @@ interface Posto {
   id: string;
   unidade_id: string;
   nome: string;
-  codigo: string;
   funcao: string;
   status: string;
 }
@@ -213,9 +212,8 @@ const Contratos = () => {
 
   const filteredPostos = selectedUnidade
     ? postos.filter(p => {
-        const matchesUnidade = p.unidade_id === selectedUnidade;
-        const matchesSearch = p.nome.toLowerCase().includes(searchTerm.toLowerCase()) ||
-          p.codigo.toLowerCase().includes(searchTerm.toLowerCase());
+      const matchesUnidade = p.unidade_id === selectedUnidade;
+        const matchesSearch = p.nome.toLowerCase().includes(searchTerm.toLowerCase());
         
         if (filterOcupacao === "all") return matchesUnidade && matchesSearch;
         
@@ -227,8 +225,7 @@ const Contratos = () => {
         return matchesUnidade && matchesSearch && matchesOcupacao;
       })
     : postos.filter(p => {
-        const matchesSearch = p.nome.toLowerCase().includes(searchTerm.toLowerCase()) ||
-          p.codigo.toLowerCase().includes(searchTerm.toLowerCase());
+      const matchesSearch = p.nome.toLowerCase().includes(searchTerm.toLowerCase());
         const matchesUnidade = filterUnidadeId === "all" || p.unidade_id === filterUnidadeId;
         
         if (filterOcupacao === "all") return matchesSearch && matchesUnidade;

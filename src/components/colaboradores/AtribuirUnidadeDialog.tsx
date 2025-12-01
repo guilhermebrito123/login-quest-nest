@@ -37,7 +37,7 @@ export function AtribuirUnidadeDialog({ colaborador, open, onClose, onSuccess }:
       if (!unidadeId) return [];
       const { data, error } = await supabase
         .from("postos_servico")
-        .select("id, nome, codigo")
+        .select("id, nome")
         .eq("unidade_id", unidadeId)
         .in("status", ["ocupado", "ocupado_temporariamente"])
         .order("nome");
@@ -124,7 +124,7 @@ export function AtribuirUnidadeDialog({ colaborador, open, onClose, onSuccess }:
               <SelectContent>
                 {postos?.map((posto) => (
                   <SelectItem key={posto.id} value={posto.id}>
-                    {posto.codigo} - {posto.nome}
+                    {posto.nome}
                   </SelectItem>
                 ))}
               </SelectContent>

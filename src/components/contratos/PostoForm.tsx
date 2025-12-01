@@ -34,7 +34,6 @@ const PostoForm = ({ postoId, unidadeId, onClose, onSuccess }: PostoFormProps) =
   const [formData, setFormData] = useState({
     unidade_id: unidadeId || "",
     nome: "",
-    codigo: "",
     funcao: "",
     escala: "",
     dias_semana: [] as number[],
@@ -78,7 +77,6 @@ const PostoForm = ({ postoId, unidadeId, onClose, onSuccess }: PostoFormProps) =
       setFormData({
         unidade_id: posto.unidade_id || "",
         nome: posto.nome || "",
-        codigo: posto.codigo || "",
         funcao: posto.funcao || "",
         escala: posto.escala || "",
         dias_semana: posto.dias_semana || [],
@@ -198,18 +196,6 @@ const PostoForm = ({ postoId, unidadeId, onClose, onSuccess }: PostoFormProps) =
                 value={formData.nome}
                 onChange={(e) =>
                   setFormData({ ...formData, nome: e.target.value })
-                }
-                required
-              />
-            </div>
-
-            <div className="space-y-2">
-              <Label htmlFor="codigo">Código *</Label>
-              <Input
-                id="codigo"
-                value={formData.codigo}
-                onChange={(e) =>
-                  setFormData({ ...formData, codigo: e.target.value })
                 }
                 required
               />

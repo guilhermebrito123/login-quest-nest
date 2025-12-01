@@ -126,7 +126,7 @@ export function ColaboradorCard({ colaborador, onEdit, onDelete, onPresenca, onE
               {colaborador.posto?.nome && (
                 <div className="flex items-center gap-2">
                   <Briefcase className="h-4 w-4 text-muted-foreground" />
-                  <span>{colaborador.posto.codigo} - {colaborador.posto.nome}</span>
+                  <span>{colaborador.posto.nome}</span>
                 </div>
               )}
               {colaborador.escala && (

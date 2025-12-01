@@ -47,7 +47,7 @@ export default function Colaboradores() {
           *,
           unidade:unidades(nome),
           escala:escalas(nome, tipo),
-          posto:postos_servico(nome, codigo)
+          posto:postos_servico(nome)
         `)
         .order("nome_completo");
 
