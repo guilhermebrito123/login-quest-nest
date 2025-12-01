@@ -32,7 +32,6 @@ interface PostoCardProps {
     id: string;
     unidade_id: string;
     nome: string;
-    codigo: string;
     funcao: string;
     status: string;
     horario_inicio?: string;
@@ -449,7 +448,7 @@ const PostoCard = ({ posto, unidade, onEdit, onDelete }: PostoCardProps) => {
             </div>
             <div>
               <CardTitle className="text-base">{posto.nome}</CardTitle>
-              <p className="text-sm text-muted-foreground">{posto.codigo}</p>
+              <p className="text-sm text-muted-foreground">{posto.funcao}</p>
             </div>
           </div>
           <div className="flex gap-2 items-center">
