@@ -624,7 +624,7 @@ export type Database = {
           id: number
           motivo_cancelamento: string | null
           motivo_reprovacao: string | null
-          motivo_vago: Database["public"]["Enums"]["motivo_vago_type"] | null
+          motivo_vago: Database["public"]["Enums"]["motivo_vago_type"]
           posto_servico_id: string
           status: Database["public"]["Enums"]["status_diaria"]
           updated_at: string
@@ -638,7 +638,7 @@ export type Database = {
           id?: number
           motivo_cancelamento?: string | null
           motivo_reprovacao?: string | null
-          motivo_vago?: Database["public"]["Enums"]["motivo_vago_type"] | null
+          motivo_vago?: Database["public"]["Enums"]["motivo_vago_type"]
           posto_servico_id: string
           status?: Database["public"]["Enums"]["status_diaria"]
           updated_at?: string
@@ -652,7 +652,7 @@ export type Database = {
           id?: number
           motivo_cancelamento?: string | null
           motivo_reprovacao?: string | null
-          motivo_vago?: Database["public"]["Enums"]["motivo_vago_type"] | null
+          motivo_vago?: Database["public"]["Enums"]["motivo_vago_type"]
           posto_servico_id?: string
           status?: Database["public"]["Enums"]["status_diaria"]
           updated_at?: string
