@@ -392,7 +392,9 @@ const PostoCard = ({ posto, unidade, onEdit, onDelete }: PostoCardProps) => {
       const { data: { user } } = await supabase.auth.getUser();
       if (!user) throw new Error("Usuário não autenticado");
 
-      // Find the colaborador assigned to this posto
+      const dataStr = selectedDayForAction.toISOString().split('T')[0];
+
+      // Buscar colaborador vinculado ao posto (se existir)
       const { data: colabs } = await supabase
         .from("colaboradores")
         .select("id")
@@ -401,23 +403,35 @@ const PostoCard = ({ posto, unidade, onEdit, onDelete }: PostoCardProps) => {
         .limit(1)
         .single();
 
-      // Save to database
+      // Inserir registro específico do colaborador em posto_dias_vagos
       const { error } = await supabase
         .from("posto_dias_vagos")
         .insert({
           posto_servico_id: posto.id,
           colaborador_id: colabs?.id || null,
-          data: selectedDayForAction.toISOString().split('T')[0],
+          data: dataStr,
           motivo: motivoVago,
           created_by: user.id,
         });
 
       if (error && !error.message.includes('duplicate key')) throw error;
 
-      // Remove dos dias de presença se estiver lá
+      // Garantir que não fique um registro genérico (colaborador_id NULL) duplicado
+      const { error: deleteGenericError } = await supabase
+        .from("posto_dias_vagos")
+        .delete()
+        .eq("posto_servico_id", posto.id)
+        .eq("data", dataStr)
+        .is("colaborador_id", null);
+
+      if (deleteGenericError && !deleteGenericError.message.includes('foreign key')) {
+        throw deleteGenericError;
+      }
+
+      // Remover dos dias de presença se estiver lá
       setDiasPresenca(prev => prev.filter(d => d.getTime() !== selectedDayForAction.getTime()));
       
-      // Adiciona aos dias vagos se não estiver
+      // Adicionar aos dias vagos se não estiver
       if (!diasVagos.some(d => d.getTime() === selectedDayForAction.getTime())) {
         setDiasVagos(prev => [...prev, selectedDayForAction]);
       }
