@@ -394,6 +394,19 @@ const PostoCard = ({ posto, unidade, onEdit, onDelete }: PostoCardProps) => {
 
       const dataStr = selectedDayForAction.toISOString().split('T')[0];
 
+      // Mapear valores do frontend para os valores do banco
+      const motivoMap: Record<string, string> = {
+        'falta_justificada': 'falta justificada',
+        'falta_injustificada': 'falta injustificada',
+        'pedido': 'Posto vago',
+        'afastamento_inss': 'afastamento INSS',
+        'folga': 'Posto vago',
+        'ferias': 'férias',
+        'suspensao': 'suspensão',
+      };
+
+      const motivoMapeado = motivoMap[motivoVago] || motivoVago;
+
       // Buscar colaborador vinculado ao posto (se existir)
       const { data: colabs } = await supabase
         .from("colaboradores")
@@ -403,30 +416,23 @@ const PostoCard = ({ posto, unidade, onEdit, onDelete }: PostoCardProps) => {
         .limit(1)
         .single();
 
-      // Inserir registro específico do colaborador em posto_dias_vagos
-      const { error } = await supabase
-        .from("posto_dias_vagos")
-        .insert({
-          posto_servico_id: posto.id,
-          colaborador_id: colabs?.id || null,
-          data: dataStr,
-          motivo: motivoVago,
-          created_by: user.id,
-        });
-
-      if (error && !error.message.includes('duplicate key')) throw error;
-
-      // Garantir que não fique um registro genérico (colaborador_id NULL) duplicado
-      const { error: deleteGenericError } = await supabase
-        .from("posto_dias_vagos")
-        .delete()
+      // Atualizar dias_trabalho para status vago MAS manter colaborador_id
+      const { error: updateError } = await supabase
+        .from("dias_trabalho")
+        .update({
+          status: 'vago',
+          motivo_vago: motivoMapeado as any,
+          updated_at: new Date().toISOString(),
+        })
         .eq("posto_servico_id", posto.id)
-        .eq("data", dataStr)
-        .is("colaborador_id", null);
+        .eq("data", dataStr);
 
-      if (deleteGenericError && !deleteGenericError.message.includes('foreign key')) {
-        throw deleteGenericError;
-      }
+      if (updateError) throw updateError;
+
+      // Inserir registro específico do colaborador em posto_dias_vagos (trigger sync_dias_vagos cuida disso)
+      // Mas vamos garantir que está em posto_dias_vagos também
+      await fetchDiasVagos();
+      await fetchDiasVagos();
 
       // Remover dos dias de presença se estiver lá
       setDiasPresenca(prev => prev.filter(d => d.getTime() !== selectedDayForAction.getTime()));
