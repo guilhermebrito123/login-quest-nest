@@ -1957,6 +1957,8 @@ export type Database = {
         Returns: boolean
       }
       is_admin: { Args: { _user_id: string }; Returns: boolean }
+      limpar_diarias_antigas: { Args: never; Returns: undefined }
+      limpar_diarias_temporarias_antigas: { Args: never; Returns: undefined }
       limpar_posto_dias_vagos_antigos: { Args: never; Returns: undefined }
       limpar_presencas_antigas: { Args: never; Returns: undefined }
       processar_movimentacoes_agendadas: { Args: never; Returns: undefined }
