@@ -1993,6 +1993,7 @@ export type Database = {
         | "Aprovada para pagamento"
         | "Cancelada"
         | "Reprovada"
+        | "Paga"
       status_diarista: "ativo" | "inativo" | "desligado"
       status_execucao: "ativo" | "concluido" | "atrasado" | "cancelado"
       status_posto:
@@ -2165,6 +2166,7 @@ export const Constants = {
         "Aprovada para pagamento",
         "Cancelada",
         "Reprovada",
+        "Paga",
       ],
       status_diarista: ["ativo", "inativo", "desligado"],
       status_execucao: ["ativo", "concluido", "atrasado", "cancelado"],
