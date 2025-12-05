@@ -29,6 +29,7 @@ export function DiaristaForm({ open, onClose, onSuccess, diarista }: DiaristaFor
   const [loading, setLoading] = useState(false);
   const [formData, setFormData] = useState<{
     nome_completo: string;
+    cpf: string;
     endereco: string;
     cep: string;
     cidade: string;
@@ -43,6 +44,7 @@ export function DiaristaForm({ open, onClose, onSuccess, diarista }: DiaristaFor
     pix: string;
   }>({
     nome_completo: "",
+    cpf: "",
     endereco: "",
     cep: "",
     cidade: "",
@@ -68,6 +70,7 @@ export function DiaristaForm({ open, onClose, onSuccess, diarista }: DiaristaFor
     if (diarista) {
       setFormData({
         nome_completo: diarista.nome_completo || "",
+        cpf: diarista.cpf || "",
         endereco: diarista.endereco || "",
         cep: diarista.cep || "",
         cidade: diarista.cidade || "",
@@ -84,6 +87,7 @@ export function DiaristaForm({ open, onClose, onSuccess, diarista }: DiaristaFor
     } else {
       setFormData({
         nome_completo: "",
+        cpf: "",
         endereco: "",
         cep: "",
         cidade: "",
@@ -205,6 +209,19 @@ export function DiaristaForm({ open, onClose, onSuccess, diarista }: DiaristaFor
                 onChange={(e) =>
                   setFormData({ ...formData, nome_completo: e.target.value })
                 }
+                required
+              />
+            </div>
+
+            <div className="space-y-2">
+              <Label htmlFor="cpf">CPF *</Label>
+              <Input
+                id="cpf"
+                value={formData.cpf}
+                onChange={(e) =>
+                  setFormData({ ...formData, cpf: e.target.value })
+                }
+                placeholder="000.000.000-00"
                 required
               />
             </div>
