@@ -632,8 +632,10 @@ export type Database = {
       diarias_temporarias: {
         Row: {
           colaborador_ausente: string | null
+          colaborador_demitido: string | null
           created_at: string
           data_diaria: string
+          demissao: boolean | null
           diarista_id: string
           horario_fim: string | null
           horario_inicio: string | null
@@ -650,8 +652,10 @@ export type Database = {
         }
         Insert: {
           colaborador_ausente?: string | null
+          colaborador_demitido?: string | null
           created_at?: string
           data_diaria: string
+          demissao?: boolean | null
           diarista_id: string
           horario_fim?: string | null
           horario_inicio?: string | null
@@ -668,8 +672,10 @@ export type Database = {
         }
         Update: {
           colaborador_ausente?: string | null
+          colaborador_demitido?: string | null
           created_at?: string
           data_diaria?: string
+          demissao?: boolean | null
           diarista_id?: string
           horario_fim?: string | null
           horario_inicio?: string | null
@@ -688,6 +694,13 @@ export type Database = {
           {
             foreignKeyName: "diarias_temporarias_colaborador_ausente_fkey"
             columns: ["colaborador_ausente"]
+            isOneToOne: false
+            referencedRelation: "colaboradores"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "diarias_temporarias_colaborador_demitido_fkey"
+            columns: ["colaborador_demitido"]
             isOneToOne: false
             referencedRelation: "colaboradores"
             referencedColumns: ["id"]
