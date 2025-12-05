@@ -1989,7 +1989,11 @@ export type Database = {
         | "afastamento INSS"
         | "férias"
         | "suspensão"
-        | "Posto vago"
+        | "Vaga em aberto (Cobertura salário)"
+        | "licença maternidade"
+        | "licença paternidade"
+        | "licença casamento"
+        | "licença nojo (falecimento)"
       periodicidade_type:
         | "diaria"
         | "semanal"
@@ -2160,7 +2164,11 @@ export const Constants = {
         "afastamento INSS",
         "férias",
         "suspensão",
-        "Posto vago",
+        "Vaga em aberto (Cobertura salário)",
+        "licença maternidade",
+        "licença paternidade",
+        "licença casamento",
+        "licença nojo (falecimento)",
       ],
       periodicidade_type: [
         "diaria",
