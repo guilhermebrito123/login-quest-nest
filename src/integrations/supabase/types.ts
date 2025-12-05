@@ -638,6 +638,7 @@ export type Database = {
           horario_fim: string | null
           horario_inicio: string | null
           id: number
+          intervalo: number | null
           jornada_diaria: number | null
           motivo_cancelamento: string | null
           motivo_reprovacao: string | null
@@ -655,6 +656,7 @@ export type Database = {
           horario_fim?: string | null
           horario_inicio?: string | null
           id?: number
+          intervalo?: number | null
           jornada_diaria?: number | null
           motivo_cancelamento?: string | null
           motivo_reprovacao?: string | null
@@ -672,6 +674,7 @@ export type Database = {
           horario_fim?: string | null
           horario_inicio?: string | null
           id?: number
+          intervalo?: number | null
           jornada_diaria?: number | null
           motivo_cancelamento?: string | null
           motivo_reprovacao?: string | null
