@@ -710,69 +710,69 @@ export type Database = {
       }
       diaristas: {
         Row: {
-          agencia: string
-          anexo_comprovante_endereco: string
-          anexo_cpf: string
-          anexo_dados_bancarios: string
-          anexo_possui_antecedente: string
-          banco: string
-          cep: string
-          cidade: string
+          agencia: string | null
+          anexo_comprovante_endereco: string | null
+          anexo_cpf: string | null
+          anexo_dados_bancarios: string | null
+          anexo_possui_antecedente: string | null
+          banco: string | null
+          cep: string | null
+          cidade: string | null
           created_at: string
-          email: string
-          endereco: string
+          email: string | null
+          endereco: string | null
           id: string
           nome_completo: string
-          numero_conta: string
+          numero_conta: string | null
           pix: string
-          possui_antecedente: boolean
-          status: Database["public"]["Enums"]["status_diarista"]
+          possui_antecedente: boolean | null
+          status: Database["public"]["Enums"]["status_diarista"] | null
           telefone: string
-          tipo_conta: Database["public"]["Enums"]["tipo_conta_bancaria"]
+          tipo_conta: Database["public"]["Enums"]["tipo_conta_bancaria"] | null
           updated_at: string
         }
         Insert: {
-          agencia?: string
-          anexo_comprovante_endereco: string
-          anexo_cpf: string
-          anexo_dados_bancarios: string
-          anexo_possui_antecedente: string
-          banco?: string
-          cep: string
-          cidade: string
+          agencia?: string | null
+          anexo_comprovante_endereco?: string | null
+          anexo_cpf?: string | null
+          anexo_dados_bancarios?: string | null
+          anexo_possui_antecedente?: string | null
+          banco?: string | null
+          cep?: string | null
+          cidade?: string | null
           created_at?: string
-          email: string
-          endereco: string
+          email?: string | null
+          endereco?: string | null
           id?: string
           nome_completo: string
-          numero_conta?: string
+          numero_conta?: string | null
           pix?: string
-          possui_antecedente?: boolean
-          status?: Database["public"]["Enums"]["status_diarista"]
+          possui_antecedente?: boolean | null
+          status?: Database["public"]["Enums"]["status_diarista"] | null
           telefone: string
-          tipo_conta?: Database["public"]["Enums"]["tipo_conta_bancaria"]
+          tipo_conta?: Database["public"]["Enums"]["tipo_conta_bancaria"] | null
           updated_at?: string
         }
         Update: {
-          agencia?: string
-          anexo_comprovante_endereco?: string
-          anexo_cpf?: string
-          anexo_dados_bancarios?: string
-          anexo_possui_antecedente?: string
-          banco?: string
-          cep?: string
-          cidade?: string
+          agencia?: string | null
+          anexo_comprovante_endereco?: string | null
+          anexo_cpf?: string | null
+          anexo_dados_bancarios?: string | null
+          anexo_possui_antecedente?: string | null
+          banco?: string | null
+          cep?: string | null
+          cidade?: string | null
           created_at?: string
-          email?: string
-          endereco?: string
+          email?: string | null
+          endereco?: string | null
           id?: string
           nome_completo?: string
-          numero_conta?: string
+          numero_conta?: string | null
           pix?: string
-          possui_antecedente?: boolean
-          status?: Database["public"]["Enums"]["status_diarista"]
+          possui_antecedente?: boolean | null
+          status?: Database["public"]["Enums"]["status_diarista"] | null
           telefone?: string
-          tipo_conta?: Database["public"]["Enums"]["tipo_conta_bancaria"]
+          tipo_conta?: Database["public"]["Enums"]["tipo_conta_bancaria"] | null
           updated_at?: string
         }
         Relationships: []
