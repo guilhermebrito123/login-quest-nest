@@ -1984,16 +1984,16 @@ export type Database = {
         | "tecnico"
         | "cliente_view"
       motivo_vago_type:
-        | "falta justificada"
-        | "falta injustificada"
-        | "afastamento INSS"
-        | "férias"
-        | "suspensão"
-        | "Vaga em aberto (Cobertura salário)"
-        | "licença maternidade"
-        | "licença paternidade"
-        | "licença casamento"
-        | "licença nojo (falecimento)"
+        | "FALTA JUSTIFICADA"
+        | "FALTA INJUSTIFICADA"
+        | "AFASTAMENTO INSS"
+        | "FÉRIAS"
+        | "SUSPENSÃO"
+        | "VAGA EM ABERTO (COBERTURA SALÁRIO)"
+        | "LICENÇA MATERNIDADE"
+        | "LICENÇA PATERNIDADE"
+        | "LICENÇA CASAMENTO"
+        | "LICENÇA NOJO (FALECIMENTO)"
       periodicidade_type:
         | "diaria"
         | "semanal"
@@ -2159,16 +2159,16 @@ export const Constants = {
         "cliente_view",
       ],
       motivo_vago_type: [
-        "falta justificada",
-        "falta injustificada",
-        "afastamento INSS",
-        "férias",
-        "suspensão",
-        "Vaga em aberto (Cobertura salário)",
-        "licença maternidade",
-        "licença paternidade",
-        "licença casamento",
-        "licença nojo (falecimento)",
+        "FALTA JUSTIFICADA",
+        "FALTA INJUSTIFICADA",
+        "AFASTAMENTO INSS",
+        "FÉRIAS",
+        "SUSPENSÃO",
+        "VAGA EM ABERTO (COBERTURA SALÁRIO)",
+        "LICENÇA MATERNIDADE",
+        "LICENÇA PATERNIDADE",
+        "LICENÇA CASAMENTO",
+        "LICENÇA NOJO (FALECIMENTO)",
       ],
       periodicidade_type: [
         "diaria",
