@@ -631,7 +631,9 @@ export type Database = {
       }
       diarias_temporarias: {
         Row: {
+          cliente_nome: string | null
           colaborador_ausente: string | null
+          colaborador_ausente_nome: string | null
           colaborador_demitido: string | null
           created_at: string
           data_diaria: string
@@ -645,13 +647,16 @@ export type Database = {
           motivo_cancelamento: string | null
           motivo_reprovacao: string | null
           motivo_vago: Database["public"]["Enums"]["motivo_vago_type"]
-          posto_servico_id: string
+          posto_servico: string | null
+          posto_servico_id: string | null
           status: Database["public"]["Enums"]["status_diaria"]
           updated_at: string
           valor_diaria: number
         }
         Insert: {
+          cliente_nome?: string | null
           colaborador_ausente?: string | null
+          colaborador_ausente_nome?: string | null
           colaborador_demitido?: string | null
           created_at?: string
           data_diaria: string
@@ -665,13 +670,16 @@ export type Database = {
           motivo_cancelamento?: string | null
           motivo_reprovacao?: string | null
           motivo_vago?: Database["public"]["Enums"]["motivo_vago_type"]
-          posto_servico_id: string
+          posto_servico?: string | null
+          posto_servico_id?: string | null
           status?: Database["public"]["Enums"]["status_diaria"]
           updated_at?: string
           valor_diaria: number
         }
         Update: {
+          cliente_nome?: string | null
           colaborador_ausente?: string | null
+          colaborador_ausente_nome?: string | null
           colaborador_demitido?: string | null
           created_at?: string
           data_diaria?: string
@@ -685,7 +693,8 @@ export type Database = {
           motivo_cancelamento?: string | null
           motivo_reprovacao?: string | null
           motivo_vago?: Database["public"]["Enums"]["motivo_vago_type"]
-          posto_servico_id?: string
+          posto_servico?: string | null
+          posto_servico_id?: string | null
           status?: Database["public"]["Enums"]["status_diaria"]
           updated_at?: string
           valor_diaria?: number
