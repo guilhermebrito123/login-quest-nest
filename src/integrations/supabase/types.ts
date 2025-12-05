@@ -635,7 +635,10 @@ export type Database = {
           created_at: string
           data_diaria: string
           diarista_id: string
+          horario_fim: string | null
+          horario_inicio: string | null
           id: number
+          jornada_diaria: number | null
           motivo_cancelamento: string | null
           motivo_reprovacao: string | null
           motivo_vago: Database["public"]["Enums"]["motivo_vago_type"]
@@ -649,7 +652,10 @@ export type Database = {
           created_at?: string
           data_diaria: string
           diarista_id: string
+          horario_fim?: string | null
+          horario_inicio?: string | null
           id?: number
+          jornada_diaria?: number | null
           motivo_cancelamento?: string | null
           motivo_reprovacao?: string | null
           motivo_vago?: Database["public"]["Enums"]["motivo_vago_type"]
@@ -663,7 +669,10 @@ export type Database = {
           created_at?: string
           data_diaria?: string
           diarista_id?: string
+          horario_fim?: string | null
+          horario_inicio?: string | null
           id?: number
+          jornada_diaria?: number | null
           motivo_cancelamento?: string | null
           motivo_reprovacao?: string | null
           motivo_vago?: Database["public"]["Enums"]["motivo_vago_type"]
