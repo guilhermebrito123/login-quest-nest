@@ -648,6 +648,7 @@ export type Database = {
           motivo_cancelamento: string | null
           motivo_reprovacao: string | null
           motivo_vago: Database["public"]["Enums"]["motivo_vago_type"]
+          observacao: string | null
           posto_servico: string | null
           posto_servico_id: string | null
           status: Database["public"]["Enums"]["status_diaria"]
@@ -672,6 +673,7 @@ export type Database = {
           motivo_cancelamento?: string | null
           motivo_reprovacao?: string | null
           motivo_vago?: Database["public"]["Enums"]["motivo_vago_type"]
+          observacao?: string | null
           posto_servico?: string | null
           posto_servico_id?: string | null
           status?: Database["public"]["Enums"]["status_diaria"]
@@ -696,6 +698,7 @@ export type Database = {
           motivo_cancelamento?: string | null
           motivo_reprovacao?: string | null
           motivo_vago?: Database["public"]["Enums"]["motivo_vago_type"]
+          observacao?: string | null
           posto_servico?: string | null
           posto_servico_id?: string | null
           status?: Database["public"]["Enums"]["status_diaria"]
