@@ -637,6 +637,7 @@ export type Database = {
           colaborador_demitido: string | null
           colaborador_demitido_nome: string | null
           created_at: string
+          criado_por: string | null
           data_diaria: string
           demissao: boolean | null
           diarista_id: string
@@ -662,6 +663,7 @@ export type Database = {
           colaborador_demitido?: string | null
           colaborador_demitido_nome?: string | null
           created_at?: string
+          criado_por?: string | null
           data_diaria: string
           demissao?: boolean | null
           diarista_id: string
@@ -687,6 +689,7 @@ export type Database = {
           colaborador_demitido?: string | null
           colaborador_demitido_nome?: string | null
           created_at?: string
+          criado_por?: string | null
           data_diaria?: string
           demissao?: boolean | null
           diarista_id?: string
@@ -718,6 +721,13 @@ export type Database = {
             columns: ["colaborador_demitido"]
             isOneToOne: false
             referencedRelation: "colaboradores"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "diarias_temporarias_criado_por_fkey"
+            columns: ["criado_por"]
+            isOneToOne: false
+            referencedRelation: "profiles"
             referencedColumns: ["id"]
           },
           {
