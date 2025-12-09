@@ -833,7 +833,7 @@ export type Database = {
           banco: string | null
           cep: string | null
           cidade: string | null
-          cpf: string
+          cpf: string | null
           created_at: string
           email: string | null
           endereco: string | null
@@ -856,7 +856,7 @@ export type Database = {
           banco?: string | null
           cep?: string | null
           cidade?: string | null
-          cpf?: string
+          cpf?: string | null
           created_at?: string
           email?: string | null
           endereco?: string | null
@@ -879,7 +879,7 @@ export type Database = {
           banco?: string | null
           cep?: string | null
           cidade?: string | null
-          cpf?: string
+          cpf?: string | null
           created_at?: string
           email?: string | null
           endereco?: string | null
