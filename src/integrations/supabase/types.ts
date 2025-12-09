@@ -639,6 +639,7 @@ export type Database = {
           colaborador_ausente_nome: string | null
           colaborador_demitido: string | null
           colaborador_demitido_nome: string | null
+          colaborador_falecido: string | null
           confirmada_por: string | null
           created_at: string
           criado_por: string | null
@@ -672,6 +673,7 @@ export type Database = {
           colaborador_ausente_nome?: string | null
           colaborador_demitido?: string | null
           colaborador_demitido_nome?: string | null
+          colaborador_falecido?: string | null
           confirmada_por?: string | null
           created_at?: string
           criado_por?: string | null
@@ -705,6 +707,7 @@ export type Database = {
           colaborador_ausente_nome?: string | null
           colaborador_demitido?: string | null
           colaborador_demitido_nome?: string | null
+          colaborador_falecido?: string | null
           confirmada_por?: string | null
           created_at?: string
           criado_por?: string | null
