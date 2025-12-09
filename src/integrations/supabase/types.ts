@@ -631,11 +631,14 @@ export type Database = {
       }
       diarias_temporarias: {
         Row: {
+          aprovada_por: string | null
+          aprovado_para_pgto_por: string | null
           cliente_nome: string | null
           colaborador_ausente: string | null
           colaborador_ausente_nome: string | null
           colaborador_demitido: string | null
           colaborador_demitido_nome: string | null
+          confirmada_por: string | null
           created_at: string
           criado_por: string | null
           data_diaria: string
@@ -646,10 +649,12 @@ export type Database = {
           id: number
           intervalo: number | null
           jornada_diaria: number | null
+          lancada_por: string | null
           motivo_cancelamento: string | null
           motivo_reprovacao: string | null
           motivo_vago: Database["public"]["Enums"]["motivo_vago_type"]
           observacao: string | null
+          paga_por: string | null
           posto_servico: string | null
           posto_servico_id: string | null
           status: Database["public"]["Enums"]["status_diaria"]
@@ -657,11 +662,14 @@ export type Database = {
           valor_diaria: number
         }
         Insert: {
+          aprovada_por?: string | null
+          aprovado_para_pgto_por?: string | null
           cliente_nome?: string | null
           colaborador_ausente?: string | null
           colaborador_ausente_nome?: string | null
           colaborador_demitido?: string | null
           colaborador_demitido_nome?: string | null
+          confirmada_por?: string | null
           created_at?: string
           criado_por?: string | null
           data_diaria: string
@@ -672,10 +680,12 @@ export type Database = {
           id?: number
           intervalo?: number | null
           jornada_diaria?: number | null
+          lancada_por?: string | null
           motivo_cancelamento?: string | null
           motivo_reprovacao?: string | null
           motivo_vago?: Database["public"]["Enums"]["motivo_vago_type"]
           observacao?: string | null
+          paga_por?: string | null
           posto_servico?: string | null
           posto_servico_id?: string | null
           status?: Database["public"]["Enums"]["status_diaria"]
@@ -683,11 +693,14 @@ export type Database = {
           valor_diaria: number
         }
         Update: {
+          aprovada_por?: string | null
+          aprovado_para_pgto_por?: string | null
           cliente_nome?: string | null
           colaborador_ausente?: string | null
           colaborador_ausente_nome?: string | null
           colaborador_demitido?: string | null
           colaborador_demitido_nome?: string | null
+          confirmada_por?: string | null
           created_at?: string
           criado_por?: string | null
           data_diaria?: string
@@ -698,10 +711,12 @@ export type Database = {
           id?: number
           intervalo?: number | null
           jornada_diaria?: number | null
+          lancada_por?: string | null
           motivo_cancelamento?: string | null
           motivo_reprovacao?: string | null
           motivo_vago?: Database["public"]["Enums"]["motivo_vago_type"]
           observacao?: string | null
+          paga_por?: string | null
           posto_servico?: string | null
           posto_servico_id?: string | null
           status?: Database["public"]["Enums"]["status_diaria"]
@@ -709,6 +724,20 @@ export type Database = {
           valor_diaria?: number
         }
         Relationships: [
+          {
+            foreignKeyName: "diarias_temporarias_aprovada_por_fkey"
+            columns: ["aprovada_por"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "diarias_temporarias_aprovado_para_pgto_por_fkey"
+            columns: ["aprovado_para_pgto_por"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
           {
             foreignKeyName: "diarias_temporarias_colaborador_ausente_fkey"
             columns: ["colaborador_ausente"]
@@ -724,6 +753,13 @@ export type Database = {
             referencedColumns: ["id"]
           },
           {
+            foreignKeyName: "diarias_temporarias_confirmada_por_fkey"
+            columns: ["confirmada_por"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
             foreignKeyName: "diarias_temporarias_criado_por_fkey"
             columns: ["criado_por"]
             isOneToOne: false
@@ -735,6 +771,20 @@ export type Database = {
             columns: ["diarista_id"]
             isOneToOne: false
             referencedRelation: "diaristas"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "diarias_temporarias_lancada_por_fkey"
+            columns: ["lancada_por"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "diarias_temporarias_paga_por_fkey"
+            columns: ["paga_por"]
+            isOneToOne: false
+            referencedRelation: "profiles"
             referencedColumns: ["id"]
           },
           {
