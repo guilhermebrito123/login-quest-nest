@@ -634,7 +634,7 @@ export type Database = {
           aprovada_por: string | null
           aprovado_para_pgto_por: string | null
           cancelada_por: string | null
-          cliente_nome: string | null
+          cliente_id: number
           colaborador_ausente: string | null
           colaborador_ausente_nome: string | null
           colaborador_demitido: string | null
@@ -667,7 +667,7 @@ export type Database = {
           aprovada_por?: string | null
           aprovado_para_pgto_por?: string | null
           cancelada_por?: string | null
-          cliente_nome?: string | null
+          cliente_id: number
           colaborador_ausente?: string | null
           colaborador_ausente_nome?: string | null
           colaborador_demitido?: string | null
@@ -700,7 +700,7 @@ export type Database = {
           aprovada_por?: string | null
           aprovado_para_pgto_por?: string | null
           cancelada_por?: string | null
-          cliente_nome?: string | null
+          cliente_id?: number
           colaborador_ausente?: string | null
           colaborador_ausente_nome?: string | null
           colaborador_demitido?: string | null
@@ -749,6 +749,13 @@ export type Database = {
             columns: ["cancelada_por"]
             isOneToOne: false
             referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "diarias_temporarias_cliente_id_fkey"
+            columns: ["cliente_id"]
+            isOneToOne: false
+            referencedRelation: "clientes"
             referencedColumns: ["id"]
           },
           {
