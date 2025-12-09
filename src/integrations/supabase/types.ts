@@ -347,7 +347,7 @@ export type Database = {
           contato_nome: string | null
           contato_telefone: string | null
           created_at: string
-          id: string
+          id: number
           nome_fantasia: string
           razao_social: string
           updated_at: string
@@ -358,7 +358,7 @@ export type Database = {
           contato_nome?: string | null
           contato_telefone?: string | null
           created_at?: string
-          id: string
+          id?: number
           nome_fantasia?: string
           razao_social: string
           updated_at?: string
@@ -369,7 +369,7 @@ export type Database = {
           contato_nome?: string | null
           contato_telefone?: string | null
           created_at?: string
-          id?: string
+          id?: number
           nome_fantasia?: string
           razao_social?: string
           updated_at?: string
@@ -539,7 +539,7 @@ export type Database = {
       }
       contratos: {
         Row: {
-          cliente_id: string
+          cliente_id: number
           conq_perd: number
           created_at: string | null
           data_fim: string | null
@@ -549,7 +549,7 @@ export type Database = {
           updated_at: string | null
         }
         Insert: {
-          cliente_id: string
+          cliente_id: number
           conq_perd: number
           created_at?: string | null
           data_fim?: string | null
@@ -559,7 +559,7 @@ export type Database = {
           updated_at?: string | null
         }
         Update: {
-          cliente_id?: string
+          cliente_id?: number
           conq_perd?: number
           created_at?: string | null
           data_fim?: string | null
