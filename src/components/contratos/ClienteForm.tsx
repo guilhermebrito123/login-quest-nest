@@ -21,7 +21,7 @@ import { toast } from "@/hooks/use-toast";
 import { Loader2 } from "lucide-react";
 
 interface ClienteFormProps {
-  clienteId?: string;
+  clienteId?: number;
   onClose: () => void;
   onSuccess: () => void;
 }
@@ -57,7 +57,7 @@ const ClienteForm = ({ clienteId, onClose, onSuccess }: ClienteFormProps) => {
       } else {
         const { error } = await supabase
           .from("clientes")
-          .insert([{ ...formData, id: formData.cnpj }]);
+          .insert([formData]);
 
         if (error) throw error;
 

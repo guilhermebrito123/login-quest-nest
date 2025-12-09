@@ -34,7 +34,7 @@ import UnidadeCard from "@/components/contratos/UnidadeCard";
 import PostoCard from "@/components/contratos/PostoCard";
 
 interface Cliente {
-  id: string;
+  id: number;
   razao_social: string;
   cnpj: string;
   contato_nome: string | null;
@@ -45,7 +45,7 @@ interface Cliente {
 
 interface Contrato {
   id: string;
-  cliente_id: string;
+  cliente_id: number;
   negocio: string;
   data_inicio: string;
   data_fim: string | null;
@@ -91,13 +91,13 @@ const Contratos = () => {
   const [showPostoForm, setShowPostoForm] = useState(false);
   
   // State for editing entities
-  const [editingClienteId, setEditingClienteId] = useState<string | undefined>(undefined);
+  const [editingClienteId, setEditingClienteId] = useState<number | undefined>(undefined);
   const [editingContratoId, setEditingContratoId] = useState<string | undefined>(undefined);
   const [editingUnidadeId, setEditingUnidadeId] = useState<string | undefined>(undefined);
   const [editingPostoId, setEditingPostoId] = useState<string | undefined>(undefined);
   
   // Selected entities for hierarchy
-  const [selectedCliente, setSelectedCliente] = useState<string | null>(null);
+  const [selectedCliente, setSelectedCliente] = useState<number | null>(null);
   const [selectedContrato, setSelectedContrato] = useState<string | null>(null);
   const [selectedUnidade, setSelectedUnidade] = useState<string | null>(null);
 
