@@ -22,7 +22,7 @@ import { Loader2 } from "lucide-react";
 
 interface ContratoFormProps {
   contratoId?: string;
-  clienteId?: string | null;
+  clienteId?: number | null;
   onClose: () => void;
   onSuccess: () => void;
 }
@@ -31,7 +31,7 @@ const ContratoForm = ({ contratoId, clienteId, onClose, onSuccess }: ContratoFor
   const [loading, setLoading] = useState(false);
   const [clientes, setClientes] = useState<any[]>([]);
   const [formData, setFormData] = useState({
-    cliente_id: clienteId || "",
+    cliente_id: clienteId || 0,
     negocio: "",
     data_inicio: "",
     data_fim: "",
@@ -113,9 +113,9 @@ const ContratoForm = ({ contratoId, clienteId, onClose, onSuccess }: ContratoFor
             <div className="space-y-2 col-span-2">
               <Label htmlFor="cliente_id">Cliente *</Label>
               <Select
-                value={formData.cliente_id}
+                value={formData.cliente_id?.toString() || ""}
                 onValueChange={(value) =>
-                  setFormData({ ...formData, cliente_id: value })
+                  setFormData({ ...formData, cliente_id: parseInt(value) })
                 }
                 disabled={!!clienteId}
               >
@@ -124,7 +124,7 @@ const ContratoForm = ({ contratoId, clienteId, onClose, onSuccess }: ContratoFor
                 </SelectTrigger>
                 <SelectContent>
                   {clientes.map((cliente) => (
-                    <SelectItem key={cliente.id} value={cliente.id}>
+                    <SelectItem key={cliente.id} value={cliente.id.toString()}>
                       {cliente.razao_social}
                     </SelectItem>
                   ))}

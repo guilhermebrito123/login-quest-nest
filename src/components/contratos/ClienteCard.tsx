@@ -18,7 +18,7 @@ import {
 
 interface ClienteCardProps {
   cliente: {
-    id: string;
+    id: number;
     razao_social: string;
     cnpj: string;
     contato_nome: string | null;

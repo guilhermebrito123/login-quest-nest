@@ -20,7 +20,7 @@ import { format } from "date-fns";
 interface ContratoCardProps {
   contrato: {
     id: string;
-    cliente_id: string;
+    cliente_id: number;
     negocio: string;
     data_inicio: string;
     data_fim: string | null;
