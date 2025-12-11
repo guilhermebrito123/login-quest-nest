@@ -66,3 +66,6 @@ verify_jwt = false
 
 [functions.reset-password]
 verify_jwt = false
+
+[functions.request-password-reset-sms]
+verify_jwt = false
