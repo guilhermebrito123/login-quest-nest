@@ -1732,6 +1732,7 @@ export type Database = {
           primeiro_dia_atividade: string | null
           salario: number | null
           status: Database["public"]["Enums"]["status_posto"] | null
+          turno: Database["public"]["Enums"]["turno_opcoes"] | null
           ultimo_dia_atividade: string | null
           unidade_id: string | null
           updated_at: string | null
@@ -1765,6 +1766,7 @@ export type Database = {
           primeiro_dia_atividade?: string | null
           salario?: number | null
           status?: Database["public"]["Enums"]["status_posto"] | null
+          turno?: Database["public"]["Enums"]["turno_opcoes"] | null
           ultimo_dia_atividade?: string | null
           unidade_id?: string | null
           updated_at?: string | null
@@ -1798,6 +1800,7 @@ export type Database = {
           primeiro_dia_atividade?: string | null
           salario?: number | null
           status?: Database["public"]["Enums"]["status_posto"] | null
+          turno?: Database["public"]["Enums"]["turno_opcoes"] | null
           ultimo_dia_atividade?: string | null
           unidade_id?: string | null
           updated_at?: string | null
@@ -2225,6 +2228,12 @@ export type Database = {
         | "ocupacao_agendada"
         | "inativo"
       tipo_conta_bancaria: "conta corrente" | "conta poupança" | "conta salário"
+      turno_opcoes:
+        | "Diurno"
+        | "Noturno"
+        | "Vespertino"
+        | "Revezamento"
+        | "Ininterrupto"
     }
     CompositeTypes: {
       [_ in never]: never
@@ -2407,6 +2416,13 @@ export const Constants = {
         "conta corrente",
         "conta poupança",
         "conta salário",
+      ],
+      turno_opcoes: [
+        "Diurno",
+        "Noturno",
+        "Vespertino",
+        "Revezamento",
+        "Ininterrupto",
       ],
     },
   },
