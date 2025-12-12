@@ -1708,64 +1708,103 @@ export type Database = {
       }
       postos_servico: {
         Row: {
+          acumulo_funcao: boolean | null
+          adicional_noturno: boolean | null
+          assistencia_medica: boolean | null
           beneficios: string[] | null
+          cesta: boolean | null
           created_at: string | null
           dias_semana: number[] | null
           escala: string | null
           funcao: string
+          gratificacao: boolean | null
           horario_fim: string | null
           horario_inicio: string | null
           id: string
+          insalubridade: boolean | null
           intervalo_refeicao: number | null
+          intrajornada: boolean | null
           jornada: number | null
           nome: string
           observacoes: string | null
+          periculosidade: boolean | null
+          premio_assiduidade: boolean | null
           primeiro_dia_atividade: string | null
+          salario: number | null
           status: Database["public"]["Enums"]["status_posto"] | null
           ultimo_dia_atividade: string | null
           unidade_id: string | null
           updated_at: string | null
           valor_diaria: number
+          valor_unitario: number | null
+          vr_dia: number | null
+          vt_dia: number | null
         }
         Insert: {
+          acumulo_funcao?: boolean | null
+          adicional_noturno?: boolean | null
+          assistencia_medica?: boolean | null
           beneficios?: string[] | null
+          cesta?: boolean | null
           created_at?: string | null
           dias_semana?: number[] | null
           escala?: string | null
           funcao: string
+          gratificacao?: boolean | null
           horario_fim?: string | null
           horario_inicio?: string | null
           id?: string
+          insalubridade?: boolean | null
           intervalo_refeicao?: number | null
+          intrajornada?: boolean | null
           jornada?: number | null
           nome: string
           observacoes?: string | null
+          periculosidade?: boolean | null
+          premio_assiduidade?: boolean | null
           primeiro_dia_atividade?: string | null
+          salario?: number | null
           status?: Database["public"]["Enums"]["status_posto"] | null
           ultimo_dia_atividade?: string | null
           unidade_id?: string | null
           updated_at?: string | null
           valor_diaria?: number
+          valor_unitario?: number | null
+          vr_dia?: number | null
+          vt_dia?: number | null
         }
         Update: {
+          acumulo_funcao?: boolean | null
+          adicional_noturno?: boolean | null
+          assistencia_medica?: boolean | null
           beneficios?: string[] | null
+          cesta?: boolean | null
           created_at?: string | null
           dias_semana?: number[] | null
           escala?: string | null
           funcao?: string
+          gratificacao?: boolean | null
           horario_fim?: string | null
           horario_inicio?: string | null
           id?: string
+          insalubridade?: boolean | null
           intervalo_refeicao?: number | null
+          intrajornada?: boolean | null
           jornada?: number | null
           nome?: string
           observacoes?: string | null
+          periculosidade?: boolean | null
+          premio_assiduidade?: boolean | null
           primeiro_dia_atividade?: string | null
+          salario?: number | null
           status?: Database["public"]["Enums"]["status_posto"] | null
           ultimo_dia_atividade?: string | null
           unidade_id?: string | null
           updated_at?: string | null
           valor_diaria?: number
+          valor_unitario?: number | null
+          vr_dia?: number | null
+          vt_dia?: number | null
         }
         Relationships: [
           {
