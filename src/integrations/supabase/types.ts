@@ -1711,7 +1711,6 @@ export type Database = {
           acumulo_funcao: boolean | null
           adicional_noturno: boolean | null
           assistencia_medica: boolean | null
-          beneficios: string[] | null
           cesta: boolean | null
           created_at: string | null
           dias_semana: number[] | null
@@ -1727,6 +1726,7 @@ export type Database = {
           jornada: number | null
           nome: string
           observacoes: string | null
+          outros_beneficios: string[] | null
           periculosidade: boolean | null
           premio_assiduidade: boolean | null
           primeiro_dia_atividade: string | null
@@ -1744,7 +1744,6 @@ export type Database = {
           acumulo_funcao?: boolean | null
           adicional_noturno?: boolean | null
           assistencia_medica?: boolean | null
-          beneficios?: string[] | null
           cesta?: boolean | null
           created_at?: string | null
           dias_semana?: number[] | null
@@ -1760,6 +1759,7 @@ export type Database = {
           jornada?: number | null
           nome: string
           observacoes?: string | null
+          outros_beneficios?: string[] | null
           periculosidade?: boolean | null
           premio_assiduidade?: boolean | null
           primeiro_dia_atividade?: string | null
@@ -1777,7 +1777,6 @@ export type Database = {
           acumulo_funcao?: boolean | null
           adicional_noturno?: boolean | null
           assistencia_medica?: boolean | null
-          beneficios?: string[] | null
           cesta?: boolean | null
           created_at?: string | null
           dias_semana?: number[] | null
@@ -1793,6 +1792,7 @@ export type Database = {
           jornada?: number | null
           nome?: string
           observacoes?: string | null
+          outros_beneficios?: string[] | null
           periculosidade?: boolean | null
           premio_assiduidade?: boolean | null
           primeiro_dia_atividade?: string | null
