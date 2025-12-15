@@ -125,7 +125,7 @@ serve(async (req: Request): Promise<Response> => {
 
     // Get the profile to find the user
     const { data: profile, error: profileError } = await supabase
-      .from("profiles")
+      .from("usuarios")
       .select("id, email")
       .eq("id", resetToken.profile_id)
       .single();

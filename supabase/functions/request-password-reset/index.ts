@@ -57,7 +57,7 @@ serve(async (req: Request): Promise<Response> => {
 
     // Check if email exists in profiles (don't expose result to client)
     const { data: profile, error: profileError } = await supabase
-      .from("perfil_interno")
+      .from("usuarios")
       .select("id, full_name")
       .eq("email", email.toLowerCase().trim())
       .single();
