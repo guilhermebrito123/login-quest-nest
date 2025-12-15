@@ -1623,6 +1623,63 @@ export type Database = {
           },
         ]
       }
+      perfil_candidato: {
+        Row: {
+          altura: number | null
+          created_at: string
+          curso_adicional: string[] | null
+          estado_civil: Database["public"]["Enums"]["estado_civil"] | null
+          experiencia: string[] | null
+          formacao: string[] | null
+          habilidade: string[] | null
+          id: string
+          idade_maxima: number | null
+          idade_minima: number | null
+          peso: number | null
+          requisito_descricao: string | null
+          sexo: Database["public"]["Enums"]["sexualidade"] | null
+          tempo_minimo_experiencia: number | null
+          tipo_requisito: Database["public"]["Enums"]["tipos_requisito"]
+          updated_at: string
+        }
+        Insert: {
+          altura?: number | null
+          created_at?: string
+          curso_adicional?: string[] | null
+          estado_civil?: Database["public"]["Enums"]["estado_civil"] | null
+          experiencia?: string[] | null
+          formacao?: string[] | null
+          habilidade?: string[] | null
+          id?: string
+          idade_maxima?: number | null
+          idade_minima?: number | null
+          peso?: number | null
+          requisito_descricao?: string | null
+          sexo?: Database["public"]["Enums"]["sexualidade"] | null
+          tempo_minimo_experiencia?: number | null
+          tipo_requisito: Database["public"]["Enums"]["tipos_requisito"]
+          updated_at?: string
+        }
+        Update: {
+          altura?: number | null
+          created_at?: string
+          curso_adicional?: string[] | null
+          estado_civil?: Database["public"]["Enums"]["estado_civil"] | null
+          experiencia?: string[] | null
+          formacao?: string[] | null
+          habilidade?: string[] | null
+          id?: string
+          idade_maxima?: number | null
+          idade_minima?: number | null
+          peso?: number | null
+          requisito_descricao?: string | null
+          sexo?: Database["public"]["Enums"]["sexualidade"] | null
+          tempo_minimo_experiencia?: number | null
+          tipo_requisito?: Database["public"]["Enums"]["tipos_requisito"]
+          updated_at?: string
+        }
+        Relationships: []
+      }
       posto_dias_vagos: {
         Row: {
           colaborador_id: string | null
@@ -2199,6 +2256,12 @@ export type Database = {
         | "analista_centro_controle"
         | "tecnico"
         | "cliente_view"
+      estado_civil:
+        | "Solteiro"
+        | "Casado"
+        | "Divorciado"
+        | "Viúvo"
+        | "Indiferente"
       motivo_vago_type:
         | "FALTA JUSTIFICADA"
         | "FALTA INJUSTIFICADA"
@@ -2218,6 +2281,7 @@ export type Database = {
         | "trimestral"
         | "semestral"
         | "anual"
+      sexualidade: "Masculino" | "Feminino" | "Indiferente"
       status_colaborador: "ativo" | "inativo"
       status_diaria:
         | "Aguardando confirmacao"
@@ -2239,6 +2303,10 @@ export type Database = {
         | "ocupacao_agendada"
         | "inativo"
       tipo_conta_bancaria: "conta corrente" | "conta poupança" | "conta salário"
+      tipos_requisito:
+        | "TQC (D.A. 06-01)"
+        | "TQC (D.A. 06-01) + exigências do cliente"
+        | "Solicitação do cliente"
       turno_opcoes:
         | "Diurno"
         | "Noturno"
@@ -2380,6 +2448,13 @@ export const Constants = {
         "tecnico",
         "cliente_view",
       ],
+      estado_civil: [
+        "Solteiro",
+        "Casado",
+        "Divorciado",
+        "Viúvo",
+        "Indiferente",
+      ],
       motivo_vago_type: [
         "FALTA JUSTIFICADA",
         "FALTA INJUSTIFICADA",
@@ -2401,6 +2476,7 @@ export const Constants = {
         "semestral",
         "anual",
       ],
+      sexualidade: ["Masculino", "Feminino", "Indiferente"],
       status_colaborador: ["ativo", "inativo"],
       status_diaria: [
         "Aguardando confirmacao",
@@ -2427,6 +2503,11 @@ export const Constants = {
         "conta corrente",
         "conta poupança",
         "conta salário",
+      ],
+      tipos_requisito: [
+        "TQC (D.A. 06-01)",
+        "TQC (D.A. 06-01) + exigências do cliente",
+        "Solicitação do cliente",
       ],
       turno_opcoes: [
         "Diurno",
