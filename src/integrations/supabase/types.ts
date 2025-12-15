@@ -1414,41 +1414,6 @@ export type Database = {
           },
         ]
       }
-      internal_profiles: {
-        Row: {
-          cargo: string | null
-          created_at: string
-          departamento: string | null
-          nivel_acesso: Database["public"]["Enums"]["app_role"]
-          updated_at: string
-          user_id: string
-        }
-        Insert: {
-          cargo?: string | null
-          created_at?: string
-          departamento?: string | null
-          nivel_acesso?: Database["public"]["Enums"]["app_role"]
-          updated_at?: string
-          user_id: string
-        }
-        Update: {
-          cargo?: string | null
-          created_at?: string
-          departamento?: string | null
-          nivel_acesso?: Database["public"]["Enums"]["app_role"]
-          updated_at?: string
-          user_id?: string
-        }
-        Relationships: [
-          {
-            foreignKeyName: "internal_profiles_user_id_fkey"
-            columns: ["user_id"]
-            isOneToOne: true
-            referencedRelation: "usuarios"
-            referencedColumns: ["id"]
-          },
-        ]
-      }
       itens_estoque: {
         Row: {
           created_at: string | null
