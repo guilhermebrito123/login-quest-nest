@@ -1725,7 +1725,6 @@ export type Database = {
           intrajornada: boolean | null
           jornada: number | null
           nome: string
-          observacoes: string | null
           observacoes_especificas: string | null
           outros_beneficios: string[] | null
           periculosidade: boolean | null
@@ -1760,7 +1759,6 @@ export type Database = {
           intrajornada?: boolean | null
           jornada?: number | null
           nome: string
-          observacoes?: string | null
           observacoes_especificas?: string | null
           outros_beneficios?: string[] | null
           periculosidade?: boolean | null
@@ -1795,7 +1793,6 @@ export type Database = {
           intrajornada?: boolean | null
           jornada?: number | null
           nome?: string
-          observacoes?: string | null
           observacoes_especificas?: string | null
           outros_beneficios?: string[] | null
           periculosidade?: boolean | null
