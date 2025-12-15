@@ -91,7 +91,7 @@ serve(async (req: Request): Promise<Response> => {
     
     for (const variant of phoneVariants) {
       const { data, error } = await supabase
-        .from("perfil_interno")
+        .from("usuarios")
         .select("id, full_name, phone")
         .ilike("phone", `%${variant.slice(-9)}%`) // Match last 9 digits
         .single();
