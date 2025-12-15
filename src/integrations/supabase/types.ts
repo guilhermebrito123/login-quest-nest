@@ -1726,6 +1726,7 @@ export type Database = {
           jornada: number | null
           nome: string
           observacoes: string | null
+          observacoes_especificas: string | null
           outros_beneficios: string[] | null
           periculosidade: boolean | null
           premio_assiduidade: boolean | null
@@ -1760,6 +1761,7 @@ export type Database = {
           jornada?: number | null
           nome: string
           observacoes?: string | null
+          observacoes_especificas?: string | null
           outros_beneficios?: string[] | null
           periculosidade?: boolean | null
           premio_assiduidade?: boolean | null
@@ -1794,6 +1796,7 @@ export type Database = {
           jornada?: number | null
           nome?: string
           observacoes?: string | null
+          observacoes_especificas?: string | null
           outros_beneficios?: string[] | null
           periculosidade?: boolean | null
           premio_assiduidade?: boolean | null
