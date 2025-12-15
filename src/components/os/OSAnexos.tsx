@@ -41,7 +41,7 @@ export function OSAnexos({ osId }: OSAnexosProps) {
       const anexosWithUploader = await Promise.all(
         (data || []).map(async (anexo) => {
           const { data: profile } = await supabase
-            .from("profiles")
+            .from("perfil_interno")
             .select("full_name")
             .eq("id", anexo.uploaded_by)
             .single();

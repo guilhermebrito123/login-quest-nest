@@ -48,7 +48,7 @@ export function OrdemServicoForm({ os, open, onClose, onSuccess }: OrdemServicoF
     queryKey: ["usuarios"],
     queryFn: async () => {
       const { data, error } = await supabase
-        .from("profiles")
+        .from("perfil_interno")
         .select("id, full_name")
         .order("full_name");
       if (error) throw error;

@@ -79,7 +79,7 @@ const UserManagement = () => {
   const loadUsers = async () => {
     try {
       const { data, error } = await supabase
-        .from("profiles")
+        .from("perfil_interno")
         .select(`
           id,
           email,
