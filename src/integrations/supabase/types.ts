@@ -70,6 +70,89 @@ export type Database = {
           },
         ]
       }
+      candidatos: {
+        Row: {
+          celular: string
+          cidade: string
+          created_at: string
+          curriculo_path: string
+          email: string
+          estado: string
+          experiencia_relevante: string[]
+          id: string
+          nome_completo: string
+          telefone: string
+          updated_at: string
+        }
+        Insert: {
+          celular: string
+          cidade: string
+          created_at?: string
+          curriculo_path: string
+          email: string
+          estado: string
+          experiencia_relevante: string[]
+          id?: string
+          nome_completo: string
+          telefone: string
+          updated_at?: string
+        }
+        Update: {
+          celular?: string
+          cidade?: string
+          created_at?: string
+          curriculo_path?: string
+          email?: string
+          estado?: string
+          experiencia_relevante?: string[]
+          id?: string
+          nome_completo?: string
+          telefone?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      candidatos_anexos: {
+        Row: {
+          caminho_storage: string
+          candidato_id: string
+          created_at: string
+          id: string
+          nome_arquivo: string
+          tamanho_bytes: number | null
+          tipo_arquivo: string | null
+          uploaded_by: string
+        }
+        Insert: {
+          caminho_storage: string
+          candidato_id: string
+          created_at?: string
+          id?: string
+          nome_arquivo: string
+          tamanho_bytes?: number | null
+          tipo_arquivo?: string | null
+          uploaded_by: string
+        }
+        Update: {
+          caminho_storage?: string
+          candidato_id?: string
+          created_at?: string
+          id?: string
+          nome_arquivo?: string
+          tamanho_bytes?: number | null
+          tipo_arquivo?: string | null
+          uploaded_by?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "candidatos_anexos_candidato_id_fkey"
+            columns: ["candidato_id"]
+            isOneToOne: false
+            referencedRelation: "candidatos"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       chamados: {
         Row: {
           atribuido_para_id: string | null
