@@ -86,9 +86,9 @@ const PostoForm = ({ postoId, unidadeId, onClose, onSuccess }: PostoFormProps) =
         horario_inicio: posto.horario_inicio || "",
         horario_fim: posto.horario_fim || "",
         intervalo_refeicao: posto.intervalo_refeicao?.toString() || "",
-        beneficios: posto.beneficios || [],
+        beneficios: posto.outros_beneficios || [],
         status: posto.status || "vago",
-        observacoes: posto.observacoes || "",
+        observacoes: posto.observacoes_especificas || "",
       });
     }
   };

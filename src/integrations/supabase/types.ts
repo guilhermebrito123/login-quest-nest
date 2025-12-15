@@ -234,7 +234,7 @@ export type Database = {
             foreignKeyName: "chamados_atribuido_para_id_fkey"
             columns: ["atribuido_para_id"]
             isOneToOne: false
-            referencedRelation: "profiles"
+            referencedRelation: "perfil_interno"
             referencedColumns: ["id"]
           },
           {
@@ -310,7 +310,7 @@ export type Database = {
             foreignKeyName: "chamados_anexos_usuario_id_fkey"
             columns: ["usuario_id"]
             isOneToOne: false
-            referencedRelation: "profiles"
+            referencedRelation: "perfil_interno"
             referencedColumns: ["id"]
           },
         ]
@@ -352,7 +352,7 @@ export type Database = {
             foreignKeyName: "chamados_comentarios_usuario_id_fkey"
             columns: ["usuario_id"]
             isOneToOne: false
-            referencedRelation: "profiles"
+            referencedRelation: "perfil_interno"
             referencedColumns: ["id"]
           },
         ]
@@ -826,21 +826,21 @@ export type Database = {
             foreignKeyName: "diarias_temporarias_aprovada_por_fkey"
             columns: ["aprovada_por"]
             isOneToOne: false
-            referencedRelation: "profiles"
+            referencedRelation: "perfil_interno"
             referencedColumns: ["id"]
           },
           {
             foreignKeyName: "diarias_temporarias_aprovado_para_pgto_por_fkey"
             columns: ["aprovado_para_pgto_por"]
             isOneToOne: false
-            referencedRelation: "profiles"
+            referencedRelation: "perfil_interno"
             referencedColumns: ["id"]
           },
           {
             foreignKeyName: "diarias_temporarias_cancelada_por_fkey"
             columns: ["cancelada_por"]
             isOneToOne: false
-            referencedRelation: "profiles"
+            referencedRelation: "perfil_interno"
             referencedColumns: ["id"]
           },
           {
@@ -868,14 +868,14 @@ export type Database = {
             foreignKeyName: "diarias_temporarias_confirmada_por_fkey"
             columns: ["confirmada_por"]
             isOneToOne: false
-            referencedRelation: "profiles"
+            referencedRelation: "perfil_interno"
             referencedColumns: ["id"]
           },
           {
             foreignKeyName: "diarias_temporarias_criado_por_fkey"
             columns: ["criado_por"]
             isOneToOne: false
-            referencedRelation: "profiles"
+            referencedRelation: "perfil_interno"
             referencedColumns: ["id"]
           },
           {
@@ -889,14 +889,14 @@ export type Database = {
             foreignKeyName: "diarias_temporarias_lancada_por_fkey"
             columns: ["lancada_por"]
             isOneToOne: false
-            referencedRelation: "profiles"
+            referencedRelation: "perfil_interno"
             referencedColumns: ["id"]
           },
           {
             foreignKeyName: "diarias_temporarias_paga_por_fkey"
             columns: ["paga_por"]
             isOneToOne: false
-            referencedRelation: "profiles"
+            referencedRelation: "perfil_interno"
             referencedColumns: ["id"]
           },
           {
@@ -910,7 +910,7 @@ export type Database = {
             foreignKeyName: "diarias_temporarias_reprovada_por_fkey"
             columns: ["reprovada_por"]
             isOneToOne: false
-            referencedRelation: "profiles"
+            referencedRelation: "perfil_interno"
             referencedColumns: ["id"]
           },
         ]
@@ -1174,7 +1174,7 @@ export type Database = {
             foreignKeyName: "execucao_checklist_supervisor_id_fkey"
             columns: ["supervisor_id"]
             isOneToOne: false
-            referencedRelation: "profiles"
+            referencedRelation: "perfil_interno"
             referencedColumns: ["id"]
           },
           {
@@ -1258,7 +1258,7 @@ export type Database = {
             foreignKeyName: "execucao_checklist_item_supervisor_id_fkey"
             columns: ["supervisor_id"]
             isOneToOne: false
-            referencedRelation: "profiles"
+            referencedRelation: "perfil_interno"
             referencedColumns: ["id"]
           },
           {
@@ -1567,14 +1567,14 @@ export type Database = {
             foreignKeyName: "ordens_servico_responsavel_id_fkey"
             columns: ["responsavel_id"]
             isOneToOne: false
-            referencedRelation: "profiles"
+            referencedRelation: "perfil_interno"
             referencedColumns: ["id"]
           },
           {
             foreignKeyName: "ordens_servico_solicitante_id_fkey"
             columns: ["solicitante_id"]
             isOneToOne: false
-            referencedRelation: "profiles"
+            referencedRelation: "perfil_interno"
             referencedColumns: ["id"]
           },
           {
@@ -1701,7 +1701,7 @@ export type Database = {
             foreignKeyName: "password_reset_tokens_profile_id_fkey"
             columns: ["profile_id"]
             isOneToOne: false
-            referencedRelation: "profiles"
+            referencedRelation: "perfil_interno"
             referencedColumns: ["id"]
           },
         ]
@@ -1762,6 +1762,47 @@ export type Database = {
           updated_at?: string
         }
         Relationships: []
+      }
+      perfil_interno: {
+        Row: {
+          created_at: string
+          email: string
+          full_name: string | null
+          id: string
+          phone: string | null
+          role: Database["public"]["Enums"]["app_role"]
+          superior: string | null
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          email: string
+          full_name?: string | null
+          id: string
+          phone?: string | null
+          role?: Database["public"]["Enums"]["app_role"]
+          superior?: string | null
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          email?: string
+          full_name?: string | null
+          id?: string
+          phone?: string | null
+          role?: Database["public"]["Enums"]["app_role"]
+          superior?: string | null
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "profiles_superior_fkey"
+            columns: ["superior"]
+            isOneToOne: false
+            referencedRelation: "perfil_interno"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       posto_dias_vagos: {
         Row: {
@@ -2012,47 +2053,6 @@ export type Database = {
             columns: ["posto_servico_id"]
             isOneToOne: false
             referencedRelation: "postos_servico"
-            referencedColumns: ["id"]
-          },
-        ]
-      }
-      profiles: {
-        Row: {
-          created_at: string
-          email: string
-          full_name: string | null
-          id: string
-          phone: string | null
-          role: Database["public"]["Enums"]["app_role"]
-          superior: string | null
-          updated_at: string
-        }
-        Insert: {
-          created_at?: string
-          email: string
-          full_name?: string | null
-          id: string
-          phone?: string | null
-          role?: Database["public"]["Enums"]["app_role"]
-          superior?: string | null
-          updated_at?: string
-        }
-        Update: {
-          created_at?: string
-          email?: string
-          full_name?: string | null
-          id?: string
-          phone?: string | null
-          role?: Database["public"]["Enums"]["app_role"]
-          superior?: string | null
-          updated_at?: string
-        }
-        Relationships: [
-          {
-            foreignKeyName: "profiles_superior_fkey"
-            columns: ["superior"]
-            isOneToOne: false
-            referencedRelation: "profiles"
             referencedColumns: ["id"]
           },
         ]
