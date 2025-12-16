@@ -714,8 +714,11 @@ export type Database = {
       }
       diarias_temporarias: {
         Row: {
+          aprovada_em: string | null
+          aprovada_para_pagamento_em: string | null
           aprovada_por: string | null
           aprovado_para_pgto_por: string | null
+          cancelada_em: string | null
           cancelada_por: string | null
           cliente_id: number
           colaborador_ausente: string | null
@@ -723,6 +726,7 @@ export type Database = {
           colaborador_demitido: string | null
           colaborador_demitido_nome: string | null
           colaborador_falecido: string | null
+          confirmada_em: string | null
           confirmada_por: string | null
           created_at: string
           criado_por: string | null
@@ -734,6 +738,7 @@ export type Database = {
           id: number
           intervalo: number | null
           jornada_diaria: number | null
+          lancada_em: string | null
           lancada_por: string | null
           licenca_nojo: boolean | null
           motivo_cancelamento: string | null
@@ -741,17 +746,22 @@ export type Database = {
           motivo_vago: Database["public"]["Enums"]["motivo_vago_type"]
           novo_posto: boolean | null
           observacao: string | null
+          paga_em: string | null
           paga_por: string | null
           posto_servico: string | null
           posto_servico_id: string | null
+          reprovada_em: string | null
           reprovada_por: string | null
           status: Database["public"]["Enums"]["status_diaria"]
           updated_at: string
           valor_diaria: number
         }
         Insert: {
+          aprovada_em?: string | null
+          aprovada_para_pagamento_em?: string | null
           aprovada_por?: string | null
           aprovado_para_pgto_por?: string | null
+          cancelada_em?: string | null
           cancelada_por?: string | null
           cliente_id: number
           colaborador_ausente?: string | null
@@ -759,6 +769,7 @@ export type Database = {
           colaborador_demitido?: string | null
           colaborador_demitido_nome?: string | null
           colaborador_falecido?: string | null
+          confirmada_em?: string | null
           confirmada_por?: string | null
           created_at?: string
           criado_por?: string | null
@@ -770,6 +781,7 @@ export type Database = {
           id?: number
           intervalo?: number | null
           jornada_diaria?: number | null
+          lancada_em?: string | null
           lancada_por?: string | null
           licenca_nojo?: boolean | null
           motivo_cancelamento?: string | null
@@ -777,17 +789,22 @@ export type Database = {
           motivo_vago?: Database["public"]["Enums"]["motivo_vago_type"]
           novo_posto?: boolean | null
           observacao?: string | null
+          paga_em?: string | null
           paga_por?: string | null
           posto_servico?: string | null
           posto_servico_id?: string | null
+          reprovada_em?: string | null
           reprovada_por?: string | null
           status?: Database["public"]["Enums"]["status_diaria"]
           updated_at?: string
           valor_diaria: number
         }
         Update: {
+          aprovada_em?: string | null
+          aprovada_para_pagamento_em?: string | null
           aprovada_por?: string | null
           aprovado_para_pgto_por?: string | null
+          cancelada_em?: string | null
           cancelada_por?: string | null
           cliente_id?: number
           colaborador_ausente?: string | null
@@ -795,6 +812,7 @@ export type Database = {
           colaborador_demitido?: string | null
           colaborador_demitido_nome?: string | null
           colaborador_falecido?: string | null
+          confirmada_em?: string | null
           confirmada_por?: string | null
           created_at?: string
           criado_por?: string | null
@@ -806,6 +824,7 @@ export type Database = {
           id?: number
           intervalo?: number | null
           jornada_diaria?: number | null
+          lancada_em?: string | null
           lancada_por?: string | null
           licenca_nojo?: boolean | null
           motivo_cancelamento?: string | null
@@ -813,9 +832,11 @@ export type Database = {
           motivo_vago?: Database["public"]["Enums"]["motivo_vago_type"]
           novo_posto?: boolean | null
           observacao?: string | null
+          paga_em?: string | null
           paga_por?: string | null
           posto_servico?: string | null
           posto_servico_id?: string | null
+          reprovada_em?: string | null
           reprovada_por?: string | null
           status?: Database["public"]["Enums"]["status_diaria"]
           updated_at?: string
