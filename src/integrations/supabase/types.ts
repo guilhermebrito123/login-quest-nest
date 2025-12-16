@@ -1440,7 +1440,7 @@ export type Database = {
           cargo: string | null
           created_at: string
           departamento: string | null
-          nivel_acesso: Database["public"]["Enums"]["app_role"]
+          nivel_acesso: Database["public"]["Enums"]["internal_access_level"]
           updated_at: string
           user_id: string
         }
@@ -1448,7 +1448,7 @@ export type Database = {
           cargo?: string | null
           created_at?: string
           departamento?: string | null
-          nivel_acesso?: Database["public"]["Enums"]["app_role"]
+          nivel_acesso?: Database["public"]["Enums"]["internal_access_level"]
           updated_at?: string
           user_id: string
         }
@@ -1456,7 +1456,7 @@ export type Database = {
           cargo?: string | null
           created_at?: string
           departamento?: string | null
-          nivel_acesso?: Database["public"]["Enums"]["app_role"]
+          nivel_acesso?: Database["public"]["Enums"]["internal_access_level"]
           updated_at?: string
           user_id?: string
         }
@@ -2252,19 +2252,19 @@ export type Database = {
         Row: {
           created_at: string
           id: string
-          role: Database["public"]["Enums"]["app_role"]
+          role: Database["public"]["Enums"]["internal_access_level"]
           user_id: string
         }
         Insert: {
           created_at?: string
           id?: string
-          role?: Database["public"]["Enums"]["app_role"]
+          role?: Database["public"]["Enums"]["internal_access_level"]
           user_id: string
         }
         Update: {
           created_at?: string
           id?: string
-          role?: Database["public"]["Enums"]["app_role"]
+          role?: Database["public"]["Enums"]["internal_access_level"]
           user_id?: string
         }
         Relationships: []
@@ -2276,7 +2276,7 @@ export type Database = {
           full_name: string | null
           id: string
           phone: string | null
-          role: Database["public"]["Enums"]["app_role"]
+          role: Database["public"]["Enums"]["internal_access_level"]
           superior: string | null
           updated_at: string
         }
@@ -2286,7 +2286,7 @@ export type Database = {
           full_name?: string | null
           id: string
           phone?: string | null
-          role?: Database["public"]["Enums"]["app_role"]
+          role?: Database["public"]["Enums"]["internal_access_level"]
           superior?: string | null
           updated_at?: string
         }
@@ -2296,7 +2296,7 @@ export type Database = {
           full_name?: string | null
           id?: string
           phone?: string | null
-          role?: Database["public"]["Enums"]["app_role"]
+          role?: Database["public"]["Enums"]["internal_access_level"]
           superior?: string | null
           updated_at?: string
         }
@@ -2377,7 +2377,7 @@ export type Database = {
       gerar_dias_trabalho_proximo_mes: { Args: never; Returns: undefined }
       has_role: {
         Args: {
-          _role: Database["public"]["Enums"]["app_role"]
+          _role: Database["public"]["Enums"]["internal_access_level"]
           _user_id: string
         }
         Returns: boolean
@@ -2391,19 +2391,19 @@ export type Database = {
       processar_movimentacoes_agendadas: { Args: never; Returns: undefined }
     }
     Enums: {
-      app_role:
-        | "admin"
-        | "gestor_operacoes"
-        | "supervisor"
-        | "analista_centro_controle"
-        | "tecnico"
-        | "cliente_view"
       estado_civil:
         | "Solteiro"
         | "Casado"
         | "Divorciado"
         | "Viúvo"
         | "Indiferente"
+      internal_access_level:
+        | "admin"
+        | "gestor_operacoes"
+        | "supervisor"
+        | "analista_centro_controle"
+        | "tecnico"
+        | "cliente_view"
       motivo_vago_type:
         | "FALTA JUSTIFICADA"
         | "FALTA INJUSTIFICADA"
@@ -2583,20 +2583,20 @@ export type CompositeTypes<
 export const Constants = {
   public: {
     Enums: {
-      app_role: [
-        "admin",
-        "gestor_operacoes",
-        "supervisor",
-        "analista_centro_controle",
-        "tecnico",
-        "cliente_view",
-      ],
       estado_civil: [
         "Solteiro",
         "Casado",
         "Divorciado",
         "Viúvo",
         "Indiferente",
+      ],
+      internal_access_level: [
+        "admin",
+        "gestor_operacoes",
+        "supervisor",
+        "analista_centro_controle",
+        "tecnico",
+        "cliente_view",
       ],
       motivo_vago_type: [
         "FALTA JUSTIFICADA",
