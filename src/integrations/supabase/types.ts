@@ -2455,6 +2455,7 @@ export type Database = {
         | "Vespertino"
         | "Revezamento"
         | "Ininterrupto"
+      user_type: "candidato" | "colaborador" | "perfil_interno"
     }
     CompositeTypes: {
       [_ in never]: never
@@ -2658,6 +2659,7 @@ export const Constants = {
         "Revezamento",
         "Ininterrupto",
       ],
+      user_type: ["candidato", "colaborador", "perfil_interno"],
     },
   },
 } as const
