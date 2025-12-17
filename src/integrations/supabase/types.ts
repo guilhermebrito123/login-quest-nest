@@ -1440,7 +1440,10 @@ export type Database = {
           cargo: string | null
           created_at: string
           departamento: string | null
+          email: string | null
           nivel_acesso: Database["public"]["Enums"]["internal_access_level"]
+          nome_completo: string | null
+          phone: string | null
           updated_at: string
           user_id: string
         }
@@ -1448,7 +1451,10 @@ export type Database = {
           cargo?: string | null
           created_at?: string
           departamento?: string | null
+          email?: string | null
           nivel_acesso?: Database["public"]["Enums"]["internal_access_level"]
+          nome_completo?: string | null
+          phone?: string | null
           updated_at?: string
           user_id: string
         }
@@ -1456,7 +1462,10 @@ export type Database = {
           cargo?: string | null
           created_at?: string
           departamento?: string | null
+          email?: string | null
           nivel_acesso?: Database["public"]["Enums"]["internal_access_level"]
+          nome_completo?: string | null
+          phone?: string | null
           updated_at?: string
           user_id?: string
         }
