@@ -72,42 +72,42 @@ export type Database = {
       }
       candidatos: {
         Row: {
-          celular: string
-          cidade: string
+          celular: string | null
+          cidade: string | null
           created_at: string
-          curriculo_path: string
+          curriculo_path: string | null
           email: string
-          estado: string
-          experiencia_relevante: string[]
+          estado: string | null
+          experiencia_relevante: string[] | null
           id: string
           nome_completo: string
-          telefone: string
+          telefone: string | null
           updated_at: string
         }
         Insert: {
-          celular: string
-          cidade: string
+          celular?: string | null
+          cidade?: string | null
           created_at?: string
-          curriculo_path: string
+          curriculo_path?: string | null
           email: string
-          estado: string
-          experiencia_relevante: string[]
+          estado?: string | null
+          experiencia_relevante?: string[] | null
           id?: string
           nome_completo: string
-          telefone: string
+          telefone?: string | null
           updated_at?: string
         }
         Update: {
-          celular?: string
-          cidade?: string
+          celular?: string | null
+          cidade?: string | null
           created_at?: string
-          curriculo_path?: string
+          curriculo_path?: string | null
           email?: string
-          estado?: string
-          experiencia_relevante?: string[]
+          estado?: string | null
+          experiencia_relevante?: string[] | null
           id?: string
           nome_completo?: string
-          telefone?: string
+          telefone?: string | null
           updated_at?: string
         }
         Relationships: []
