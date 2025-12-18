@@ -83,6 +83,7 @@ export type Database = {
           nome_completo: string
           telefone: string | null
           updated_at: string
+          user_id: string | null
         }
         Insert: {
           celular?: string | null
@@ -96,6 +97,7 @@ export type Database = {
           nome_completo: string
           telefone?: string | null
           updated_at?: string
+          user_id?: string | null
         }
         Update: {
           celular?: string | null
@@ -109,6 +111,7 @@ export type Database = {
           nome_completo?: string
           telefone?: string | null
           updated_at?: string
+          user_id?: string | null
         }
         Relationships: []
       }
@@ -561,6 +564,7 @@ export type Database = {
           telefone: string | null
           unidade_id: string | null
           updated_at: string | null
+          user_id: string | null
         }
         Insert: {
           cargo?: string | null
@@ -578,6 +582,7 @@ export type Database = {
           telefone?: string | null
           unidade_id?: string | null
           updated_at?: string | null
+          user_id?: string | null
         }
         Update: {
           cargo?: string | null
@@ -595,6 +600,7 @@ export type Database = {
           telefone?: string | null
           unidade_id?: string | null
           updated_at?: string | null
+          user_id?: string | null
         }
         Relationships: [
           {
