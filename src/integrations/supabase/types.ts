@@ -1438,6 +1438,7 @@ export type Database = {
       internal_profiles: {
         Row: {
           cargo: string | null
+          cpf: string | null
           created_at: string
           departamento: string | null
           email: string | null
@@ -1449,6 +1450,7 @@ export type Database = {
         }
         Insert: {
           cargo?: string | null
+          cpf?: string | null
           created_at?: string
           departamento?: string | null
           email?: string | null
@@ -1460,6 +1462,7 @@ export type Database = {
         }
         Update: {
           cargo?: string | null
+          cpf?: string | null
           created_at?: string
           departamento?: string | null
           email?: string | null
