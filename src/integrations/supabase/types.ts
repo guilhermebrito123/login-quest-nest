@@ -1928,6 +1928,7 @@ export type Database = {
           cesta: boolean | null
           created_at: string | null
           dias_semana: number[] | null
+          efetivo_planejado: number | null
           escala: string | null
           funcao: string
           gratificacao: boolean | null
@@ -1962,6 +1963,7 @@ export type Database = {
           cesta?: boolean | null
           created_at?: string | null
           dias_semana?: number[] | null
+          efetivo_planejado?: number | null
           escala?: string | null
           funcao: string
           gratificacao?: boolean | null
@@ -1996,6 +1998,7 @@ export type Database = {
           cesta?: boolean | null
           created_at?: string | null
           dias_semana?: number[] | null
+          efetivo_planejado?: number | null
           escala?: string | null
           funcao?: string
           gratificacao?: boolean | null
