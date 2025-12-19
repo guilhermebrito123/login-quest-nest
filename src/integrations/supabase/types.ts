@@ -434,6 +434,7 @@ export type Database = {
           contato_telefone: string | null
           created_at: string
           id: number
+          itens_adicionais: string | null
           nome_fantasia: string
           razao_social: string
           updated_at: string
@@ -445,6 +446,7 @@ export type Database = {
           contato_telefone?: string | null
           created_at?: string
           id?: number
+          itens_adicionais?: string | null
           nome_fantasia?: string
           razao_social: string
           updated_at?: string
@@ -456,6 +458,7 @@ export type Database = {
           contato_telefone?: string | null
           created_at?: string
           id?: number
+          itens_adicionais?: string | null
           nome_fantasia?: string
           razao_social?: string
           updated_at?: string
@@ -1923,6 +1926,8 @@ export type Database = {
       postos_servico: {
         Row: {
           acumulo_funcao: boolean | null
+          acumulo_funcao_percentual: number | null
+          adc_insalubridade_percentual: number | null
           adicional_noturno: boolean | null
           assistencia_medica: boolean | null
           cesta: boolean | null
@@ -1958,6 +1963,8 @@ export type Database = {
         }
         Insert: {
           acumulo_funcao?: boolean | null
+          acumulo_funcao_percentual?: number | null
+          adc_insalubridade_percentual?: number | null
           adicional_noturno?: boolean | null
           assistencia_medica?: boolean | null
           cesta?: boolean | null
@@ -1993,6 +2000,8 @@ export type Database = {
         }
         Update: {
           acumulo_funcao?: boolean | null
+          acumulo_funcao_percentual?: number | null
+          adc_insalubridade_percentual?: number | null
           adicional_noturno?: boolean | null
           assistencia_medica?: boolean | null
           cesta?: boolean | null
