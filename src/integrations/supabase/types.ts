@@ -2359,6 +2359,7 @@ export type Database = {
           id: number
           idade_maxima: number | null
           idade_minima: number | null
+          intervalo_refeicao: number
           motivo_contratacao: Database["public"]["Enums"]["motivo_contratacao"]
           nome_candidato: string | null
           nome_colaborador: string | null
@@ -2402,6 +2403,7 @@ export type Database = {
           id?: number
           idade_maxima?: number | null
           idade_minima?: number | null
+          intervalo_refeicao?: number
           motivo_contratacao: Database["public"]["Enums"]["motivo_contratacao"]
           nome_candidato?: string | null
           nome_colaborador?: string | null
@@ -2445,6 +2447,7 @@ export type Database = {
           id?: number
           idade_maxima?: number | null
           idade_minima?: number | null
+          intervalo_refeicao?: number
           motivo_contratacao?: Database["public"]["Enums"]["motivo_contratacao"]
           nome_candidato?: string | null
           nome_colaborador?: string | null
