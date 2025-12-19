@@ -1931,7 +1931,7 @@ export type Database = {
           adicional_noturno: boolean | null
           assistencia_medica: boolean | null
           cesta: boolean | null
-          cliente_id: number | null
+          cliente_id: number
           created_at: string | null
           dias_semana: number[] | null
           efetivo_planejado: number | null
@@ -1969,7 +1969,7 @@ export type Database = {
           adicional_noturno?: boolean | null
           assistencia_medica?: boolean | null
           cesta?: boolean | null
-          cliente_id?: number | null
+          cliente_id: number
           created_at?: string | null
           dias_semana?: number[] | null
           efetivo_planejado?: number | null
@@ -2007,7 +2007,7 @@ export type Database = {
           adicional_noturno?: boolean | null
           assistencia_medica?: boolean | null
           cesta?: boolean | null
-          cliente_id?: number | null
+          cliente_id?: number
           created_at?: string | null
           dias_semana?: number[] | null
           efetivo_planejado?: number | null
