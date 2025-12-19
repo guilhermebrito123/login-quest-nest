@@ -1931,6 +1931,7 @@ export type Database = {
           adicional_noturno: boolean | null
           assistencia_medica: boolean | null
           cesta: boolean | null
+          cliente_id: number | null
           created_at: string | null
           dias_semana: number[] | null
           efetivo_planejado: number | null
@@ -1968,6 +1969,7 @@ export type Database = {
           adicional_noturno?: boolean | null
           assistencia_medica?: boolean | null
           cesta?: boolean | null
+          cliente_id?: number | null
           created_at?: string | null
           dias_semana?: number[] | null
           efetivo_planejado?: number | null
@@ -2005,6 +2007,7 @@ export type Database = {
           adicional_noturno?: boolean | null
           assistencia_medica?: boolean | null
           cesta?: boolean | null
+          cliente_id?: number | null
           created_at?: string | null
           dias_semana?: number[] | null
           efetivo_planejado?: number | null
@@ -2036,6 +2039,13 @@ export type Database = {
           vt_dia?: number | null
         }
         Relationships: [
+          {
+            foreignKeyName: "postos_servico_cliente_id_fkey"
+            columns: ["cliente_id"]
+            isOneToOne: false
+            referencedRelation: "clientes"
+            referencedColumns: ["id"]
+          },
           {
             foreignKeyName: "postos_servico_unidade_id_fkey"
             columns: ["unidade_id"]
