@@ -2331,6 +2331,209 @@ export type Database = {
           },
         ]
       }
+      vagas_temp: {
+        Row: {
+          aberta_por: string
+          altura: number | null
+          aprovada_por: string | null
+          cancelada_por: string | null
+          created_at: string
+          criado_por: string
+          curso_adicional: string[] | null
+          data_abertura: string
+          data_aprovacao: string | null
+          data_cancelamento: string | null
+          data_fechamento: string | null
+          data_fim: string | null
+          data_inicio: string
+          data_reprovacao: string | null
+          data_selecao: string | null
+          entrevistador: string | null
+          estado_civil: Database["public"]["Enums"]["estado_civil"] | null
+          experiencia: string[] | null
+          fechada_por: string | null
+          formacao: string[] | null
+          habilidade: string[] | null
+          horario_fim: string
+          horario_inicio: string
+          id: number
+          idade_maxima: number | null
+          idade_minima: number | null
+          motivo_contratacao: Database["public"]["Enums"]["motivo_contratacao"]
+          nome_candidato: string | null
+          nome_colaborador: string | null
+          nome_vaga: string
+          observacoes: string | null
+          peso: number | null
+          posto_servico_id: string
+          reprovada_por: string | null
+          requisito_descricao: string | null
+          sexo: Database["public"]["Enums"]["sexualidade"] | null
+          status: Database["public"]["Enums"]["status_vaga"]
+          tempo_minimo_experiencia: number | null
+          tipo_requisito: Database["public"]["Enums"]["tipos_requisito"]
+          tipo_vaga: Database["public"]["Enums"]["tipo_de_vaga"]
+          updated_at: string
+        }
+        Insert: {
+          aberta_por: string
+          altura?: number | null
+          aprovada_por?: string | null
+          cancelada_por?: string | null
+          created_at?: string
+          criado_por: string
+          curso_adicional?: string[] | null
+          data_abertura?: string
+          data_aprovacao?: string | null
+          data_cancelamento?: string | null
+          data_fechamento?: string | null
+          data_fim?: string | null
+          data_inicio: string
+          data_reprovacao?: string | null
+          data_selecao?: string | null
+          entrevistador?: string | null
+          estado_civil?: Database["public"]["Enums"]["estado_civil"] | null
+          experiencia?: string[] | null
+          fechada_por?: string | null
+          formacao?: string[] | null
+          habilidade?: string[] | null
+          horario_fim: string
+          horario_inicio: string
+          id?: number
+          idade_maxima?: number | null
+          idade_minima?: number | null
+          motivo_contratacao: Database["public"]["Enums"]["motivo_contratacao"]
+          nome_candidato?: string | null
+          nome_colaborador?: string | null
+          nome_vaga: string
+          observacoes?: string | null
+          peso?: number | null
+          posto_servico_id: string
+          reprovada_por?: string | null
+          requisito_descricao?: string | null
+          sexo?: Database["public"]["Enums"]["sexualidade"] | null
+          status?: Database["public"]["Enums"]["status_vaga"]
+          tempo_minimo_experiencia?: number | null
+          tipo_requisito: Database["public"]["Enums"]["tipos_requisito"]
+          tipo_vaga: Database["public"]["Enums"]["tipo_de_vaga"]
+          updated_at?: string
+        }
+        Update: {
+          aberta_por?: string
+          altura?: number | null
+          aprovada_por?: string | null
+          cancelada_por?: string | null
+          created_at?: string
+          criado_por?: string
+          curso_adicional?: string[] | null
+          data_abertura?: string
+          data_aprovacao?: string | null
+          data_cancelamento?: string | null
+          data_fechamento?: string | null
+          data_fim?: string | null
+          data_inicio?: string
+          data_reprovacao?: string | null
+          data_selecao?: string | null
+          entrevistador?: string | null
+          estado_civil?: Database["public"]["Enums"]["estado_civil"] | null
+          experiencia?: string[] | null
+          fechada_por?: string | null
+          formacao?: string[] | null
+          habilidade?: string[] | null
+          horario_fim?: string
+          horario_inicio?: string
+          id?: number
+          idade_maxima?: number | null
+          idade_minima?: number | null
+          motivo_contratacao?: Database["public"]["Enums"]["motivo_contratacao"]
+          nome_candidato?: string | null
+          nome_colaborador?: string | null
+          nome_vaga?: string
+          observacoes?: string | null
+          peso?: number | null
+          posto_servico_id?: string
+          reprovada_por?: string | null
+          requisito_descricao?: string | null
+          sexo?: Database["public"]["Enums"]["sexualidade"] | null
+          status?: Database["public"]["Enums"]["status_vaga"]
+          tempo_minimo_experiencia?: number | null
+          tipo_requisito?: Database["public"]["Enums"]["tipos_requisito"]
+          tipo_vaga?: Database["public"]["Enums"]["tipo_de_vaga"]
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "vagas_temp_aberta_por_fkey"
+            columns: ["aberta_por"]
+            isOneToOne: false
+            referencedRelation: "usuarios"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "vagas_temp_aprovada_por_fkey"
+            columns: ["aprovada_por"]
+            isOneToOne: false
+            referencedRelation: "usuarios"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "vagas_temp_cancelada_por_fkey"
+            columns: ["cancelada_por"]
+            isOneToOne: false
+            referencedRelation: "usuarios"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "vagas_temp_criado_por_fkey"
+            columns: ["criado_por"]
+            isOneToOne: false
+            referencedRelation: "usuarios"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "vagas_temp_entrevistador_fkey"
+            columns: ["entrevistador"]
+            isOneToOne: false
+            referencedRelation: "usuarios"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "vagas_temp_fechada_por_fkey"
+            columns: ["fechada_por"]
+            isOneToOne: false
+            referencedRelation: "usuarios"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "vagas_temp_nome_candidato_fkey"
+            columns: ["nome_candidato"]
+            isOneToOne: false
+            referencedRelation: "candidatos"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "vagas_temp_nome_colaborador_fkey"
+            columns: ["nome_colaborador"]
+            isOneToOne: false
+            referencedRelation: "colaboradores"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "vagas_temp_posto_servico_id_fkey"
+            columns: ["posto_servico_id"]
+            isOneToOne: false
+            referencedRelation: "postos_servico"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "vagas_temp_reprovada_por_fkey"
+            columns: ["reprovada_por"]
+            isOneToOne: false
+            referencedRelation: "usuarios"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
     }
     Views: {
       [_ in never]: never
@@ -2425,6 +2628,11 @@ export type Database = {
         | "analista_centro_controle"
         | "tecnico"
         | "cliente_view"
+      motivo_contratacao:
+        | "Substituição efetivo"
+        | "Substituição férias licença"
+        | "Implantação/Abertura de novo contrato"
+        | "Solicitação do cliente"
       motivo_vago_type:
         | "FALTA JUSTIFICADA"
         | "FALTA INJUSTIFICADA"
@@ -2465,7 +2673,18 @@ export type Database = {
         | "presenca_confirmada"
         | "ocupacao_agendada"
         | "inativo"
+      status_vaga:
+        | "Aberta"
+        | "Em seleção"
+        | "Em aprovação"
+        | "Aguardando documentação"
+        | "Aguardando exame"
+        | "Em Admissão"
+        | "Fechada"
+        | "Cancelada"
+        | "Reprovada"
       tipo_conta_bancaria: "conta corrente" | "conta poupança" | "conta salário"
+      tipo_de_vaga: "Efetivo" | "Temporário" | "Seleção" | "Estágio"
       tipos_requisito:
         | "TQC (D.A. 06-01)"
         | "TQC (D.A. 06-01) + exigências do cliente"
@@ -2619,6 +2838,12 @@ export const Constants = {
         "tecnico",
         "cliente_view",
       ],
+      motivo_contratacao: [
+        "Substituição efetivo",
+        "Substituição férias licença",
+        "Implantação/Abertura de novo contrato",
+        "Solicitação do cliente",
+      ],
       motivo_vago_type: [
         "FALTA JUSTIFICADA",
         "FALTA INJUSTIFICADA",
@@ -2663,11 +2888,23 @@ export const Constants = {
         "ocupacao_agendada",
         "inativo",
       ],
+      status_vaga: [
+        "Aberta",
+        "Em seleção",
+        "Em aprovação",
+        "Aguardando documentação",
+        "Aguardando exame",
+        "Em Admissão",
+        "Fechada",
+        "Cancelada",
+        "Reprovada",
+      ],
       tipo_conta_bancaria: [
         "conta corrente",
         "conta poupança",
         "conta salário",
       ],
+      tipo_de_vaga: ["Efetivo", "Temporário", "Seleção", "Estágio"],
       tipos_requisito: [
         "TQC (D.A. 06-01)",
         "TQC (D.A. 06-01) + exigências do cliente",
