@@ -2225,6 +2225,44 @@ export type Database = {
           },
         ]
       }
+      subitens: {
+        Row: {
+          cliente_id: number
+          created_at: string
+          id: string
+          nome: string
+          observacao: string | null
+          updated_at: string
+          valor_unitario: number | null
+        }
+        Insert: {
+          cliente_id: number
+          created_at?: string
+          id?: string
+          nome: string
+          observacao?: string | null
+          updated_at?: string
+          valor_unitario?: number | null
+        }
+        Update: {
+          cliente_id?: number
+          created_at?: string
+          id?: string
+          nome?: string
+          observacao?: string | null
+          updated_at?: string
+          valor_unitario?: number | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "subitens_cliente_id_fkey"
+            columns: ["cliente_id"]
+            isOneToOne: false
+            referencedRelation: "clientes"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       unidades: {
         Row: {
           cep: string | null
