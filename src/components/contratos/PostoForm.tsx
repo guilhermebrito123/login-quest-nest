@@ -31,7 +31,9 @@ interface PostoFormProps {
 const PostoForm = ({ postoId, unidadeId, onClose, onSuccess }: PostoFormProps) => {
   const [loading, setLoading] = useState(false);
   const [unidades, setUnidades] = useState<any[]>([]);
+  const [clientes, setClientes] = useState<any[]>([]);
   const [formData, setFormData] = useState({
+    cliente_id: "",
     unidade_id: unidadeId || "",
     nome: "",
     funcao: "",
