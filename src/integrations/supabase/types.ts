@@ -1925,7 +1925,9 @@ export type Database = {
       }
       postos_servico: {
         Row: {
-          acumulo_funcao: boolean | null
+          acumulo_funcao:
+            | Database["public"]["Enums"]["acumulo_funcao_options"]
+            | null
           acumulo_funcao_percentual: number | null
           adc_insalubridade_percentual: number | null
           adicional_noturno: boolean | null
@@ -1963,7 +1965,9 @@ export type Database = {
           vt_dia: number | null
         }
         Insert: {
-          acumulo_funcao?: boolean | null
+          acumulo_funcao?:
+            | Database["public"]["Enums"]["acumulo_funcao_options"]
+            | null
           acumulo_funcao_percentual?: number | null
           adc_insalubridade_percentual?: number | null
           adicional_noturno?: boolean | null
@@ -2001,7 +2005,9 @@ export type Database = {
           vt_dia?: number | null
         }
         Update: {
-          acumulo_funcao?: boolean | null
+          acumulo_funcao?:
+            | Database["public"]["Enums"]["acumulo_funcao_options"]
+            | null
           acumulo_funcao_percentual?: number | null
           adc_insalubridade_percentual?: number | null
           adicional_noturno?: boolean | null
@@ -2675,6 +2681,7 @@ export type Database = {
       processar_movimentacoes_agendadas: { Args: never; Returns: undefined }
     }
     Enums: {
+      acumulo_funcao_options: "Sim" | "Não" | "Especial"
       estado_civil:
         | "Solteiro"
         | "Casado"
@@ -2883,6 +2890,7 @@ export type CompositeTypes<
 export const Constants = {
   public: {
     Enums: {
+      acumulo_funcao_options: ["Sim", "Não", "Especial"],
       estado_civil: [
         "Solteiro",
         "Casado",
