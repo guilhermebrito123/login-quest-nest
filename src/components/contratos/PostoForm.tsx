@@ -33,7 +33,7 @@ const PostoForm = ({ postoId, unidadeId, onClose, onSuccess }: PostoFormProps) =
   const [unidades, setUnidades] = useState<any[]>([]);
   const [clientes, setClientes] = useState<any[]>([]);
   const [formData, setFormData] = useState({
-    cliente_id: "",
+    cliente_id: null as number | null,
     unidade_id: unidadeId || "",
     nome: "",
     funcao: "",
@@ -77,6 +77,7 @@ const PostoForm = ({ postoId, unidadeId, onClose, onSuccess }: PostoFormProps) =
 
     if (posto) {
       setFormData({
+        cliente_id: posto.cliente_id,
         unidade_id: posto.unidade_id || "",
         nome: posto.nome || "",
         funcao: posto.funcao || "",
@@ -109,14 +110,20 @@ const PostoForm = ({ postoId, unidadeId, onClose, onSuccess }: PostoFormProps) =
 
     try {
       const dataToSave = {
-        ...formData,
+        cliente_id: formData.cliente_id!,
+        unidade_id: formData.unidade_id || null,
+        nome: formData.nome,
+        funcao: formData.funcao,
+        escala: formData.escala || null,
         dias_semana: formData.dias_semana.length > 0 ? formData.dias_semana : null,
         primeiro_dia_atividade: formData.primeiro_dia_atividade || null,
         ultimo_dia_atividade: formData.ultimo_dia_atividade || null,
         jornada: formData.jornada ? parseInt(formData.jornada) : null,
+        horario_inicio: formData.horario_inicio || null,
+        horario_fim: formData.horario_fim || null,
         intervalo_refeicao: formData.intervalo_refeicao ? parseInt(formData.intervalo_refeicao) : null,
-        beneficios: formData.beneficios.length > 0 ? formData.beneficios : null,
-        observacoes: formData.observacoes || null,
+        outros_beneficios: formData.beneficios.length > 0 ? formData.beneficios : null,
+        observacoes_especificas: formData.observacoes || null,
         status: formData.status as "vago" | "ocupado" | "vago_temporariamente" | "ocupado_temporariamente" | "inativo",
       };
 
