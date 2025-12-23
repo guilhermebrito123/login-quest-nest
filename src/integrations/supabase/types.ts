@@ -963,6 +963,7 @@ export type Database = {
           nome_completo: string
           numero_conta: string | null
           pix: string
+          pix_pertence_beneficiario: boolean | null
           possui_antecedente: boolean | null
           status: Database["public"]["Enums"]["status_diarista"] | null
           telefone: string
@@ -986,6 +987,7 @@ export type Database = {
           nome_completo: string
           numero_conta?: string | null
           pix?: string
+          pix_pertence_beneficiario?: boolean | null
           possui_antecedente?: boolean | null
           status?: Database["public"]["Enums"]["status_diarista"] | null
           telefone: string
@@ -1009,6 +1011,7 @@ export type Database = {
           nome_completo?: string
           numero_conta?: string | null
           pix?: string
+          pix_pertence_beneficiario?: boolean | null
           possui_antecedente?: boolean | null
           status?: Database["public"]["Enums"]["status_diarista"] | null
           telefone?: string
