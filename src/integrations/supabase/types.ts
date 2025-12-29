@@ -756,6 +756,13 @@ export type Database = {
           motivo_vago: Database["public"]["Enums"]["motivo_vago_type"]
           novo_posto: boolean | null
           observacao: string | null
+          observacao_pagamento:
+            | Database["public"]["Enums"]["observacao_pagamento_type"]
+            | null
+          ok_pagamento: boolean | null
+          ok_pagamento_em: string | null
+          ok_pagamento_por: string | null
+          outros_motivos_reprovacao_pagamento: string | null
           paga_em: string | null
           paga_por: string | null
           pix_alternativo: string | null
@@ -801,6 +808,13 @@ export type Database = {
           motivo_vago?: Database["public"]["Enums"]["motivo_vago_type"]
           novo_posto?: boolean | null
           observacao?: string | null
+          observacao_pagamento?:
+            | Database["public"]["Enums"]["observacao_pagamento_type"]
+            | null
+          ok_pagamento?: boolean | null
+          ok_pagamento_em?: string | null
+          ok_pagamento_por?: string | null
+          outros_motivos_reprovacao_pagamento?: string | null
           paga_em?: string | null
           paga_por?: string | null
           pix_alternativo?: string | null
@@ -846,6 +860,13 @@ export type Database = {
           motivo_vago?: Database["public"]["Enums"]["motivo_vago_type"]
           novo_posto?: boolean | null
           observacao?: string | null
+          observacao_pagamento?:
+            | Database["public"]["Enums"]["observacao_pagamento_type"]
+            | null
+          ok_pagamento?: boolean | null
+          ok_pagamento_em?: string | null
+          ok_pagamento_por?: string | null
+          outros_motivos_reprovacao_pagamento?: string | null
           paga_em?: string | null
           paga_por?: string | null
           pix_alternativo?: string | null
@@ -924,6 +945,13 @@ export type Database = {
           {
             foreignKeyName: "diarias_temporarias_lancada_por_fkey"
             columns: ["lancada_por"]
+            isOneToOne: false
+            referencedRelation: "usuarios"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "diarias_temporarias_ok_pagamento_por_fkey"
+            columns: ["ok_pagamento_por"]
             isOneToOne: false
             referencedRelation: "usuarios"
             referencedColumns: ["id"]
@@ -2720,6 +2748,9 @@ export type Database = {
         | "LICENÇA PATERNIDADE"
         | "LICENÇA CASAMENTO"
         | "LICENÇA NOJO (FALECIMENTO)"
+      observacao_pagamento_type:
+        | "Valores divergentes"
+        | "Beneficiário do pix não identificado"
       periodicidade_type:
         | "diaria"
         | "semanal"
@@ -2931,6 +2962,10 @@ export const Constants = {
         "LICENÇA PATERNIDADE",
         "LICENÇA CASAMENTO",
         "LICENÇA NOJO (FALECIMENTO)",
+      ],
+      observacao_pagamento_type: [
+        "Valores divergentes",
+        "Beneficiário do pix não identificado",
       ],
       periodicidade_type: [
         "diaria",
