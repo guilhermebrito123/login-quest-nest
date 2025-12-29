@@ -727,6 +727,7 @@ export type Database = {
           aprovada_para_pagamento_em: string | null
           aprovada_por: string | null
           aprovado_para_pgto_por: string | null
+          beneficiario_alternativo: string | null
           cancelada_em: string | null
           cancelada_por: string | null
           cliente_id: number
@@ -757,6 +758,7 @@ export type Database = {
           observacao: string | null
           paga_em: string | null
           paga_por: string | null
+          pix_alternativo: string | null
           posto_servico: string | null
           posto_servico_id: string | null
           reprovada_em: string | null
@@ -770,6 +772,7 @@ export type Database = {
           aprovada_para_pagamento_em?: string | null
           aprovada_por?: string | null
           aprovado_para_pgto_por?: string | null
+          beneficiario_alternativo?: string | null
           cancelada_em?: string | null
           cancelada_por?: string | null
           cliente_id: number
@@ -800,6 +803,7 @@ export type Database = {
           observacao?: string | null
           paga_em?: string | null
           paga_por?: string | null
+          pix_alternativo?: string | null
           posto_servico?: string | null
           posto_servico_id?: string | null
           reprovada_em?: string | null
@@ -813,6 +817,7 @@ export type Database = {
           aprovada_para_pagamento_em?: string | null
           aprovada_por?: string | null
           aprovado_para_pgto_por?: string | null
+          beneficiario_alternativo?: string | null
           cancelada_em?: string | null
           cancelada_por?: string | null
           cliente_id?: number
@@ -843,6 +848,7 @@ export type Database = {
           observacao?: string | null
           paga_em?: string | null
           paga_por?: string | null
+          pix_alternativo?: string | null
           posto_servico?: string | null
           posto_servico_id?: string | null
           reprovada_em?: string | null
