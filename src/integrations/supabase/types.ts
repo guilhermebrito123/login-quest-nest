@@ -757,7 +757,7 @@ export type Database = {
           novo_posto: boolean | null
           observacao: string | null
           observacao_pagamento:
-            | Database["public"]["Enums"]["observacao_pagamento_type"]
+            | Database["public"]["Enums"]["observacao_pagamento_type"][]
             | null
           ok_pagamento: boolean | null
           ok_pagamento_em: string | null
@@ -809,7 +809,7 @@ export type Database = {
           novo_posto?: boolean | null
           observacao?: string | null
           observacao_pagamento?:
-            | Database["public"]["Enums"]["observacao_pagamento_type"]
+            | Database["public"]["Enums"]["observacao_pagamento_type"][]
             | null
           ok_pagamento?: boolean | null
           ok_pagamento_em?: string | null
@@ -861,7 +861,7 @@ export type Database = {
           novo_posto?: boolean | null
           observacao?: string | null
           observacao_pagamento?:
-            | Database["public"]["Enums"]["observacao_pagamento_type"]
+            | Database["public"]["Enums"]["observacao_pagamento_type"][]
             | null
           ok_pagamento?: boolean | null
           ok_pagamento_em?: string | null
