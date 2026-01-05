@@ -991,6 +991,57 @@ export type Database = {
           },
         ]
       }
+      diarias_temporarias_logs: {
+        Row: {
+          campo: string
+          criado_em: string | null
+          diaria_id: number
+          id: string
+          operacao: string
+          operacao_em: string | null
+          usuario_responsavel: string | null
+          valor_antigo: string | null
+          valor_novo: string | null
+        }
+        Insert: {
+          campo: string
+          criado_em?: string | null
+          diaria_id: number
+          id?: string
+          operacao: string
+          operacao_em?: string | null
+          usuario_responsavel?: string | null
+          valor_antigo?: string | null
+          valor_novo?: string | null
+        }
+        Update: {
+          campo?: string
+          criado_em?: string | null
+          diaria_id?: number
+          id?: string
+          operacao?: string
+          operacao_em?: string | null
+          usuario_responsavel?: string | null
+          valor_antigo?: string | null
+          valor_novo?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "diarias_temporarias_logs_diaria_id_fkey"
+            columns: ["diaria_id"]
+            isOneToOne: false
+            referencedRelation: "diarias_temporarias"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "diarias_temporarias_logs_usuario_responsavel_fkey"
+            columns: ["usuario_responsavel"]
+            isOneToOne: false
+            referencedRelation: "usuarios"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       diaristas: {
         Row: {
           agencia: string | null
