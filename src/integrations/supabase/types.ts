@@ -70,6 +70,45 @@ export type Database = {
           },
         ]
       }
+      blacklist: {
+        Row: {
+          bloqueado_em: string | null
+          bloqueado_por: string | null
+          diarista_id: string
+          id: string
+          motivo: string
+        }
+        Insert: {
+          bloqueado_em?: string | null
+          bloqueado_por?: string | null
+          diarista_id: string
+          id?: string
+          motivo: string
+        }
+        Update: {
+          bloqueado_em?: string | null
+          bloqueado_por?: string | null
+          diarista_id?: string
+          id?: string
+          motivo?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "blacklist_bloqueado_por_fkey"
+            columns: ["bloqueado_por"]
+            isOneToOne: false
+            referencedRelation: "usuarios"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "fk_blacklist_diarista"
+            columns: ["diarista_id"]
+            isOneToOne: false
+            referencedRelation: "diaristas"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       candidatos: {
         Row: {
           celular: string | null
@@ -2705,6 +2744,14 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
+      adicionar_diarista_blacklist: {
+        Args: {
+          p_bloqueado_por: string
+          p_diarista_id: string
+          p_motivo: string
+        }
+        Returns: undefined
+      }
       agendar_ocupacao_posto: {
         Args: {
           p_colaborador_id: string
