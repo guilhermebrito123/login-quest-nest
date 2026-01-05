@@ -752,7 +752,10 @@ export type Database = {
           lancada_por: string | null
           licenca_nojo: boolean | null
           motivo_cancelamento: string | null
-          motivo_reprovacao: string | null
+          motivo_reprovacao:
+            | Database["public"]["Enums"]["motivo_reprovacao"]
+            | null
+          motivo_reprovacao_observacao: string | null
           motivo_vago: Database["public"]["Enums"]["motivo_vago_type"]
           novo_posto: boolean | null
           observacao: string | null
@@ -805,7 +808,10 @@ export type Database = {
           lancada_por?: string | null
           licenca_nojo?: boolean | null
           motivo_cancelamento?: string | null
-          motivo_reprovacao?: string | null
+          motivo_reprovacao?:
+            | Database["public"]["Enums"]["motivo_reprovacao"]
+            | null
+          motivo_reprovacao_observacao?: string | null
           motivo_vago?: Database["public"]["Enums"]["motivo_vago_type"]
           novo_posto?: boolean | null
           observacao?: string | null
@@ -858,7 +864,10 @@ export type Database = {
           lancada_por?: string | null
           licenca_nojo?: boolean | null
           motivo_cancelamento?: string | null
-          motivo_reprovacao?: string | null
+          motivo_reprovacao?:
+            | Database["public"]["Enums"]["motivo_reprovacao"]
+            | null
+          motivo_reprovacao_observacao?: string | null
           motivo_vago?: Database["public"]["Enums"]["motivo_vago_type"]
           novo_posto?: boolean | null
           observacao?: string | null
@@ -2740,6 +2749,7 @@ export type Database = {
         | "Substituição férias licença"
         | "Implantação/Abertura de novo contrato"
         | "Solicitação do cliente"
+      motivo_reprovacao: "Diarista ausente" | "Dados incorretos"
       motivo_vago_type:
         | "FALTA JUSTIFICADA"
         | "FALTA INJUSTIFICADA"
@@ -2954,6 +2964,7 @@ export const Constants = {
         "Implantação/Abertura de novo contrato",
         "Solicitação do cliente",
       ],
+      motivo_reprovacao: ["Diarista ausente", "Dados incorretos"],
       motivo_vago_type: [
         "FALTA JUSTIFICADA",
         "FALTA INJUSTIFICADA",
