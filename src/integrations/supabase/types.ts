@@ -1081,6 +1081,36 @@ export type Database = {
           },
         ]
       }
+      diarias_temporarias_logs_completos: {
+        Row: {
+          alteracoes: Json | null
+          data_operacao: string
+          diaria_id: number
+          id: number
+          operacao: string
+          registro_completo: Json | null
+          usuario: string | null
+        }
+        Insert: {
+          alteracoes?: Json | null
+          data_operacao?: string
+          diaria_id: number
+          id?: number
+          operacao: string
+          registro_completo?: Json | null
+          usuario?: string | null
+        }
+        Update: {
+          alteracoes?: Json | null
+          data_operacao?: string
+          diaria_id?: number
+          id?: number
+          operacao?: string
+          registro_completo?: Json | null
+          usuario?: string | null
+        }
+        Relationships: []
+      }
       diaristas: {
         Row: {
           agencia: string | null
@@ -2811,6 +2841,7 @@ export type Database = {
         }
         Returns: undefined
       }
+      fn_diff_jsonb: { Args: { new_row: Json; old_row: Json }; Returns: Json }
       gerar_dias_trabalho_proximo_mes: { Args: never; Returns: undefined }
       has_role: {
         Args: {
