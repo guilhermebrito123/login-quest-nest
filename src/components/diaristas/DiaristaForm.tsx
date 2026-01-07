@@ -36,7 +36,8 @@ export function DiaristaForm({ open, onClose, onSuccess, diarista }: DiaristaFor
     telefone: string;
     email: string;
     possui_antecedente: boolean;
-    status: "ativo" | "inativo" | "desligado";
+    status: "ativo" | "inativo" | "desligado" | "restrito";
+    motivo_restricao: string;
     agencia: string;
     banco: string;
     tipo_conta: "conta corrente" | "conta poupança" | "conta salário";
@@ -52,6 +53,7 @@ export function DiaristaForm({ open, onClose, onSuccess, diarista }: DiaristaFor
     email: "",
     possui_antecedente: false,
     status: "ativo",
+    motivo_restricao: "",
     agencia: "",
     banco: "",
     tipo_conta: "conta corrente",
@@ -77,7 +79,8 @@ export function DiaristaForm({ open, onClose, onSuccess, diarista }: DiaristaFor
         telefone: diarista.telefone || "",
         email: diarista.email || "",
         possui_antecedente: diarista.possui_antecedente || false,
-        status: (diarista.status || "ativo") as "ativo" | "inativo" | "desligado",
+        status: (diarista.status || "ativo") as "ativo" | "inativo" | "desligado" | "restrito",
+        motivo_restricao: diarista.motivo_restricao || "",
         agencia: diarista.agencia || "",
         banco: diarista.banco || "",
         tipo_conta: (diarista.tipo_conta || "conta corrente") as "conta corrente" | "conta poupança" | "conta salário",
@@ -95,6 +98,7 @@ export function DiaristaForm({ open, onClose, onSuccess, diarista }: DiaristaFor
         email: "",
         possui_antecedente: false,
         status: "ativo",
+        motivo_restricao: "",
         agencia: "",
         banco: "",
         tipo_conta: "conta corrente",
@@ -109,6 +113,11 @@ export function DiaristaForm({ open, onClose, onSuccess, diarista }: DiaristaFor
     
     if (formData.possui_antecedente) {
       toast.error("Não é permitido cadastrar diaristas com antecedentes criminais");
+      return;
+    }
+
+    if (formData.status === "restrito" && !formData.motivo_restricao.trim()) {
+      toast.error("O motivo da restrição é obrigatório quando o status é 'restrito'");
       return;
     }
 
@@ -312,7 +321,11 @@ export function DiaristaForm({ open, onClose, onSuccess, diarista }: DiaristaFor
               <Select
                 value={formData.status}
                 onValueChange={(value) =>
-                  setFormData({ ...formData, status: value as "ativo" | "inativo" | "desligado" })
+                  setFormData({ 
+                    ...formData, 
+                    status: value as "ativo" | "inativo" | "desligado" | "restrito",
+                    motivo_restricao: value !== "restrito" ? "" : formData.motivo_restricao
+                  })
                 }
               >
                 <SelectTrigger>
@@ -322,9 +335,25 @@ export function DiaristaForm({ open, onClose, onSuccess, diarista }: DiaristaFor
                   <SelectItem value="ativo">Ativo</SelectItem>
                   <SelectItem value="inativo">Inativo</SelectItem>
                   <SelectItem value="desligado">Desligado</SelectItem>
+                  <SelectItem value="restrito">Restrito</SelectItem>
                 </SelectContent>
               </Select>
             </div>
+
+            {formData.status === "restrito" && (
+              <div className="space-y-2">
+                <Label htmlFor="motivo_restricao">Motivo da Restrição *</Label>
+                <Input
+                  id="motivo_restricao"
+                  value={formData.motivo_restricao}
+                  onChange={(e) =>
+                    setFormData({ ...formData, motivo_restricao: e.target.value })
+                  }
+                  placeholder="Informe o motivo da restrição"
+                  required
+                />
+              </div>
+            )}
 
             <div className="space-y-2 col-span-2">
               <h3 className="text-lg font-semibold">Dados Bancários</h3>

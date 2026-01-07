@@ -1126,6 +1126,7 @@ export type Database = {
           email: string | null
           endereco: string | null
           id: string
+          motivo_restricao: string | null
           nome_completo: string
           numero_conta: string | null
           pix: string
@@ -1150,6 +1151,7 @@ export type Database = {
           email?: string | null
           endereco?: string | null
           id?: string
+          motivo_restricao?: string | null
           nome_completo: string
           numero_conta?: string | null
           pix?: string
@@ -1174,6 +1176,7 @@ export type Database = {
           email?: string | null
           endereco?: string | null
           id?: string
+          motivo_restricao?: string | null
           nome_completo?: string
           numero_conta?: string | null
           pix?: string
@@ -2911,7 +2914,7 @@ export type Database = {
         | "Paga"
         | "Cancelada"
         | "Reprovada"
-      status_diarista: "ativo" | "inativo" | "desligado"
+      status_diarista: "ativo" | "inativo" | "desligado" | "restrito"
       status_execucao: "ativo" | "concluido" | "atrasado" | "cancelado"
       status_posto:
         | "vago"
@@ -3130,7 +3133,7 @@ export const Constants = {
         "Cancelada",
         "Reprovada",
       ],
-      status_diarista: ["ativo", "inativo", "desligado"],
+      status_diarista: ["ativo", "inativo", "desligado", "restrito"],
       status_execucao: ["ativo", "concluido", "atrasado", "cancelado"],
       status_posto: [
         "vago",
