@@ -813,7 +813,7 @@ export type Database = {
           reprovada_em: string | null
           reprovada_por: string | null
           status: Database["public"]["Enums"]["status_diaria"]
-          unidade: string | null
+          unidade: string
           updated_at: string
           valor_diaria: number
         }
@@ -869,7 +869,7 @@ export type Database = {
           reprovada_em?: string | null
           reprovada_por?: string | null
           status?: Database["public"]["Enums"]["status_diaria"]
-          unidade?: string | null
+          unidade: string
           updated_at?: string
           valor_diaria: number
         }
@@ -925,7 +925,7 @@ export type Database = {
           reprovada_em?: string | null
           reprovada_por?: string | null
           status?: Database["public"]["Enums"]["status_diaria"]
-          unidade?: string | null
+          unidade?: string
           updated_at?: string
           valor_diaria?: number
         }
