@@ -1120,6 +1120,7 @@ export type Database = {
           email: string | null
           endereco: string | null
           id: string
+          motivo_alteracao: string | null
           motivo_restricao: string | null
           nome_completo: string
           numero_conta: string | null
@@ -1145,6 +1146,7 @@ export type Database = {
           email?: string | null
           endereco?: string | null
           id?: string
+          motivo_alteracao?: string | null
           motivo_restricao?: string | null
           nome_completo: string
           numero_conta?: string | null
@@ -1170,6 +1172,7 @@ export type Database = {
           email?: string | null
           endereco?: string | null
           id?: string
+          motivo_alteracao?: string | null
           motivo_restricao?: string | null
           nome_completo?: string
           numero_conta?: string | null
@@ -1217,6 +1220,44 @@ export type Database = {
         Relationships: [
           {
             foreignKeyName: "diaristas_anexos_diarista_id_fkey"
+            columns: ["diarista_id"]
+            isOneToOne: false
+            referencedRelation: "diaristas"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      diaristas_historico: {
+        Row: {
+          alterado_em: string | null
+          campo_alterado: string
+          diarista_id: string
+          id: string
+          motivo: string
+          valor_anterior: string | null
+          valor_novo: string | null
+        }
+        Insert: {
+          alterado_em?: string | null
+          campo_alterado: string
+          diarista_id: string
+          id?: string
+          motivo: string
+          valor_anterior?: string | null
+          valor_novo?: string | null
+        }
+        Update: {
+          alterado_em?: string | null
+          campo_alterado?: string
+          diarista_id?: string
+          id?: string
+          motivo?: string
+          valor_anterior?: string | null
+          valor_novo?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "diaristas_historico_diarista_id_fkey"
             columns: ["diarista_id"]
             isOneToOne: false
             referencedRelation: "diaristas"
