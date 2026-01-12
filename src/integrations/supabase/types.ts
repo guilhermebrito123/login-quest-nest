@@ -773,7 +773,6 @@ export type Database = {
           colaborador_ausente_nome: string | null
           colaborador_demitido: string | null
           colaborador_demitido_nome: string | null
-          colaborador_falecido: string | null
           confirmada_em: string | null
           confirmada_por: string | null
           created_at: string
@@ -788,7 +787,6 @@ export type Database = {
           jornada_diaria: number | null
           lancada_em: string | null
           lancada_por: string | null
-          licenca_nojo: boolean | null
           motivo_cancelamento: string | null
           motivo_reprovacao:
             | Database["public"]["Enums"]["motivo_reprovacao"]
@@ -827,7 +825,6 @@ export type Database = {
           colaborador_ausente_nome?: string | null
           colaborador_demitido?: string | null
           colaborador_demitido_nome?: string | null
-          colaborador_falecido?: string | null
           confirmada_em?: string | null
           confirmada_por?: string | null
           created_at?: string
@@ -842,7 +839,6 @@ export type Database = {
           jornada_diaria?: number | null
           lancada_em?: string | null
           lancada_por?: string | null
-          licenca_nojo?: boolean | null
           motivo_cancelamento?: string | null
           motivo_reprovacao?:
             | Database["public"]["Enums"]["motivo_reprovacao"]
@@ -881,7 +877,6 @@ export type Database = {
           colaborador_ausente_nome?: string | null
           colaborador_demitido?: string | null
           colaborador_demitido_nome?: string | null
-          colaborador_falecido?: string | null
           confirmada_em?: string | null
           confirmada_por?: string | null
           created_at?: string
@@ -896,7 +891,6 @@ export type Database = {
           jornada_diaria?: number | null
           lancada_em?: string | null
           lancada_por?: string | null
-          licenca_nojo?: boolean | null
           motivo_cancelamento?: string | null
           motivo_reprovacao?:
             | Database["public"]["Enums"]["motivo_reprovacao"]
