@@ -592,7 +592,7 @@ export type Database = {
       colaboradores: {
         Row: {
           cargo: string | null
-          cpf: string
+          cpf: string | null
           created_at: string | null
           data_admissao: string | null
           data_desligamento: string | null
@@ -610,7 +610,7 @@ export type Database = {
         }
         Insert: {
           cargo?: string | null
-          cpf: string
+          cpf?: string | null
           created_at?: string | null
           data_admissao?: string | null
           data_desligamento?: string | null
@@ -628,7 +628,7 @@ export type Database = {
         }
         Update: {
           cargo?: string | null
-          cpf?: string
+          cpf?: string | null
           created_at?: string | null
           data_admissao?: string | null
           data_desligamento?: string | null
