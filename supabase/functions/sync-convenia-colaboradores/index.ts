@@ -178,19 +178,12 @@ Deno.serve(async (req) => {
           updated++;
         }
       } else {
-        // Para inserir, precisamos de CPF
-        if (!cpf) {
-          console.log(`Colaborador ${nomeCompleto} sem CPF e não existe no banco, pulando inserção...`);
-          skipped++;
-          continue;
-        }
-
-        // Inserir novo colaborador
+        // Inserir novo colaborador (CPF agora é opcional)
         const { error: insertError } = await supabaseAdmin
           .from("colaboradores")
           .insert({
             ...colaboradorData,
-            cpf: cpf,
+            cpf: cpf, // pode ser null
           });
 
         if (insertError) {
