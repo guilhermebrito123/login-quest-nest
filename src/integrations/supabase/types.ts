@@ -592,6 +592,7 @@ export type Database = {
       colaboradores: {
         Row: {
           cargo: string | null
+          cliente_id: number | null
           cpf: string | null
           created_at: string | null
           data_admissao: string | null
@@ -610,6 +611,7 @@ export type Database = {
         }
         Insert: {
           cargo?: string | null
+          cliente_id?: number | null
           cpf?: string | null
           created_at?: string | null
           data_admissao?: string | null
@@ -628,6 +630,7 @@ export type Database = {
         }
         Update: {
           cargo?: string | null
+          cliente_id?: number | null
           cpf?: string | null
           created_at?: string | null
           data_admissao?: string | null
@@ -645,6 +648,13 @@ export type Database = {
           user_id?: string | null
         }
         Relationships: [
+          {
+            foreignKeyName: "colaboradores_cliente_id_fkey"
+            columns: ["cliente_id"]
+            isOneToOne: false
+            referencedRelation: "clientes"
+            referencedColumns: ["id"]
+          },
           {
             foreignKeyName: "colaboradores_escala_id_fkey"
             columns: ["escala_id"]
