@@ -1119,7 +1119,7 @@ export type Database = {
           banco: string | null
           cep: string | null
           cidade: string | null
-          cpf: string | null
+          cpf: string
           created_at: string
           email: string | null
           endereco: string | null
@@ -1128,11 +1128,11 @@ export type Database = {
           motivo_restricao: string | null
           nome_completo: string
           numero_conta: string | null
-          pix: string
+          pix: string | null
           pix_pertence_beneficiario: boolean | null
           possui_antecedente: boolean | null
           status: Database["public"]["Enums"]["status_diarista"] | null
-          telefone: string
+          telefone: string | null
           tipo_conta: Database["public"]["Enums"]["tipo_conta_bancaria"] | null
           updated_at: string
         }
@@ -1145,7 +1145,7 @@ export type Database = {
           banco?: string | null
           cep?: string | null
           cidade?: string | null
-          cpf?: string | null
+          cpf?: string
           created_at?: string
           email?: string | null
           endereco?: string | null
@@ -1154,11 +1154,11 @@ export type Database = {
           motivo_restricao?: string | null
           nome_completo: string
           numero_conta?: string | null
-          pix?: string
+          pix?: string | null
           pix_pertence_beneficiario?: boolean | null
           possui_antecedente?: boolean | null
           status?: Database["public"]["Enums"]["status_diarista"] | null
-          telefone: string
+          telefone?: string | null
           tipo_conta?: Database["public"]["Enums"]["tipo_conta_bancaria"] | null
           updated_at?: string
         }
@@ -1171,7 +1171,7 @@ export type Database = {
           banco?: string | null
           cep?: string | null
           cidade?: string | null
-          cpf?: string | null
+          cpf?: string
           created_at?: string
           email?: string | null
           endereco?: string | null
@@ -1180,11 +1180,11 @@ export type Database = {
           motivo_restricao?: string | null
           nome_completo?: string
           numero_conta?: string | null
-          pix?: string
+          pix?: string | null
           pix_pertence_beneficiario?: boolean | null
           possui_antecedente?: boolean | null
           status?: Database["public"]["Enums"]["status_diarista"] | null
-          telefone?: string
+          telefone?: string | null
           tipo_conta?: Database["public"]["Enums"]["tipo_conta_bancaria"] | null
           updated_at?: string
         }
