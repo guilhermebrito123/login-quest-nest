@@ -681,6 +681,192 @@ export type Database = {
           },
         ]
       }
+      colaboradores_convenia: {
+        Row: {
+          address_city: string | null
+          address_complement: string | null
+          address_district: string | null
+          address_number: string | null
+          address_state: string | null
+          address_street: string | null
+          address_zip_code: string | null
+          annotations: Json | null
+          aso: Json | null
+          bank_accounts: Json | null
+          birth_date: string | null
+          convenia_id: string
+          cost_center_id: string | null
+          cost_center_name: string | null
+          cpf: string | null
+          created_at: string
+          ctps_emission_date: string | null
+          ctps_number: string | null
+          ctps_serial_number: string | null
+          department_id: string | null
+          department_name: string | null
+          disability: Json | null
+          driver_license_category: string | null
+          driver_license_number: string | null
+          driver_license_validate_date: string | null
+          educations: Json | null
+          electoral_card: Json | null
+          email: string | null
+          emergency_contacts: Json | null
+          experience_period: Json | null
+          foreign_data: Json | null
+          hiring_date: string | null
+          id: string
+          intern_data: Json | null
+          job_id: string | null
+          job_name: string | null
+          last_name: string | null
+          name: string | null
+          nationalities: Json | null
+          payroll: Json | null
+          personal_email: string | null
+          personal_phone: string | null
+          pis: string | null
+          registration: string | null
+          reservist: Json | null
+          residential_phone: string | null
+          rg_emission_date: string | null
+          rg_issuing_agency: string | null
+          rg_number: string | null
+          salary: number | null
+          social_name: string | null
+          status: string | null
+          supervisor_id: string | null
+          supervisor_last_name: string | null
+          supervisor_name: string | null
+          synced_at: string | null
+          team_id: string | null
+          team_name: string | null
+          updated_at: string
+        }
+        Insert: {
+          address_city?: string | null
+          address_complement?: string | null
+          address_district?: string | null
+          address_number?: string | null
+          address_state?: string | null
+          address_street?: string | null
+          address_zip_code?: string | null
+          annotations?: Json | null
+          aso?: Json | null
+          bank_accounts?: Json | null
+          birth_date?: string | null
+          convenia_id: string
+          cost_center_id?: string | null
+          cost_center_name?: string | null
+          cpf?: string | null
+          created_at?: string
+          ctps_emission_date?: string | null
+          ctps_number?: string | null
+          ctps_serial_number?: string | null
+          department_id?: string | null
+          department_name?: string | null
+          disability?: Json | null
+          driver_license_category?: string | null
+          driver_license_number?: string | null
+          driver_license_validate_date?: string | null
+          educations?: Json | null
+          electoral_card?: Json | null
+          email?: string | null
+          emergency_contacts?: Json | null
+          experience_period?: Json | null
+          foreign_data?: Json | null
+          hiring_date?: string | null
+          id?: string
+          intern_data?: Json | null
+          job_id?: string | null
+          job_name?: string | null
+          last_name?: string | null
+          name?: string | null
+          nationalities?: Json | null
+          payroll?: Json | null
+          personal_email?: string | null
+          personal_phone?: string | null
+          pis?: string | null
+          registration?: string | null
+          reservist?: Json | null
+          residential_phone?: string | null
+          rg_emission_date?: string | null
+          rg_issuing_agency?: string | null
+          rg_number?: string | null
+          salary?: number | null
+          social_name?: string | null
+          status?: string | null
+          supervisor_id?: string | null
+          supervisor_last_name?: string | null
+          supervisor_name?: string | null
+          synced_at?: string | null
+          team_id?: string | null
+          team_name?: string | null
+          updated_at?: string
+        }
+        Update: {
+          address_city?: string | null
+          address_complement?: string | null
+          address_district?: string | null
+          address_number?: string | null
+          address_state?: string | null
+          address_street?: string | null
+          address_zip_code?: string | null
+          annotations?: Json | null
+          aso?: Json | null
+          bank_accounts?: Json | null
+          birth_date?: string | null
+          convenia_id?: string
+          cost_center_id?: string | null
+          cost_center_name?: string | null
+          cpf?: string | null
+          created_at?: string
+          ctps_emission_date?: string | null
+          ctps_number?: string | null
+          ctps_serial_number?: string | null
+          department_id?: string | null
+          department_name?: string | null
+          disability?: Json | null
+          driver_license_category?: string | null
+          driver_license_number?: string | null
+          driver_license_validate_date?: string | null
+          educations?: Json | null
+          electoral_card?: Json | null
+          email?: string | null
+          emergency_contacts?: Json | null
+          experience_period?: Json | null
+          foreign_data?: Json | null
+          hiring_date?: string | null
+          id?: string
+          intern_data?: Json | null
+          job_id?: string | null
+          job_name?: string | null
+          last_name?: string | null
+          name?: string | null
+          nationalities?: Json | null
+          payroll?: Json | null
+          personal_email?: string | null
+          personal_phone?: string | null
+          pis?: string | null
+          registration?: string | null
+          reservist?: Json | null
+          residential_phone?: string | null
+          rg_emission_date?: string | null
+          rg_issuing_agency?: string | null
+          rg_number?: string | null
+          salary?: number | null
+          social_name?: string | null
+          status?: string | null
+          supervisor_id?: string | null
+          supervisor_last_name?: string | null
+          supervisor_name?: string | null
+          synced_at?: string | null
+          team_id?: string | null
+          team_name?: string | null
+          updated_at?: string
+        }
+        Relationships: []
+      }
       contratos: {
         Row: {
           cliente_id: number
