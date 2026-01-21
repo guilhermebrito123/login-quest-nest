@@ -333,6 +333,7 @@ function mapToColaboradoresConvenia(employee: ConveniaEmployee) {
     ctps_emission_date: employee.ctps?.emission_date || null,
     driver_license_number: employee.driver_license?.number || null,
     driver_license_category: employee.driver_license?.category || null,
+    driver_license_emission_date: employee.driver_license?.emission_date || null,
     driver_license_validate_date: employee.driver_license?.validate_date || null,
     intern_data: employee.intern ? JSON.stringify(employee.intern) : null,
     annotations: employee.annotations ? JSON.stringify(employee.annotations) : null,
