@@ -206,7 +206,8 @@ function mapToColaboradoresConvenia(employee: ConveniaEmployee) {
     residential_phone: formatPhone(employee.contact_information?.residential_phone),
     personal_phone: formatPhone(employee.contact_information?.personal_phone),
     personal_email: employee.contact_information?.personal_email || null,
-    bank_accounts: employee.bank_accounts ? JSON.stringify(employee.bank_accounts) : null,
+    // JSONB columns - passar objetos diretamente, não strings
+    bank_accounts: employee.bank_accounts || null,
     rg_number: employee.rg?.number || null,
     rg_emission_date: employee.rg?.emission_date || null,
     rg_issuing_agency: employee.rg?.issuing_agency || null,
@@ -217,19 +218,20 @@ function mapToColaboradoresConvenia(employee: ConveniaEmployee) {
     driver_license_category: employee.driver_license?.category || null,
     driver_license_emission_date: employee.driver_license?.emission_date || null,
     driver_license_validate_date: employee.driver_license?.validate_date || null,
-    intern_data: employee.intern ? JSON.stringify(employee.intern) : null,
-    annotations: employee.annotations ? JSON.stringify(employee.annotations) : null,
-    aso: employee.aso ? JSON.stringify(employee.aso) : null,
-    disability: employee.disability ? JSON.stringify(employee.disability) : null,
-    foreign_data: employee.foreign ? JSON.stringify(employee.foreign) : null,
-    educations: employee.educations ? JSON.stringify(employee.educations) : null,
-    nationalities: employee.nationalities ? JSON.stringify(employee.nationalities) : null,
-    experience_period: employee.experience_period ? JSON.stringify(employee.experience_period) : null,
-    emergency_contacts: employee.emergency_contacts ? JSON.stringify(employee.emergency_contacts) : null,
-    electoral_card: employee.electoral_card ? JSON.stringify(employee.electoral_card) : null,
-    reservist: employee.reservist ? JSON.stringify(employee.reservist) : null,
-    payroll: employee.payroll ? JSON.stringify(employee.payroll) : null,
-    raw_data: JSON.stringify(employee), // Armazena payload completo
+    // JSONB columns - passar objetos diretamente
+    intern_data: employee.intern || null,
+    annotations: employee.annotations || null,
+    aso: employee.aso || null,
+    disability: employee.disability || null,
+    foreign_data: employee.foreign || null,
+    educations: employee.educations || null,
+    nationalities: employee.nationalities || null,
+    experience_period: employee.experience_period || null,
+    emergency_contacts: employee.emergency_contacts || null,
+    electoral_card: employee.electoral_card || null,
+    reservist: employee.reservist || null,
+    payroll: employee.payroll || null,
+    raw_data: employee, // Armazena payload completo como JSONB
     synced_at: new Date().toISOString(),
   };
 }
@@ -296,9 +298,12 @@ Deno.serve(async (req) => {
 
     console.log(`Total de colaboradores encontrados: ${allEmployeesBasic.length}`);
     
-    // PASSO 2: Buscar detalhes de cada colaborador
-    console.log("Buscando detalhes de cada colaborador...");
+    // PASSO 2: Buscar detalhes e salvar em lotes de 10 para evitar timeout
+    console.log("Buscando detalhes e salvando em lotes...");
     const allEmployees: ConveniaEmployee[] = [];
+    let colaboradoresConveniaUpdated = 0;
+    const colaboradoresConveniaErrors: string[] = [];
+    const BATCH_SIZE = 10;
     
     for (let i = 0; i < allEmployeesBasic.length; i++) {
       const basicEmployee = allEmployeesBasic[i];
@@ -310,6 +315,27 @@ Deno.serve(async (req) => {
         allEmployees.push(basicEmployee);
       }
       
+      // Salvar em lotes de BATCH_SIZE ou quando for o último
+      if (allEmployees.length % BATCH_SIZE === 0 || i === allEmployeesBasic.length - 1) {
+        const startIdx = Math.floor((allEmployees.length - 1) / BATCH_SIZE) * BATCH_SIZE;
+        const batch = allEmployees.slice(startIdx);
+        
+        for (const employee of batch) {
+          const mappedData = mapToColaboradoresConvenia(employee);
+          
+          const { error: upsertError } = await supabaseAdmin
+            .from("colaboradores_convenia")
+            .upsert(mappedData, { onConflict: "convenia_id" });
+
+          if (upsertError) {
+            colaboradoresConveniaErrors.push(`Erro ${employee.name}: ${upsertError.message}`);
+          } else {
+            colaboradoresConveniaUpdated++;
+          }
+        }
+        console.log(`Lote salvo: ${colaboradoresConveniaUpdated}/${allEmployeesBasic.length}`);
+      }
+      
       if ((i + 1) % 50 === 0) {
         console.log(`Progresso: ${i + 1}/${allEmployeesBasic.length}`);
       }
@@ -317,30 +343,9 @@ Deno.serve(async (req) => {
       await delay(100);
     }
 
-    console.log(`Detalhes obtidos para ${allEmployees.length} colaboradores`);
+    console.log(`Total sincronizado em colaboradores_convenia: ${colaboradoresConveniaUpdated}`);
 
-    // PASSO 3: Sincronizar com tabela colaboradores_convenia
-    console.log("Sincronizando com tabela colaboradores_convenia...");
-    let colaboradoresConveniaUpdated = 0;
-    const colaboradoresConveniaErrors: string[] = [];
-
-    for (const employee of allEmployees) {
-      const mappedData = mapToColaboradoresConvenia(employee);
-      
-      const { error: upsertError } = await supabaseAdmin
-        .from("colaboradores_convenia")
-        .upsert(mappedData, { onConflict: "convenia_id" });
-
-      if (upsertError) {
-        colaboradoresConveniaErrors.push(`Erro ${employee.name}: ${upsertError.message}`);
-      } else {
-        colaboradoresConveniaUpdated++;
-      }
-    }
-
-    console.log(`Colaboradores sincronizados em colaboradores_convenia: ${colaboradoresConveniaUpdated}`);
-
-    // PASSO 4: Sincronizar com tabela colaboradores (existente)
+    // PASSO 3: Sincronizar com tabela colaboradores (existente)
     console.log("Sincronizando com tabela colaboradores...");
 
     const { data: existingColaboradores, error: fetchError } = await supabaseAdmin
