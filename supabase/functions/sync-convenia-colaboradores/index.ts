@@ -52,6 +52,37 @@ function normalizeString(str: string): string {
     .trim();
 }
 
+// Mapeamento explícito de cost_center do Convenia para nome_fantasia dos clientes
+const costCenterToClienteMap: Record<string, string> = {
+  "itaminas": "Itaminas",
+  "vmg": "Viação Minas Gerais",
+  "vma": "VMA",
+  "portal": "Condomínio Portal Vistas do Horizonte",
+  "sl mandic rj": "São Leopoldo Mandic",
+  "ibram": "IBRAM",
+  "spic": "SPIC",
+  "inspiratto": "Condomínio Inspiratto",
+  "magna ibirita": "Magna Cosma do Brasil",
+  "bionow": "Bionow",
+  "grupo bmg": "BMG",
+  "conquista premium": "Condomínio Conquista Premium",
+  "conquista": "Condomínio Conquista Premium",
+  "artesanal": "Farmácia Artesanal",
+  "village europa": "Condomínio Village Europa",
+  "village": "Condomínio Village Europa",
+  "parque europa": "Condomínio Parque Europa",
+  "neooh sp": "NEOOH SP",
+  "neooh": "NEOOH BH",
+  "neeoh bh": "NEOOH BH",
+  "pjus": "PJUS",
+  "ge": "GE",
+  "terrayama": "Terrayama",
+  "way planalto": "Condomínio Way Planalto",
+  "way": "Condomínio Way Planalto",
+  "rossi": "Condomínio Mais Reserva Especial",
+  "parque gameleira": "Parque Gameleira",
+};
+
 Deno.serve(async (req) => {
   if (req.method === "OPTIONS") {
     return new Response(null, { headers: corsHeaders });
@@ -172,15 +203,30 @@ Deno.serve(async (req) => {
       // O CPF pode vir diretamente na listagem ou não
       const cpf = cleanCpf(employee.cpf);
 
-      // Buscar cliente_id baseado no cost_center
+      // Buscar cliente_id baseado no cost_center usando mapeamento explícito
       let clienteId: number | null = null;
       if (employee.cost_center?.name) {
         const normalizedCostCenter = normalizeString(employee.cost_center.name);
-        clienteId = clienteMap.get(normalizedCostCenter) || null;
+        
+        // Primeiro tenta pelo mapeamento explícito
+        const mappedClienteName = costCenterToClienteMap[normalizedCostCenter];
+        if (mappedClienteName) {
+          clienteId = clienteMap.get(normalizeString(mappedClienteName)) || null;
+          if (clienteId) {
+            console.log(`Cost center mapeado via tabela: ${employee.cost_center.name} -> ${mappedClienteName} -> cliente_id: ${clienteId}`);
+          }
+        }
+        
+        // Se não encontrou no mapeamento explícito, tenta busca direta
+        if (!clienteId) {
+          clienteId = clienteMap.get(normalizedCostCenter) || null;
+          if (clienteId) {
+            console.log(`Cost center mapeado diretamente: ${employee.cost_center.name} -> cliente_id: ${clienteId}`);
+          }
+        }
+        
         if (!clienteId) {
           console.log(`Cost center não encontrado nos clientes: ${employee.cost_center.name}`);
-        } else {
-          console.log(`Cost center mapeado: ${employee.cost_center.name} -> cliente_id: ${clienteId}`);
         }
       }
       
