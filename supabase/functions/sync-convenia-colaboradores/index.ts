@@ -5,38 +5,33 @@ const corsHeaders = {
   "Access-Control-Allow-Headers": "authorization, x-client-info, apikey, content-type",
 };
 
-interface ConveniaEmployeeBasic {
+interface ConveniaEmployee {
   id: string;
   name: string;
   last_name: string;
-  email: string;
-  status: string;
-  hiring_date: string;
-  cpf?: string;
+  email?: string;
+  hiring_date?: string;
+  documents?: {
+    cpf?: string;
+  };
   job?: {
-    name?: string;
-  };
-  contact_information?: {
-    personal_phone?: string;
-  };
-  cost_center?: {
     id?: string;
     name?: string;
   };
+  department?: {
+    id?: string;
+    name?: string;
+  };
+  cellphone?: string;
 }
 
 interface ConveniaListResponse {
-  data: ConveniaEmployeeBasic[];
+  data: ConveniaEmployee[];
   meta?: {
     current_page: number;
     last_page: number;
     total: number;
   };
-}
-
-interface ConveniaCostCenter {
-  id: string;
-  name: string;
 }
 
 function cleanCpf(cpf: string | undefined): string | null {
@@ -46,20 +41,20 @@ function cleanCpf(cpf: string | undefined): string | null {
 
 function formatPhone(phone: string | undefined): string | null {
   if (!phone) return null;
-  return phone.replace(/\D/g, '');
+  const cleaned = phone.replace(/\D/g, '');
+  return cleaned || null;
 }
 
-// Rate limiter simples para evitar sobrecarga na API
 async function delay(ms: number): Promise<void> {
   return new Promise(resolve => setTimeout(resolve, ms));
 }
 
 // Buscar detalhes de um colaborador com retry e backoff
-async function fetchEmployeeDetailsWithRetry(
+async function fetchEmployeeDetails(
   employeeId: string, 
   token: string,
   maxRetries: number = 3
-): Promise<any | null> {
+): Promise<ConveniaEmployee | null> {
   for (let attempt = 0; attempt < maxRetries; attempt++) {
     try {
       const response = await fetch(
@@ -74,22 +69,19 @@ async function fetchEmployeeDetailsWithRetry(
       );
 
       if (response.status === 429) {
-        // Rate limited - esperar e tentar novamente
-        const waitTime = Math.pow(2, attempt) * 1000; // 1s, 2s, 4s
-        console.log(`Rate limited para ${employeeId}, aguardando ${waitTime}ms...`);
+        const waitTime = Math.pow(2, attempt) * 1000;
+        console.log(`Rate limited, aguardando ${waitTime}ms...`);
         await delay(waitTime);
         continue;
       }
 
       if (!response.ok) {
-        console.error(`Erro ao buscar detalhes do colaborador ${employeeId}: ${response.status}`);
         return null;
       }
 
       const data = await response.json();
       return data.data || data;
     } catch (error) {
-      console.error(`Erro ao buscar detalhes do colaborador ${employeeId}:`, error);
       if (attempt < maxRetries - 1) {
         await delay(1000);
       }
@@ -122,7 +114,7 @@ Deno.serve(async (req) => {
     console.log("Buscando lista de colaboradores do Convenia...");
 
     // Buscar todos os colaboradores ativos do Convenia com paginação
-    let allEmployeesBasic: ConveniaEmployeeBasic[] = [];
+    let allEmployeesBasic: ConveniaEmployee[] = [];
     let currentPage = 1;
     let lastPage = 1;
 
@@ -160,60 +152,35 @@ Deno.serve(async (req) => {
 
     console.log(`Total de colaboradores encontrados: ${allEmployeesBasic.length}`);
     
-    // Log para debug: verificar as keys de um colaborador da listagem
-    if (allEmployeesBasic.length > 0) {
-      console.log("Keys do primeiro colaborador na listagem:", Object.keys(allEmployeesBasic[0]).join(", "));
-      console.log("cost_center na listagem:", JSON.stringify(allEmployeesBasic[0].cost_center));
-    }
-
-    // Buscar detalhes do primeiro colaborador para ver a estrutura completa
-    console.log("Buscando detalhes do primeiro colaborador para análise...");
-    const firstEmployeeDetails = await fetchEmployeeDetailsWithRetry(allEmployeesBasic[0].id, convenia_token);
-    if (firstEmployeeDetails) {
-      console.log("Keys do primeiro colaborador (detalhes):", Object.keys(firstEmployeeDetails).join(", "));
-      console.log("Estrutura cost_center:", JSON.stringify(firstEmployeeDetails.cost_center));
-      console.log("Estrutura department:", JSON.stringify(firstEmployeeDetails.department));
-      console.log("Estrutura area:", JSON.stringify(firstEmployeeDetails.area));
-      console.log("Estrutura company:", JSON.stringify(firstEmployeeDetails.company));
-    }
-
-    // Para colaboradores, vamos usar os dados da listagem + detalhes apenas se necessário
-    const allEmployees: any[] = [];
+    // Buscar detalhes de cada colaborador para obter department
+    console.log("Buscando detalhes de cada colaborador...");
+    const allEmployees: ConveniaEmployee[] = [];
     
-    // Processar sequencialmente com delay para evitar rate limiting
-    console.log("Buscando detalhes de cada colaborador (1 por segundo)...");
     for (let i = 0; i < allEmployeesBasic.length; i++) {
       const basicEmployee = allEmployeesBasic[i];
-      
-      // Buscar detalhes
-      const details = await fetchEmployeeDetailsWithRetry(basicEmployee.id, convenia_token);
+      const details = await fetchEmployeeDetails(basicEmployee.id, convenia_token);
       
       if (details) {
         allEmployees.push(details);
       } else {
-        // Usar dados básicos se não conseguir detalhes
         allEmployees.push(basicEmployee);
       }
       
-      // Progresso a cada 20 colaboradores
-      if ((i + 1) % 20 === 0) {
+      if ((i + 1) % 50 === 0) {
         console.log(`Progresso: ${i + 1}/${allEmployeesBasic.length}`);
       }
       
-      // Delay de 200ms entre requisições para evitar rate limiting
-      await delay(200);
+      // Delay para evitar rate limiting
+      await delay(100);
     }
 
     console.log(`Detalhes obtidos para ${allEmployees.length} colaboradores`);
 
-    // Log de colaboradores com cost_center
-    const withCostCenter = allEmployees.filter(e => e.cost_center?.id);
-    console.log(`Colaboradores com cost_center: ${withCostCenter.length}`);
-    if (withCostCenter.length > 0) {
-      console.log("Exemplo de cost_center encontrado:", JSON.stringify(withCostCenter[0].cost_center));
-    }
+    // Contar colaboradores com department
+    const withDepartment = allEmployees.filter(e => e.department?.id);
+    console.log(`Colaboradores com department: ${withDepartment.length}`);
 
-    // Buscar colaboradores existentes no banco por nome normalizado
+    // Buscar colaboradores existentes no banco
     const { data: existingColaboradores, error: fetchError } = await supabaseAdmin
       .from("colaboradores")
       .select("id, cpf, nome_completo, email, telefone, cargo, data_admissao, cliente_id");
@@ -226,7 +193,7 @@ Deno.serve(async (req) => {
       );
     }
 
-    // Buscar mapeamento de cost centers (tabela de mapeamento)
+    // Buscar mapeamento de cost centers (usando department.id do Convenia)
     const { data: costCentersMapping, error: costCenterError } = await supabaseAdmin
       .from("cost_centers_convenia")
       .select("convenia_cost_center_id, cliente_id");
@@ -235,17 +202,17 @@ Deno.serve(async (req) => {
       console.error("Erro ao buscar cost centers:", costCenterError);
     }
 
-    // Criar mapa de cost_center_id -> cliente_id
-    const costCenterMap = new Map<string, number>();
+    // Criar mapa de department_id -> cliente_id
+    const departmentMap = new Map<string, number>();
     costCentersMapping?.forEach((cc) => {
       if (cc.cliente_id) {
-        costCenterMap.set(cc.convenia_cost_center_id, cc.cliente_id);
+        departmentMap.set(cc.convenia_cost_center_id, cc.cliente_id);
       }
     });
 
-    console.log(`Cost centers mapeados na tabela: ${costCenterMap.size}`);
+    console.log(`Departments mapeados na tabela: ${departmentMap.size}`);
 
-    // Criar mapa de nomes normalizados para comparação de colaboradores
+    // Criar mapa de nomes normalizados
     const normalizeString = (str: string): string => {
       return str.toLowerCase()
         .normalize("NFD")
@@ -257,44 +224,37 @@ Deno.serve(async (req) => {
     const nomeMap = new Map<string, any>();
     existingColaboradores?.forEach((colab) => {
       if (colab.nome_completo) {
-        const normalizedName = normalizeString(colab.nome_completo);
-        nomeMap.set(normalizedName, colab);
+        nomeMap.set(normalizeString(colab.nome_completo), colab);
       }
     });
 
     let updated = 0;
     let inserted = 0;
-    let skipped = 0;
     const errors: string[] = [];
-    const unmappedCostCenters: { id: string; name: string; count: number }[] = [];
-    const unmappedCostCentersMap = new Map<string, { id: string; name: string; count: number }>();
+    const unmappedDepartments = new Map<string, { id: string; name: string; count: number }>();
 
     for (const employee of allEmployees) {
       const nomeCompleto = `${employee.name} ${employee.last_name}`.trim();
-      const normalizedNomeConvenia = normalizeString(nomeCompleto);
-      
-      const cpf = cleanCpf(employee.cpf);
+      const normalizedNome = normalizeString(nomeCompleto);
+      const cpf = cleanCpf(employee.documents?.cpf);
 
-      // Buscar cliente_id usando o ID do cost_center (determinístico)
+      // Buscar cliente_id usando department.id
       let clienteId: number | null = null;
       
-      if (employee.cost_center?.id) {
-        clienteId = costCenterMap.get(employee.cost_center.id) || null;
+      if (employee.department?.id) {
+        clienteId = departmentMap.get(employee.department.id) || null;
         
-        if (clienteId) {
-          console.log(`Cost center mapeado: id=${employee.cost_center.id} -> cliente_id=${clienteId}`);
-        } else {
-          // Registrar cost center não mapeado para relatório
-          const existing = unmappedCostCentersMap.get(employee.cost_center.id);
+        if (!clienteId) {
+          // Registrar department não mapeado
+          const existing = unmappedDepartments.get(employee.department.id);
           if (existing) {
             existing.count++;
           } else {
-            const entry = { 
-              id: employee.cost_center.id, 
-              name: employee.cost_center.name || "Nome não disponível", 
+            unmappedDepartments.set(employee.department.id, { 
+              id: employee.department.id, 
+              name: employee.department.name || "Nome não disponível", 
               count: 1 
-            };
-            unmappedCostCentersMap.set(employee.cost_center.id, entry);
+            });
           }
         }
       }
@@ -302,18 +262,16 @@ Deno.serve(async (req) => {
       const colaboradorData = {
         nome_completo: nomeCompleto,
         email: employee.email || null,
-        telefone: formatPhone(employee.contact_information?.personal_phone),
+        telefone: formatPhone(employee.cellphone),
         cargo: employee.job?.name || null,
         data_admissao: employee.hiring_date || null,
         status_colaborador: "ativo" as const,
         cliente_id: clienteId,
       };
 
-      // Tentar encontrar por nome normalizado
-      const existing = nomeMap.get(normalizedNomeConvenia);
+      const existing = nomeMap.get(normalizedNome);
 
       if (existing) {
-        // Atualizar colaborador existente
         const updateData: any = {
           email: colaboradorData.email || existing.email,
           telefone: colaboradorData.telefone || existing.telefone,
@@ -321,7 +279,6 @@ Deno.serve(async (req) => {
           data_admissao: colaboradorData.data_admissao || existing.data_admissao,
         };
 
-        // Atualizar cliente_id apenas se encontrado no mapeamento
         if (clienteId !== null) {
           updateData.cliente_id = clienteId;
         }
@@ -332,22 +289,16 @@ Deno.serve(async (req) => {
           .eq("id", existing.id);
 
         if (updateError) {
-          console.error(`Erro ao atualizar ${nomeCompleto}:`, updateError);
           errors.push(`Erro ao atualizar ${nomeCompleto}: ${updateError.message}`);
         } else {
           updated++;
         }
       } else {
-        // Inserir novo colaborador
         const { error: insertError } = await supabaseAdmin
           .from("colaboradores")
-          .insert({
-            ...colaboradorData,
-            cpf: cpf,
-          });
+          .insert({ ...colaboradorData, cpf });
 
         if (insertError) {
-          console.error(`Erro ao inserir ${nomeCompleto}:`, insertError);
           errors.push(`Erro ao inserir ${nomeCompleto}: ${insertError.message}`);
         } else {
           inserted++;
@@ -355,46 +306,37 @@ Deno.serve(async (req) => {
       }
     }
 
-    // Converter mapa de cost centers não mapeados para array
-    unmappedCostCentersMap.forEach((value) => {
-      unmappedCostCenters.push(value);
-    });
-
-    // Inserir cost centers não mapeados na tabela (para facilitar mapeamento futuro)
-    if (unmappedCostCenters.length > 0) {
-      console.log(`Inserindo ${unmappedCostCenters.length} cost centers não mapeados na tabela...`);
+    // Inserir departments não mapeados na tabela cost_centers_convenia
+    const unmappedList = Array.from(unmappedDepartments.values());
+    if (unmappedList.length > 0) {
+      console.log(`Inserindo ${unmappedList.length} departments não mapeados...`);
       
-      for (const cc of unmappedCostCenters) {
-        const { error: upsertError } = await supabaseAdmin
+      for (const dept of unmappedList) {
+        await supabaseAdmin
           .from("cost_centers_convenia")
           .upsert({
-            convenia_cost_center_id: cc.id,
-            convenia_cost_center_name: cc.name,
+            convenia_cost_center_id: dept.id,
+            convenia_cost_center_name: dept.name,
           }, {
             onConflict: "convenia_cost_center_id",
             ignoreDuplicates: true,
           });
-
-        if (upsertError) {
-          console.error(`Erro ao inserir cost center ${cc.id}:`, upsertError);
-        }
       }
     }
 
     const result = {
       success: true,
-      message: `Sincronização concluída`,
+      message: "Sincronização concluída",
       summary: {
         total_convenia: allEmployees.length,
         total_banco: existingColaboradores?.length || 0,
         inserted,
         updated,
-        skipped,
         errors: errors.length,
-        cost_centers_mapped: costCenterMap.size,
-        cost_centers_unmapped: unmappedCostCenters.length,
+        departments_mapped: departmentMap.size,
+        departments_unmapped: unmappedList.length,
       },
-      unmapped_cost_centers: unmappedCostCenters.length > 0 ? unmappedCostCenters : undefined,
+      unmapped_departments: unmappedList.length > 0 ? unmappedList : undefined,
       errors: errors.length > 0 ? errors : undefined,
     };
 
@@ -406,9 +348,8 @@ Deno.serve(async (req) => {
     );
   } catch (error) {
     console.error("Erro:", error);
-    const errorMessage = error instanceof Error ? error.message : "Erro desconhecido";
     return new Response(
-      JSON.stringify({ error: `Erro interno: ${errorMessage}` }),
+      JSON.stringify({ error: error instanceof Error ? error.message : "Erro desconhecido" }),
       { status: 500, headers: { ...corsHeaders, "Content-Type": "application/json" } }
     );
   }

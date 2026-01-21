@@ -69,3 +69,6 @@ verify_jwt = false
 
 [functions.request-password-reset-sms]
 verify_jwt = false
+
+[functions.test-convenia-api]
+verify_jwt = false
