@@ -719,6 +719,41 @@ export type Database = {
           },
         ]
       }
+      cost_centers_convenia: {
+        Row: {
+          cliente_id: number | null
+          convenia_cost_center_id: string
+          convenia_cost_center_name: string
+          created_at: string | null
+          id: string
+          updated_at: string | null
+        }
+        Insert: {
+          cliente_id?: number | null
+          convenia_cost_center_id: string
+          convenia_cost_center_name: string
+          created_at?: string | null
+          id?: string
+          updated_at?: string | null
+        }
+        Update: {
+          cliente_id?: number | null
+          convenia_cost_center_id?: string
+          convenia_cost_center_name?: string
+          created_at?: string | null
+          id?: string
+          updated_at?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "cost_centers_convenia_cliente_id_fkey"
+            columns: ["cliente_id"]
+            isOneToOne: false
+            referencedRelation: "clientes"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       diarias: {
         Row: {
           created_at: string
