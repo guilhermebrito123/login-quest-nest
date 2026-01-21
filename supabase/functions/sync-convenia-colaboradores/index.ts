@@ -5,16 +5,37 @@ const corsHeaders = {
   "Access-Control-Allow-Headers": "authorization, x-client-info, apikey, content-type",
 };
 
+// Interface atualizada conforme nova resposta da API Convenia
 interface ConveniaEmployee {
   id: string;
   name: string;
   last_name: string;
   email?: string;
+  status?: string;
   hiring_date?: string;
-  documents?: {
+  salary?: number;
+  birth_date?: string;
+  social_name?: string;
+  registration?: string;
+  document?: {
+    pis?: string;
     cpf?: string;
   };
-  job?: {
+  address?: {
+    id?: string;
+    zip_code?: string;
+    address?: string;
+    number?: string;
+    complement?: string;
+    district?: string;
+    state?: string;
+    city?: string;
+  };
+  department?: {
+    id?: string;
+    name?: string;
+  };
+  team?: {
     id?: string;
     name?: string;
   };
@@ -22,7 +43,35 @@ interface ConveniaEmployee {
     id?: string;
     name?: string;
   };
-  cellphone?: string;
+  supervisor?: {
+    id?: string;
+    name?: string;
+    last_name?: string;
+  };
+  job?: {
+    id?: string;
+    name?: string;
+  };
+  bank_accounts?: Array<{
+    id?: string;
+    bank?: string;
+    account_type?: string;
+    account?: string;
+    agency?: string;
+    digit?: string;
+    pix?: string;
+    modality?: string;
+  }>;
+  contact_information?: {
+    id?: number;
+    residential_phone?: string;
+    personal_phone?: string;
+    personal_email?: string;
+  };
+  cpf?: {
+    id?: string;
+    cpf?: string;
+  };
 }
 
 interface ConveniaCostCenter {
@@ -31,12 +80,14 @@ interface ConveniaCostCenter {
 }
 
 interface ConveniaListResponse {
+  message?: string;
+  current_page?: number;
   data: ConveniaEmployee[];
-  meta?: {
-    current_page: number;
-    last_page: number;
-    total: number;
-  };
+  first_page_url?: string;
+  from?: number;
+  last_page?: number;
+  total?: number;
+  success?: boolean;
 }
 
 function cleanCpf(cpf: string | undefined): string | null {
@@ -202,7 +253,7 @@ Deno.serve(async (req) => {
 
     console.log(`Clientes mapeados: ${costCenterIdToClienteMap.size}, novos criados: ${clientesCreated}`);
 
-    // PASSO 3: Buscar colaboradores do Convenia com paginação
+    // PASSO 2: Buscar colaboradores do Convenia com paginação (usando novo formato)
     console.log("Buscando lista de colaboradores do Convenia...");
 
     let allEmployeesBasic: ConveniaEmployee[] = [];
@@ -233,9 +284,10 @@ Deno.serve(async (req) => {
       const data: ConveniaListResponse = await response.json();
       allEmployeesBasic = [...allEmployeesBasic, ...data.data];
       
-      if (data.meta) {
-        lastPage = data.meta.last_page;
-        console.log(`Página ${currentPage}/${lastPage} - Total: ${data.meta.total}`);
+      // Usar campos do novo formato de resposta
+      if (data.last_page) {
+        lastPage = data.last_page;
+        console.log(`Página ${currentPage}/${lastPage} - Total: ${data.total || 'N/A'}`);
       }
       
       currentPage++;
@@ -243,7 +295,7 @@ Deno.serve(async (req) => {
 
     console.log(`Total de colaboradores encontrados: ${allEmployeesBasic.length}`);
     
-    // PASSO 4: Buscar detalhes de cada colaborador para obter cost_center
+    // PASSO 3: Buscar detalhes de cada colaborador para obter cost_center completo
     console.log("Buscando detalhes de cada colaborador...");
     const allEmployees: ConveniaEmployee[] = [];
     
@@ -304,9 +356,21 @@ Deno.serve(async (req) => {
     const errors: string[] = [];
 
     for (const employee of allEmployees) {
+      // Montar nome completo usando name + last_name
       const nomeCompleto = `${employee.name} ${employee.last_name}`.trim();
       const normalizedNome = normalizeString(nomeCompleto);
-      const cpf = cleanCpf(employee.documents?.cpf);
+      
+      // CPF pode vir em document.cpf ou cpf.cpf (novo formato)
+      const cpfFromDocument = cleanCpf(employee.document?.cpf);
+      const cpfFromCpfObject = cleanCpf(employee.cpf?.cpf);
+      const cpf = cpfFromDocument || cpfFromCpfObject;
+
+      // Telefone pode vir de contact_information.personal_phone
+      const telefone = formatPhone(employee.contact_information?.personal_phone) || 
+                       formatPhone(employee.contact_information?.residential_phone);
+
+      // Email pode ser o principal ou personal_email
+      const email = employee.email || employee.contact_information?.personal_email || null;
 
       // Buscar cliente_id usando cost_center.id (já mapeado automaticamente)
       let clienteId: number | null = null;
@@ -321,13 +385,14 @@ Deno.serve(async (req) => {
         }
       }
       
+      // Mapear campos do Convenia para colaboradores
       const colaboradorData = {
         nome_completo: nomeCompleto,
-        email: employee.email || null,
-        telefone: formatPhone(employee.cellphone),
+        email: email,
+        telefone: telefone,
         cargo: employee.job?.name || null,
         data_admissao: employee.hiring_date || null,
-        status_colaborador: "ativo" as const,
+        status_colaborador: employee.status === "Ativo" ? "ativo" as const : "inativo" as const,
         cliente_id: clienteId,
       };
 
@@ -339,9 +404,10 @@ Deno.serve(async (req) => {
           telefone: colaboradorData.telefone || existing.telefone,
           cargo: colaboradorData.cargo || existing.cargo,
           data_admissao: colaboradorData.data_admissao || existing.data_admissao,
+          status_colaborador: colaboradorData.status_colaborador,
         };
 
-        // PASSO 7: Só atualiza cliente_id se encontrou mapeamento
+        // Só atualiza cliente_id se encontrou mapeamento
         if (clienteId !== null) {
           updateData.cliente_id = clienteId;
         }
