@@ -139,39 +139,68 @@ Deno.serve(async (req) => {
       { auth: { autoRefreshToken: false, persistSession: false } }
     );
 
-    // PASSO 1: Sincronizar cost centers do Convenia
+    // PASSO 1: Sincronizar cost centers do Convenia e criar clientes automaticamente
     console.log("Sincronizando cost centers do Convenia...");
     
     const conveniaCostCenters = await fetchConveniaCostCenters(convenia_token);
     console.log(`Cost centers encontrados no Convenia: ${conveniaCostCenters.length}`);
 
+    // Criar/atualizar clientes e mapear cost_center.id -> cliente.id
+    const costCenterIdToClienteMap = new Map<string, number>();
+    let clientesCreated = 0;
+    
     for (const cc of conveniaCostCenters) {
+      // Verificar se já existe cliente com esse convenia_cost_center_id
+      const { data: existingCliente } = await supabaseAdmin
+        .from("clientes")
+        .select("id")
+        .eq("convenia_cost_center_id", cc.id)
+        .maybeSingle();
+
+      let clienteId: number;
+
+      if (existingCliente) {
+        clienteId = existingCliente.id;
+        console.log(`Cliente existente: ${cc.name} -> id ${clienteId}`);
+      } else {
+        // Criar novo cliente com dados do cost center
+        const { data: newCliente, error: insertError } = await supabaseAdmin
+          .from("clientes")
+          .insert({
+            razao_social: cc.name,
+            nome_fantasia: cc.name,
+            cnpj: `00000000000${cc.id}`.slice(-14), // CNPJ placeholder único
+            convenia_cost_center_id: cc.id,
+          })
+          .select("id")
+          .single();
+
+        if (insertError) {
+          console.error(`Erro ao criar cliente ${cc.name}:`, insertError.message);
+          continue;
+        }
+        
+        clienteId = newCliente.id;
+        clientesCreated++;
+        console.log(`Novo cliente criado: ${cc.name} -> id ${clienteId}`);
+      }
+
+      costCenterIdToClienteMap.set(cc.id, clienteId);
+
+      // Atualizar também a tabela cost_centers_convenia para referência
       await supabaseAdmin
         .from("cost_centers_convenia")
         .upsert(
           {
             convenia_cost_center_id: cc.id,
             convenia_cost_center_name: cc.name,
+            cliente_id: clienteId,
           },
           { onConflict: "convenia_cost_center_id" }
         );
     }
 
-    console.log("Cost centers sincronizados com sucesso!");
-
-    // PASSO 2: Criar mapa cost_center.id -> cliente_id
-    const { data: mappedCostCenters } = await supabaseAdmin
-      .from("cost_centers_convenia")
-      .select("convenia_cost_center_id, cliente_id");
-
-    const costCenterIdToClienteMap = new Map<string, number>();
-    mappedCostCenters?.forEach(cc => {
-      if (cc.cliente_id) {
-        costCenterIdToClienteMap.set(cc.convenia_cost_center_id, cc.cliente_id);
-      }
-    });
-
-    console.log(`Cost centers mapeados para clientes: ${costCenterIdToClienteMap.size}`);
+    console.log(`Clientes mapeados: ${costCenterIdToClienteMap.size}, novos criados: ${clientesCreated}`);
 
     // PASSO 3: Buscar colaboradores do Convenia com paginação
     console.log("Buscando lista de colaboradores do Convenia...");
@@ -273,32 +302,22 @@ Deno.serve(async (req) => {
     let updated = 0;
     let inserted = 0;
     const errors: string[] = [];
-    const unmappedCostCenters: { id: string; name: string }[] = [];
 
     for (const employee of allEmployees) {
       const nomeCompleto = `${employee.name} ${employee.last_name}`.trim();
       const normalizedNome = normalizeString(nomeCompleto);
       const cpf = cleanCpf(employee.documents?.cpf);
 
-      // PASSO 5: Buscar cliente_id usando cost_center.id
+      // Buscar cliente_id usando cost_center.id (já mapeado automaticamente)
       let clienteId: number | null = null;
       
       if (employee.cost_center?.id) {
         clienteId = costCenterIdToClienteMap.get(employee.cost_center.id) || null;
         
-        // PASSO 6: Logar cost centers não mapeados
         if (!clienteId) {
           console.warn(
-            `Cost center sem cliente associado: ${employee.cost_center.id} - ${employee.cost_center.name}`
+            `Cost center sem mapeamento: ${employee.cost_center.id} - ${employee.cost_center.name}`
           );
-          
-          // Registrar para retorno
-          if (!unmappedCostCenters.find(cc => cc.id === employee.cost_center!.id)) {
-            unmappedCostCenters.push({
-              id: employee.cost_center.id,
-              name: employee.cost_center.name || "Nome não disponível",
-            });
-          }
         }
       }
       
@@ -360,10 +379,9 @@ Deno.serve(async (req) => {
         updated,
         errors: errors.length,
         cost_centers_convenia: conveniaCostCenters.length,
-        cost_centers_mapped: costCenterIdToClienteMap.size,
-        cost_centers_unmapped: unmappedCostCenters.length,
+        clientes_created: clientesCreated,
+        clientes_mapped: costCenterIdToClienteMap.size,
       },
-      unmapped_cost_centers: unmappedCostCenters.length > 0 ? unmappedCostCenters : undefined,
       errors: errors.length > 0 ? errors : undefined,
     };
 

@@ -471,6 +471,7 @@ export type Database = {
           contato_email: string | null
           contato_nome: string | null
           contato_telefone: string | null
+          convenia_cost_center_id: string | null
           created_at: string
           id: number
           itens_adicionais: string | null
@@ -483,6 +484,7 @@ export type Database = {
           contato_email?: string | null
           contato_nome?: string | null
           contato_telefone?: string | null
+          convenia_cost_center_id?: string | null
           created_at?: string
           id?: number
           itens_adicionais?: string | null
@@ -495,6 +497,7 @@ export type Database = {
           contato_email?: string | null
           contato_nome?: string | null
           contato_telefone?: string | null
+          convenia_cost_center_id?: string | null
           created_at?: string
           id?: number
           itens_adicionais?: string | null
