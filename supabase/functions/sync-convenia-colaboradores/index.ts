@@ -19,6 +19,10 @@ interface ConveniaEmployeeBasic {
   contact_information?: {
     personal_phone?: string;
   };
+  cost_center?: {
+    id?: string;
+    name?: string;
+  };
 }
 
 interface ConveniaListResponse {
@@ -113,7 +117,7 @@ Deno.serve(async (req) => {
     // Buscar colaboradores existentes no banco
     const { data: existingColaboradores, error: fetchError } = await supabaseAdmin
       .from("colaboradores")
-      .select("id, cpf, nome_completo, email, telefone, cargo, data_admissao");
+      .select("id, cpf, nome_completo, email, telefone, cargo, data_admissao, cliente_id");
 
     if (fetchError) {
       console.error("Erro ao buscar colaboradores existentes:", fetchError);
@@ -123,12 +127,36 @@ Deno.serve(async (req) => {
       );
     }
 
-    // Criar mapa de nomes normalizados para comparação
+    // Buscar clientes existentes no banco para mapear cost_center
+    const { data: existingClientes, error: clientesError } = await supabaseAdmin
+      .from("clientes")
+      .select("id, nome_fantasia, razao_social");
+
+    if (clientesError) {
+      console.error("Erro ao buscar clientes:", clientesError);
+      return new Response(
+        JSON.stringify({ error: "Erro ao buscar clientes" }),
+        { status: 500, headers: { ...corsHeaders, "Content-Type": "application/json" } }
+      );
+    }
+
+    // Criar mapa de nomes normalizados para comparação de colaboradores
     const nomeMap = new Map<string, any>();
     existingColaboradores?.forEach((colab) => {
       if (colab.nome_completo) {
         const normalizedName = normalizeString(colab.nome_completo);
         nomeMap.set(normalizedName, colab);
+      }
+    });
+
+    // Criar mapa de clientes por nome normalizado (nome_fantasia e razao_social)
+    const clienteMap = new Map<string, number>();
+    existingClientes?.forEach((cliente) => {
+      if (cliente.nome_fantasia) {
+        clienteMap.set(normalizeString(cliente.nome_fantasia), cliente.id);
+      }
+      if (cliente.razao_social) {
+        clienteMap.set(normalizeString(cliente.razao_social), cliente.id);
       }
     });
 
@@ -143,6 +171,18 @@ Deno.serve(async (req) => {
       
       // O CPF pode vir diretamente na listagem ou não
       const cpf = cleanCpf(employee.cpf);
+
+      // Buscar cliente_id baseado no cost_center
+      let clienteId: number | null = null;
+      if (employee.cost_center?.name) {
+        const normalizedCostCenter = normalizeString(employee.cost_center.name);
+        clienteId = clienteMap.get(normalizedCostCenter) || null;
+        if (!clienteId) {
+          console.log(`Cost center não encontrado nos clientes: ${employee.cost_center.name}`);
+        } else {
+          console.log(`Cost center mapeado: ${employee.cost_center.name} -> cliente_id: ${clienteId}`);
+        }
+      }
       
       const colaboradorData = {
         nome_completo: nomeCompleto,
@@ -151,6 +191,7 @@ Deno.serve(async (req) => {
         cargo: employee.job?.name || null,
         data_admissao: employee.hiring_date || null,
         status_colaborador: "ativo" as const,
+        cliente_id: clienteId,
       };
 
       // Tentar encontrar por nome normalizado
@@ -164,6 +205,11 @@ Deno.serve(async (req) => {
           cargo: colaboradorData.cargo || existing.cargo,
           data_admissao: colaboradorData.data_admissao || existing.data_admissao,
         };
+
+        // Atualizar cliente_id apenas se encontrado no cost_center
+        if (clienteId !== null) {
+          updateData.cliente_id = clienteId;
+        }
 
         const { error: updateError } = await supabaseAdmin
           .from("colaboradores")
