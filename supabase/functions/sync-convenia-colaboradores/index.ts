@@ -257,6 +257,51 @@ Deno.serve(async (req) => {
       { auth: { autoRefreshToken: false, persistSession: false } }
     );
 
+    // PASSO 0: Sincronizar centros de custo
+    console.log("Sincronizando centros de custo do Convenia...");
+    
+    const costCentersResponse = await fetch(
+      "https://public-api.convenia.com.br/api/v3/companies/cost-centers",
+      {
+        method: "GET",
+        headers: {
+          "token": convenia_token,
+          "Content-Type": "application/json",
+        },
+      }
+    );
+
+    let costCentersSynced = 0;
+    const costCentersErrors: string[] = [];
+
+    if (costCentersResponse.ok) {
+      const costCentersData = await costCentersResponse.json();
+      const costCenters = costCentersData.data || [];
+      
+      console.log(`Encontrados ${costCenters.length} centros de custo`);
+      
+      for (const cc of costCenters) {
+        const { error: upsertError } = await supabaseAdmin
+          .from("cost_center")
+          .upsert(
+            { 
+              convenia_id: cc.id, 
+              name: cc.name 
+            }, 
+            { onConflict: "convenia_id" }
+          );
+
+        if (upsertError) {
+          costCentersErrors.push(`Erro ${cc.name}: ${upsertError.message}`);
+        } else {
+          costCentersSynced++;
+        }
+      }
+      console.log(`Centros de custo sincronizados: ${costCentersSynced}`);
+    } else {
+      console.error("Erro ao buscar centros de custo:", costCentersResponse.status);
+    }
+
     // PASSO 1: Buscar colaboradores do Convenia com paginação
     console.log("Buscando lista de colaboradores do Convenia...");
 
@@ -435,6 +480,10 @@ Deno.serve(async (req) => {
       success: true,
       message: "Sincronização concluída",
       summary: {
+        cost_centers: {
+          synced: costCentersSynced,
+          errors: costCentersErrors.length,
+        },
         total_convenia: allEmployees.length,
         colaboradores_convenia: {
           synced: colaboradoresConveniaUpdated,
@@ -447,8 +496,8 @@ Deno.serve(async (req) => {
           errors: errors.length,
         },
       },
-      errors: errors.length > 0 || colaboradoresConveniaErrors.length > 0 
-        ? { colaboradores: errors, colaboradores_convenia: colaboradoresConveniaErrors } 
+      errors: errors.length > 0 || colaboradoresConveniaErrors.length > 0 || costCentersErrors.length > 0
+        ? { colaboradores: errors, colaboradores_convenia: colaboradoresConveniaErrors, cost_centers: costCentersErrors } 
         : undefined,
     };
 
