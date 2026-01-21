@@ -727,6 +727,7 @@ export type Database = {
           personal_email: string | null
           personal_phone: string | null
           pis: string | null
+          raw_data: Json | null
           registration: string | null
           reservist: Json | null
           residential_phone: string | null
@@ -789,6 +790,7 @@ export type Database = {
           personal_email?: string | null
           personal_phone?: string | null
           pis?: string | null
+          raw_data?: Json | null
           registration?: string | null
           reservist?: Json | null
           residential_phone?: string | null
@@ -851,6 +853,7 @@ export type Database = {
           personal_email?: string | null
           personal_phone?: string | null
           pis?: string | null
+          raw_data?: Json | null
           registration?: string | null
           reservist?: Json | null
           residential_phone?: string | null
