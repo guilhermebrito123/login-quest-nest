@@ -722,6 +722,30 @@ export type Database = {
           },
         ]
       }
+      cost_center: {
+        Row: {
+          convenia_id: string
+          created_at: string
+          id: string
+          name: string
+          updated_at: string
+        }
+        Insert: {
+          convenia_id: string
+          created_at?: string
+          id?: string
+          name: string
+          updated_at?: string
+        }
+        Update: {
+          convenia_id?: string
+          created_at?: string
+          id?: string
+          name?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
       cost_centers_convenia: {
         Row: {
           cliente_id: number | null
