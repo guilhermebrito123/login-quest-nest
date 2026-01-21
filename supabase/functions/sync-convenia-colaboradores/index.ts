@@ -44,45 +44,6 @@ function formatPhone(phone: string | undefined): string | null {
   return phone.replace(/\D/g, '');
 }
 
-function normalizeString(str: string): string {
-  return str.toLowerCase()
-    .normalize("NFD")
-    .replace(/[\u0300-\u036f]/g, "")
-    .replace(/\s+/g, " ")
-    .trim();
-}
-
-// Mapeamento explícito de cost_center do Convenia para nome_fantasia dos clientes
-const costCenterToClienteMap: Record<string, string> = {
-  "itaminas": "Itaminas",
-  "vmg": "Viação Minas Gerais",
-  "vma": "VMA",
-  "portal": "Condomínio Portal Vistas do Horizonte",
-  "sl mandic rj": "São Leopoldo Mandic",
-  "ibram": "IBRAM",
-  "spic": "SPIC",
-  "inspiratto": "Condomínio Inspiratto",
-  "magna ibirita": "Magna Cosma do Brasil",
-  "bionow": "Bionow",
-  "grupo bmg": "BMG",
-  "conquista premium": "Condomínio Conquista Premium",
-  "conquista": "Condomínio Conquista Premium",
-  "artesanal": "Farmácia Artesanal",
-  "village europa": "Condomínio Village Europa",
-  "village": "Condomínio Village Europa",
-  "parque europa": "Condomínio Parque Europa",
-  "neooh sp": "NEOOH SP",
-  "neooh": "NEOOH BH",
-  "neeoh bh": "NEOOH BH",
-  "pjus": "PJUS",
-  "ge": "GE",
-  "terrayama": "Terrayama",
-  "way planalto": "Condomínio Way Planalto",
-  "way": "Condomínio Way Planalto",
-  "rossi": "Condomínio Mais Reserva Especial",
-  "parque gameleira": "Parque Gameleira",
-};
-
 Deno.serve(async (req) => {
   if (req.method === "OPTIONS") {
     return new Response(null, { headers: corsHeaders });
@@ -145,7 +106,7 @@ Deno.serve(async (req) => {
 
     console.log(`Total de colaboradores encontrados no Convenia: ${allEmployees.length}`);
 
-    // Buscar colaboradores existentes no banco
+    // Buscar colaboradores existentes no banco por nome normalizado
     const { data: existingColaboradores, error: fetchError } = await supabaseAdmin
       .from("colaboradores")
       .select("id, cpf, nome_completo, email, telefone, cargo, data_admissao, cliente_id");
@@ -158,20 +119,34 @@ Deno.serve(async (req) => {
       );
     }
 
-    // Buscar clientes existentes no banco para mapear cost_center
-    const { data: existingClientes, error: clientesError } = await supabaseAdmin
-      .from("clientes")
-      .select("id, nome_fantasia, razao_social");
+    // Buscar mapeamento de cost centers (tabela de mapeamento)
+    const { data: costCentersMapping, error: costCenterError } = await supabaseAdmin
+      .from("cost_centers_convenia")
+      .select("convenia_cost_center_id, cliente_id");
 
-    if (clientesError) {
-      console.error("Erro ao buscar clientes:", clientesError);
-      return new Response(
-        JSON.stringify({ error: "Erro ao buscar clientes" }),
-        { status: 500, headers: { ...corsHeaders, "Content-Type": "application/json" } }
-      );
+    if (costCenterError) {
+      console.error("Erro ao buscar cost centers:", costCenterError);
     }
 
+    // Criar mapa de cost_center_id -> cliente_id
+    const costCenterMap = new Map<string, number>();
+    costCentersMapping?.forEach((cc) => {
+      if (cc.cliente_id) {
+        costCenterMap.set(cc.convenia_cost_center_id, cc.cliente_id);
+      }
+    });
+
+    console.log(`Cost centers mapeados na tabela: ${costCenterMap.size}`);
+
     // Criar mapa de nomes normalizados para comparação de colaboradores
+    const normalizeString = (str: string): string => {
+      return str.toLowerCase()
+        .normalize("NFD")
+        .replace(/[\u0300-\u036f]/g, "")
+        .replace(/\s+/g, " ")
+        .trim();
+    };
+
     const nomeMap = new Map<string, any>();
     existingColaboradores?.forEach((colab) => {
       if (colab.nome_completo) {
@@ -180,53 +155,40 @@ Deno.serve(async (req) => {
       }
     });
 
-    // Criar mapa de clientes por nome normalizado (nome_fantasia e razao_social)
-    const clienteMap = new Map<string, number>();
-    existingClientes?.forEach((cliente) => {
-      if (cliente.nome_fantasia) {
-        clienteMap.set(normalizeString(cliente.nome_fantasia), cliente.id);
-      }
-      if (cliente.razao_social) {
-        clienteMap.set(normalizeString(cliente.razao_social), cliente.id);
-      }
-    });
-
     let updated = 0;
     let inserted = 0;
     let skipped = 0;
     const errors: string[] = [];
+    const unmappedCostCenters: { id: string; name: string; count: number }[] = [];
+    const unmappedCostCentersMap = new Map<string, { id: string; name: string; count: number }>();
 
     for (const employee of allEmployees) {
       const nomeCompleto = `${employee.name} ${employee.last_name}`.trim();
       const normalizedNomeConvenia = normalizeString(nomeCompleto);
       
-      // O CPF pode vir diretamente na listagem ou não
       const cpf = cleanCpf(employee.cpf);
 
-      // Buscar cliente_id baseado no cost_center usando mapeamento explícito
+      // Buscar cliente_id usando o ID do cost_center (determinístico)
       let clienteId: number | null = null;
-      if (employee.cost_center?.name) {
-        const normalizedCostCenter = normalizeString(employee.cost_center.name);
+      
+      if (employee.cost_center?.id) {
+        clienteId = costCenterMap.get(employee.cost_center.id) || null;
         
-        // Primeiro tenta pelo mapeamento explícito
-        const mappedClienteName = costCenterToClienteMap[normalizedCostCenter];
-        if (mappedClienteName) {
-          clienteId = clienteMap.get(normalizeString(mappedClienteName)) || null;
-          if (clienteId) {
-            console.log(`Cost center mapeado via tabela: ${employee.cost_center.name} -> ${mappedClienteName} -> cliente_id: ${clienteId}`);
+        if (clienteId) {
+          console.log(`Cost center mapeado: id=${employee.cost_center.id} -> cliente_id=${clienteId}`);
+        } else {
+          // Registrar cost center não mapeado para relatório
+          const existing = unmappedCostCentersMap.get(employee.cost_center.id);
+          if (existing) {
+            existing.count++;
+          } else {
+            const entry = { 
+              id: employee.cost_center.id, 
+              name: employee.cost_center.name || "Nome não disponível", 
+              count: 1 
+            };
+            unmappedCostCentersMap.set(employee.cost_center.id, entry);
           }
-        }
-        
-        // Se não encontrou no mapeamento explícito, tenta busca direta
-        if (!clienteId) {
-          clienteId = clienteMap.get(normalizedCostCenter) || null;
-          if (clienteId) {
-            console.log(`Cost center mapeado diretamente: ${employee.cost_center.name} -> cliente_id: ${clienteId}`);
-          }
-        }
-        
-        if (!clienteId) {
-          console.log(`Cost center não encontrado nos clientes: ${employee.cost_center.name}`);
         }
       }
       
@@ -252,7 +214,7 @@ Deno.serve(async (req) => {
           data_admissao: colaboradorData.data_admissao || existing.data_admissao,
         };
 
-        // Atualizar cliente_id apenas se encontrado no cost_center
+        // Atualizar cliente_id apenas se encontrado no mapeamento
         if (clienteId !== null) {
           updateData.cliente_id = clienteId;
         }
@@ -270,12 +232,12 @@ Deno.serve(async (req) => {
           updated++;
         }
       } else {
-        // Inserir novo colaborador (CPF agora é opcional)
+        // Inserir novo colaborador
         const { error: insertError } = await supabaseAdmin
           .from("colaboradores")
           .insert({
             ...colaboradorData,
-            cpf: cpf, // pode ser null
+            cpf: cpf,
           });
 
         if (insertError) {
@@ -284,6 +246,32 @@ Deno.serve(async (req) => {
         } else {
           console.log(`Inserido: ${nomeCompleto}`);
           inserted++;
+        }
+      }
+    }
+
+    // Converter mapa de cost centers não mapeados para array
+    unmappedCostCentersMap.forEach((value) => {
+      unmappedCostCenters.push(value);
+    });
+
+    // Inserir cost centers não mapeados na tabela (para facilitar mapeamento futuro)
+    if (unmappedCostCenters.length > 0) {
+      console.log(`Inserindo ${unmappedCostCenters.length} cost centers não mapeados na tabela...`);
+      
+      for (const cc of unmappedCostCenters) {
+        const { error: upsertError } = await supabaseAdmin
+          .from("cost_centers_convenia")
+          .upsert({
+            convenia_cost_center_id: cc.id,
+            convenia_cost_center_name: cc.name,
+          }, {
+            onConflict: "convenia_cost_center_id",
+            ignoreDuplicates: true,
+          });
+
+        if (upsertError) {
+          console.error(`Erro ao inserir cost center ${cc.id}:`, upsertError);
         }
       }
     }
@@ -298,7 +286,10 @@ Deno.serve(async (req) => {
         updated,
         skipped,
         errors: errors.length,
+        cost_centers_mapped: costCenterMap.size,
+        cost_centers_unmapped: unmappedCostCenters.length,
       },
+      unmapped_cost_centers: unmappedCostCenters.length > 0 ? unmappedCostCenters : undefined,
       errors: errors.length > 0 ? errors : undefined,
     };
 
