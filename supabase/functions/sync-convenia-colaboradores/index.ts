@@ -5,7 +5,7 @@ const corsHeaders = {
   "Access-Control-Allow-Headers": "authorization, x-client-info, apikey, content-type",
 };
 
-// Interface atualizada conforme nova resposta da API Convenia
+// Interface completa conforme nova resposta da API Convenia
 interface ConveniaEmployee {
   id: string;
   name: string;
@@ -31,6 +31,28 @@ interface ConveniaEmployee {
     state?: string;
     city?: string;
   };
+  intern?: {
+    id?: string;
+    initial_at?: string;
+    finish_at?: string;
+    internship_category?: string;
+    is_mandatory?: string;
+    occupation_area?: string;
+    college?: string;
+    cnpj?: string;
+    zip_code?: string;
+    address?: string;
+    number?: string;
+    complement?: string;
+    district?: string;
+    state?: string;
+    city?: string;
+    internship_supervisor?: {
+      id?: string;
+      name?: string;
+      last_name?: string;
+    };
+  };
   department?: {
     id?: string;
     name?: string;
@@ -52,6 +74,19 @@ interface ConveniaEmployee {
     id?: string;
     name?: string;
   };
+  annotations?: Array<{
+    id?: number;
+    title?: string;
+    notes?: string;
+    date?: string;
+  }>;
+  aso?: Array<{
+    id?: string;
+    status?: boolean;
+    exam_date?: string;
+    observation?: string;
+    aso_motive?: string;
+  }>;
   bank_accounts?: Array<{
     id?: string;
     bank?: string;
@@ -68,9 +103,89 @@ interface ConveniaEmployee {
     personal_phone?: string;
     personal_email?: string;
   };
+  disability?: {
+    id?: number;
+    observations?: string;
+    disability_type?: string;
+  };
+  foreign?: {
+    id?: number;
+    arrival_date?: string;
+    naturalization_date?: string;
+    married_to_brazilian?: boolean;
+    has_brazilian_offspring?: boolean;
+    visa?: string;
+    country?: string;
+  };
+  educations?: Array<{
+    id?: string;
+    course?: string;
+    institution?: string;
+    graduation_year?: number;
+    education_type?: string;
+  }>;
+  nationalities?: Array<{
+    id?: number;
+    nationality?: string;
+  }>;
+  experience_period?: {
+    id?: number;
+    first_end?: string;
+    second_end?: string;
+    total_days?: string;
+    experience_period_type?: string;
+  };
+  emergency_contacts?: Array<{
+    id?: string;
+    name?: string;
+    phone?: string;
+    email?: string;
+    cellphone?: string;
+    work_phone?: string;
+    emergency_contact_relation?: string;
+  }>;
   cpf?: {
     id?: string;
     cpf?: string;
+  };
+  ctps?: {
+    id?: string;
+    serial_number?: string;
+    number?: string;
+    emission_date?: string;
+    pis?: string;
+    issuing_state_id?: number;
+  };
+  reservist?: {
+    id?: string;
+    reservist?: string;
+    ra_number?: string;
+    series?: string;
+  };
+  rg?: {
+    id?: string;
+    number?: string;
+    emission_date?: string;
+    issuing_agency?: string;
+    issuing_state_id?: number;
+  };
+  driver_license?: {
+    id?: string;
+    number?: string;
+    emission_date?: string;
+    validate_date?: string;
+    category?: string;
+  };
+  electoral_card?: {
+    id?: string;
+    number?: string;
+    section?: string;
+    electoral_ward?: string;
+    state_id?: number;
+    city_id?: number;
+  };
+  payroll?: {
+    registration?: string;
   };
 }
 
@@ -169,6 +284,72 @@ async function fetchEmployeeDetails(
   return null;
 }
 
+// Mapear colaborador para tabela colaboradores_convenia
+function mapToColaboradoresConvenia(employee: ConveniaEmployee) {
+  const cpfFromDocument = cleanCpf(employee.document?.cpf);
+  const cpfFromCpfObject = cleanCpf(employee.cpf?.cpf);
+  const pisFromDocument = employee.document?.pis?.replace(/\D/g, '') || null;
+  
+  return {
+    convenia_id: employee.id,
+    name: employee.name || null,
+    last_name: employee.last_name || null,
+    email: employee.email || null,
+    status: employee.status || null,
+    hiring_date: employee.hiring_date || null,
+    salary: employee.salary || null,
+    birth_date: employee.birth_date || null,
+    social_name: employee.social_name || null,
+    registration: employee.registration || null,
+    cpf: cpfFromDocument || cpfFromCpfObject || null,
+    pis: pisFromDocument || employee.ctps?.pis?.replace(/\D/g, '') || null,
+    address_zip_code: employee.address?.zip_code || null,
+    address_street: employee.address?.address || null,
+    address_number: employee.address?.number || null,
+    address_complement: employee.address?.complement || null,
+    address_district: employee.address?.district || null,
+    address_state: employee.address?.state || null,
+    address_city: employee.address?.city || null,
+    department_id: employee.department?.id || null,
+    department_name: employee.department?.name || null,
+    team_id: employee.team?.id || null,
+    team_name: employee.team?.name || null,
+    cost_center_id: employee.cost_center?.id || null,
+    cost_center_name: employee.cost_center?.name || null,
+    supervisor_id: employee.supervisor?.id || null,
+    supervisor_name: employee.supervisor?.name || null,
+    supervisor_last_name: employee.supervisor?.last_name || null,
+    job_id: employee.job?.id || null,
+    job_name: employee.job?.name || null,
+    residential_phone: formatPhone(employee.contact_information?.residential_phone),
+    personal_phone: formatPhone(employee.contact_information?.personal_phone),
+    personal_email: employee.contact_information?.personal_email || null,
+    bank_accounts: employee.bank_accounts ? JSON.stringify(employee.bank_accounts) : null,
+    rg_number: employee.rg?.number || null,
+    rg_emission_date: employee.rg?.emission_date || null,
+    rg_issuing_agency: employee.rg?.issuing_agency || null,
+    ctps_number: employee.ctps?.number || null,
+    ctps_serial_number: employee.ctps?.serial_number || null,
+    ctps_emission_date: employee.ctps?.emission_date || null,
+    driver_license_number: employee.driver_license?.number || null,
+    driver_license_category: employee.driver_license?.category || null,
+    driver_license_validate_date: employee.driver_license?.validate_date || null,
+    intern_data: employee.intern ? JSON.stringify(employee.intern) : null,
+    annotations: employee.annotations ? JSON.stringify(employee.annotations) : null,
+    aso: employee.aso ? JSON.stringify(employee.aso) : null,
+    disability: employee.disability ? JSON.stringify(employee.disability) : null,
+    foreign_data: employee.foreign ? JSON.stringify(employee.foreign) : null,
+    educations: employee.educations ? JSON.stringify(employee.educations) : null,
+    nationalities: employee.nationalities ? JSON.stringify(employee.nationalities) : null,
+    experience_period: employee.experience_period ? JSON.stringify(employee.experience_period) : null,
+    emergency_contacts: employee.emergency_contacts ? JSON.stringify(employee.emergency_contacts) : null,
+    electoral_card: employee.electoral_card ? JSON.stringify(employee.electoral_card) : null,
+    reservist: employee.reservist ? JSON.stringify(employee.reservist) : null,
+    payroll: employee.payroll ? JSON.stringify(employee.payroll) : null,
+    synced_at: new Date().toISOString(),
+  };
+}
+
 Deno.serve(async (req) => {
   if (req.method === "OPTIONS") {
     return new Response(null, { headers: corsHeaders });
@@ -190,18 +371,27 @@ Deno.serve(async (req) => {
       { auth: { autoRefreshToken: false, persistSession: false } }
     );
 
-    // PASSO 1: Sincronizar cost centers do Convenia e criar clientes automaticamente
+    // PASSO 1: Sincronizar cost centers do Convenia
     console.log("Sincronizando cost centers do Convenia...");
     
     const conveniaCostCenters = await fetchConveniaCostCenters(convenia_token);
     console.log(`Cost centers encontrados no Convenia: ${conveniaCostCenters.length}`);
+
+    // Sincronizar com tabela cost_center
+    for (const cc of conveniaCostCenters) {
+      await supabaseAdmin
+        .from("cost_center")
+        .upsert(
+          { convenia_id: cc.id, name: cc.name },
+          { onConflict: "convenia_id" }
+        );
+    }
 
     // Criar/atualizar clientes e mapear cost_center.id -> cliente.id
     const costCenterIdToClienteMap = new Map<string, number>();
     let clientesCreated = 0;
     
     for (const cc of conveniaCostCenters) {
-      // Verificar se já existe cliente com esse convenia_cost_center_id
       const { data: existingCliente } = await supabaseAdmin
         .from("clientes")
         .select("id")
@@ -212,15 +402,13 @@ Deno.serve(async (req) => {
 
       if (existingCliente) {
         clienteId = existingCliente.id;
-        console.log(`Cliente existente: ${cc.name} -> id ${clienteId}`);
       } else {
-        // Criar novo cliente com dados do cost center
         const { data: newCliente, error: insertError } = await supabaseAdmin
           .from("clientes")
           .insert({
             razao_social: cc.name,
             nome_fantasia: cc.name,
-            cnpj: `00000000000${cc.id}`.slice(-14), // CNPJ placeholder único
+            cnpj: `00000000000${cc.id}`.slice(-14),
             convenia_cost_center_id: cc.id,
           })
           .select("id")
@@ -238,7 +426,6 @@ Deno.serve(async (req) => {
 
       costCenterIdToClienteMap.set(cc.id, clienteId);
 
-      // Atualizar também a tabela cost_centers_convenia para referência
       await supabaseAdmin
         .from("cost_centers_convenia")
         .upsert(
@@ -251,9 +438,9 @@ Deno.serve(async (req) => {
         );
     }
 
-    console.log(`Clientes mapeados: ${costCenterIdToClienteMap.size}, novos criados: ${clientesCreated}`);
+    console.log(`Clientes mapeados: ${costCenterIdToClienteMap.size}, novos: ${clientesCreated}`);
 
-    // PASSO 2: Buscar colaboradores do Convenia com paginação (usando novo formato)
+    // PASSO 2: Buscar colaboradores do Convenia com paginação
     console.log("Buscando lista de colaboradores do Convenia...");
 
     let allEmployeesBasic: ConveniaEmployee[] = [];
@@ -284,7 +471,6 @@ Deno.serve(async (req) => {
       const data: ConveniaListResponse = await response.json();
       allEmployeesBasic = [...allEmployeesBasic, ...data.data];
       
-      // Usar campos do novo formato de resposta
       if (data.last_page) {
         lastPage = data.last_page;
         console.log(`Página ${currentPage}/${lastPage} - Total: ${data.total || 'N/A'}`);
@@ -295,7 +481,7 @@ Deno.serve(async (req) => {
 
     console.log(`Total de colaboradores encontrados: ${allEmployeesBasic.length}`);
     
-    // PASSO 3: Buscar detalhes de cada colaborador para obter cost_center completo
+    // PASSO 3: Buscar detalhes de cada colaborador
     console.log("Buscando detalhes de cada colaborador...");
     const allEmployees: ConveniaEmployee[] = [];
     
@@ -318,24 +504,39 @@ Deno.serve(async (req) => {
 
     console.log(`Detalhes obtidos para ${allEmployees.length} colaboradores`);
 
-    // Contar colaboradores com cost_center
-    const withCostCenter = allEmployees.filter(e => e.cost_center?.id);
-    console.log(`Colaboradores com cost_center: ${withCostCenter.length}`);
+    // PASSO 4: Sincronizar com tabela colaboradores_convenia
+    console.log("Sincronizando com tabela colaboradores_convenia...");
+    let colaboradoresConveniaInserted = 0;
+    let colaboradoresConveniaUpdated = 0;
+    const colaboradoresConveniaErrors: string[] = [];
 
-    // Buscar colaboradores existentes no banco
+    for (const employee of allEmployees) {
+      const mappedData = mapToColaboradoresConvenia(employee);
+      
+      const { error: upsertError } = await supabaseAdmin
+        .from("colaboradores_convenia")
+        .upsert(mappedData, { onConflict: "convenia_id" });
+
+      if (upsertError) {
+        colaboradoresConveniaErrors.push(`Erro ${employee.name}: ${upsertError.message}`);
+      } else {
+        colaboradoresConveniaUpdated++;
+      }
+    }
+
+    console.log(`Colaboradores sincronizados em colaboradores_convenia: ${colaboradoresConveniaUpdated}`);
+
+    // PASSO 5: Sincronizar com tabela colaboradores (existente)
+    console.log("Sincronizando com tabela colaboradores...");
+
     const { data: existingColaboradores, error: fetchError } = await supabaseAdmin
       .from("colaboradores")
       .select("id, cpf, nome_completo, email, telefone, cargo, data_admissao, cliente_id");
 
     if (fetchError) {
       console.error("Erro ao buscar colaboradores existentes:", fetchError);
-      return new Response(
-        JSON.stringify({ error: "Erro ao buscar colaboradores existentes" }),
-        { status: 500, headers: { ...corsHeaders, "Content-Type": "application/json" } }
-      );
     }
 
-    // Criar mapa de nomes normalizados
     const normalizeString = (str: string): string => {
       return str.toLowerCase()
         .normalize("NFD")
@@ -356,36 +557,24 @@ Deno.serve(async (req) => {
     const errors: string[] = [];
 
     for (const employee of allEmployees) {
-      // Montar nome completo usando name + last_name
       const nomeCompleto = `${employee.name} ${employee.last_name}`.trim();
       const normalizedNome = normalizeString(nomeCompleto);
       
-      // CPF pode vir em document.cpf ou cpf.cpf (novo formato)
       const cpfFromDocument = cleanCpf(employee.document?.cpf);
       const cpfFromCpfObject = cleanCpf(employee.cpf?.cpf);
       const cpf = cpfFromDocument || cpfFromCpfObject;
 
-      // Telefone pode vir de contact_information.personal_phone
       const telefone = formatPhone(employee.contact_information?.personal_phone) || 
                        formatPhone(employee.contact_information?.residential_phone);
 
-      // Email pode ser o principal ou personal_email
       const email = employee.email || employee.contact_information?.personal_email || null;
 
-      // Buscar cliente_id usando cost_center.id (já mapeado automaticamente)
       let clienteId: number | null = null;
       
       if (employee.cost_center?.id) {
         clienteId = costCenterIdToClienteMap.get(employee.cost_center.id) || null;
-        
-        if (!clienteId) {
-          console.warn(
-            `Cost center sem mapeamento: ${employee.cost_center.id} - ${employee.cost_center.name}`
-          );
-        }
       }
       
-      // Mapear campos do Convenia para colaboradores
       const colaboradorData = {
         nome_completo: nomeCompleto,
         email: email,
@@ -407,7 +596,6 @@ Deno.serve(async (req) => {
           status_colaborador: colaboradorData.status_colaborador,
         };
 
-        // Só atualiza cliente_id se encontrou mapeamento
         if (clienteId !== null) {
           updateData.cliente_id = clienteId;
         }
@@ -440,15 +628,25 @@ Deno.serve(async (req) => {
       message: "Sincronização concluída",
       summary: {
         total_convenia: allEmployees.length,
-        total_banco: existingColaboradores?.length || 0,
-        inserted,
-        updated,
-        errors: errors.length,
-        cost_centers_convenia: conveniaCostCenters.length,
-        clientes_created: clientesCreated,
-        clientes_mapped: costCenterIdToClienteMap.size,
+        colaboradores_convenia: {
+          synced: colaboradoresConveniaUpdated,
+          errors: colaboradoresConveniaErrors.length,
+        },
+        colaboradores: {
+          total_banco: existingColaboradores?.length || 0,
+          inserted,
+          updated,
+          errors: errors.length,
+        },
+        cost_centers: {
+          total: conveniaCostCenters.length,
+          clientes_created: clientesCreated,
+          clientes_mapped: costCenterIdToClienteMap.size,
+        },
       },
-      errors: errors.length > 0 ? errors : undefined,
+      errors: errors.length > 0 || colaboradoresConveniaErrors.length > 0 
+        ? { colaboradores: errors, colaboradores_convenia: colaboradoresConveniaErrors } 
+        : undefined,
     };
 
     console.log("Resultado:", JSON.stringify(result, null, 2));
