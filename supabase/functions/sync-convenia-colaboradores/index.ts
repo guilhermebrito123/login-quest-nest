@@ -34,6 +34,11 @@ interface ConveniaListResponse {
   };
 }
 
+interface ConveniaCostCenter {
+  id: string;
+  name: string;
+}
+
 function cleanCpf(cpf: string | undefined): string | null {
   if (!cpf) return null;
   return cpf.replace(/\D/g, '');
@@ -42,6 +47,55 @@ function cleanCpf(cpf: string | undefined): string | null {
 function formatPhone(phone: string | undefined): string | null {
   if (!phone) return null;
   return phone.replace(/\D/g, '');
+}
+
+// Rate limiter simples para evitar sobrecarga na API
+async function delay(ms: number): Promise<void> {
+  return new Promise(resolve => setTimeout(resolve, ms));
+}
+
+// Buscar detalhes de um colaborador com retry e backoff
+async function fetchEmployeeDetailsWithRetry(
+  employeeId: string, 
+  token: string,
+  maxRetries: number = 3
+): Promise<any | null> {
+  for (let attempt = 0; attempt < maxRetries; attempt++) {
+    try {
+      const response = await fetch(
+        `https://public-api.convenia.com.br/api/v3/employees/${employeeId}`,
+        {
+          method: "GET",
+          headers: {
+            "token": token,
+            "Content-Type": "application/json",
+          },
+        }
+      );
+
+      if (response.status === 429) {
+        // Rate limited - esperar e tentar novamente
+        const waitTime = Math.pow(2, attempt) * 1000; // 1s, 2s, 4s
+        console.log(`Rate limited para ${employeeId}, aguardando ${waitTime}ms...`);
+        await delay(waitTime);
+        continue;
+      }
+
+      if (!response.ok) {
+        console.error(`Erro ao buscar detalhes do colaborador ${employeeId}: ${response.status}`);
+        return null;
+      }
+
+      const data = await response.json();
+      return data.data || data;
+    } catch (error) {
+      console.error(`Erro ao buscar detalhes do colaborador ${employeeId}:`, error);
+      if (attempt < maxRetries - 1) {
+        await delay(1000);
+      }
+    }
+  }
+  return null;
 }
 
 Deno.serve(async (req) => {
@@ -65,10 +119,10 @@ Deno.serve(async (req) => {
       { auth: { autoRefreshToken: false, persistSession: false } }
     );
 
-    console.log("Buscando colaboradores do Convenia...");
+    console.log("Buscando lista de colaboradores do Convenia...");
 
     // Buscar todos os colaboradores ativos do Convenia com paginação
-    let allEmployees: ConveniaEmployeeBasic[] = [];
+    let allEmployeesBasic: ConveniaEmployeeBasic[] = [];
     let currentPage = 1;
     let lastPage = 1;
 
@@ -94,7 +148,7 @@ Deno.serve(async (req) => {
       }
 
       const data: ConveniaListResponse = await response.json();
-      allEmployees = [...allEmployees, ...data.data];
+      allEmployeesBasic = [...allEmployeesBasic, ...data.data];
       
       if (data.meta) {
         lastPage = data.meta.last_page;
@@ -104,7 +158,60 @@ Deno.serve(async (req) => {
       currentPage++;
     } while (currentPage <= lastPage);
 
-    console.log(`Total de colaboradores encontrados no Convenia: ${allEmployees.length}`);
+    console.log(`Total de colaboradores encontrados: ${allEmployeesBasic.length}`);
+    
+    // Log para debug: verificar as keys de um colaborador da listagem
+    if (allEmployeesBasic.length > 0) {
+      console.log("Keys do primeiro colaborador na listagem:", Object.keys(allEmployeesBasic[0]).join(", "));
+      console.log("cost_center na listagem:", JSON.stringify(allEmployeesBasic[0].cost_center));
+    }
+
+    // Buscar detalhes do primeiro colaborador para ver a estrutura completa
+    console.log("Buscando detalhes do primeiro colaborador para análise...");
+    const firstEmployeeDetails = await fetchEmployeeDetailsWithRetry(allEmployeesBasic[0].id, convenia_token);
+    if (firstEmployeeDetails) {
+      console.log("Keys do primeiro colaborador (detalhes):", Object.keys(firstEmployeeDetails).join(", "));
+      console.log("Estrutura cost_center:", JSON.stringify(firstEmployeeDetails.cost_center));
+      console.log("Estrutura department:", JSON.stringify(firstEmployeeDetails.department));
+      console.log("Estrutura area:", JSON.stringify(firstEmployeeDetails.area));
+      console.log("Estrutura company:", JSON.stringify(firstEmployeeDetails.company));
+    }
+
+    // Para colaboradores, vamos usar os dados da listagem + detalhes apenas se necessário
+    const allEmployees: any[] = [];
+    
+    // Processar sequencialmente com delay para evitar rate limiting
+    console.log("Buscando detalhes de cada colaborador (1 por segundo)...");
+    for (let i = 0; i < allEmployeesBasic.length; i++) {
+      const basicEmployee = allEmployeesBasic[i];
+      
+      // Buscar detalhes
+      const details = await fetchEmployeeDetailsWithRetry(basicEmployee.id, convenia_token);
+      
+      if (details) {
+        allEmployees.push(details);
+      } else {
+        // Usar dados básicos se não conseguir detalhes
+        allEmployees.push(basicEmployee);
+      }
+      
+      // Progresso a cada 20 colaboradores
+      if ((i + 1) % 20 === 0) {
+        console.log(`Progresso: ${i + 1}/${allEmployeesBasic.length}`);
+      }
+      
+      // Delay de 200ms entre requisições para evitar rate limiting
+      await delay(200);
+    }
+
+    console.log(`Detalhes obtidos para ${allEmployees.length} colaboradores`);
+
+    // Log de colaboradores com cost_center
+    const withCostCenter = allEmployees.filter(e => e.cost_center?.id);
+    console.log(`Colaboradores com cost_center: ${withCostCenter.length}`);
+    if (withCostCenter.length > 0) {
+      console.log("Exemplo de cost_center encontrado:", JSON.stringify(withCostCenter[0].cost_center));
+    }
 
     // Buscar colaboradores existentes no banco por nome normalizado
     const { data: existingColaboradores, error: fetchError } = await supabaseAdmin
@@ -228,7 +335,6 @@ Deno.serve(async (req) => {
           console.error(`Erro ao atualizar ${nomeCompleto}:`, updateError);
           errors.push(`Erro ao atualizar ${nomeCompleto}: ${updateError.message}`);
         } else {
-          console.log(`Atualizado: ${nomeCompleto}`);
           updated++;
         }
       } else {
@@ -244,7 +350,6 @@ Deno.serve(async (req) => {
           console.error(`Erro ao inserir ${nomeCompleto}:`, insertError);
           errors.push(`Erro ao inserir ${nomeCompleto}: ${insertError.message}`);
         } else {
-          console.log(`Inserido: ${nomeCompleto}`);
           inserted++;
         }
       }
