@@ -706,6 +706,7 @@ export type Database = {
           department_name: string | null
           disability: Json | null
           driver_license_category: string | null
+          driver_license_emission_date: string | null
           driver_license_number: string | null
           driver_license_validate_date: string | null
           educations: Json | null
@@ -767,6 +768,7 @@ export type Database = {
           department_name?: string | null
           disability?: Json | null
           driver_license_category?: string | null
+          driver_license_emission_date?: string | null
           driver_license_number?: string | null
           driver_license_validate_date?: string | null
           educations?: Json | null
@@ -828,6 +830,7 @@ export type Database = {
           department_name?: string | null
           disability?: Json | null
           driver_license_category?: string | null
+          driver_license_emission_date?: string | null
           driver_license_number?: string | null
           driver_license_validate_date?: string | null
           educations?: Json | null
