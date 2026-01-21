@@ -260,12 +260,14 @@ Deno.serve(async (req) => {
     // PASSO 0: Sincronizar centros de custo
     console.log("Sincronizando centros de custo do Convenia...");
     
+    const costCenterToken = Deno.env.get("CONVENIA_COST_CENTER_TOKEN") || convenia_token;
+    
     const costCentersResponse = await fetch(
       "https://public-api.convenia.com.br/api/v3/companies/cost-centers",
       {
         method: "GET",
         headers: {
-          "token": convenia_token,
+          "token": costCenterToken,
           "Content-Type": "application/json",
         },
       }
