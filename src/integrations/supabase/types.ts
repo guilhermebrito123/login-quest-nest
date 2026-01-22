@@ -507,6 +507,64 @@ export type Database = {
         }
         Relationships: []
       }
+      colaborador_faltas: {
+        Row: {
+          colaborador_id: string
+          created_at: string
+          diaria_temporaria_id: number
+          documento_url: string | null
+          id: number
+          justificada_em: string | null
+          justificada_por: string | null
+          motivo: Database["public"]["Enums"]["motivo_vago_type"]
+          updated_at: string
+        }
+        Insert: {
+          colaborador_id: string
+          created_at?: string
+          diaria_temporaria_id: number
+          documento_url?: string | null
+          id?: number
+          justificada_em?: string | null
+          justificada_por?: string | null
+          motivo: Database["public"]["Enums"]["motivo_vago_type"]
+          updated_at?: string
+        }
+        Update: {
+          colaborador_id?: string
+          created_at?: string
+          diaria_temporaria_id?: number
+          documento_url?: string | null
+          id?: number
+          justificada_em?: string | null
+          justificada_por?: string | null
+          motivo?: Database["public"]["Enums"]["motivo_vago_type"]
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "colaborador_faltas_colaborador_id_fkey"
+            columns: ["colaborador_id"]
+            isOneToOne: false
+            referencedRelation: "colaboradores"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "colaborador_faltas_diaria_temporaria_id_fkey"
+            columns: ["diaria_temporaria_id"]
+            isOneToOne: true
+            referencedRelation: "diarias_temporarias"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "colaborador_faltas_justificada_por_fkey"
+            columns: ["justificada_por"]
+            isOneToOne: false
+            referencedRelation: "usuarios"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       colaborador_movimentacoes_posto: {
         Row: {
           colaborador_id: string
@@ -3186,6 +3244,14 @@ export type Database = {
         Returns: boolean
       }
       is_admin: { Args: { _user_id: string }; Returns: boolean }
+      justificar_falta_diaria_temporaria: {
+        Args: {
+          p_diaria_temporaria_id: number
+          p_documento_url: string
+          p_user_id: string
+        }
+        Returns: undefined
+      }
       limpar_diarias_antigas: { Args: never; Returns: undefined }
       limpar_diarias_temporarias_antigas: { Args: never; Returns: undefined }
       limpar_posto_dias_vagos_antigos: { Args: never; Returns: undefined }
