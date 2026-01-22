@@ -208,16 +208,22 @@ Deno.serve(async (req) => {
     }
 
     const employeeData = await conveniaResponse.json();
-    
-    // Validação defensiva - a API retorna o objeto direto, não { data: ... }
-    if (!employeeData || !employeeData.id) {
-      console.error("Resposta inválida da API do Convenia:", JSON.stringify(employeeData));
-      
+
+    // 🔒 validação defensiva (não usar employeeData.data || employeeData)
+    if (!employeeData || typeof employeeData !== "object" || !employeeData.id) {
+      console.error("Resposta inválida da API do Convenia:", employeeData);
+
       await logWebhook(supabase, "convenia", eventType, payload, "error", "Invalid employee data from Convenia");
-      
+
       return new Response(
-        JSON.stringify({ error: "Invalid employee data from Convenia" }), 
-        { status: 502, headers: { ...corsHeaders, "Content-Type": "application/json" } }
+        JSON.stringify({
+          error: "Invalid employee data from Convenia",
+          received: employeeData,
+        }),
+        {
+          status: 502,
+          headers: corsHeaders,
+        }
       );
     }
 
