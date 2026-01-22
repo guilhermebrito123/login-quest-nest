@@ -198,6 +198,7 @@ function mapToColaboradoresConvenia(employee: ConveniaEmployee) {
     team_name: employee.team?.name || null,
     cost_center_id: employee.cost_center?.id || null,
     cost_center_name: employee.cost_center?.name || null,
+    cost_center: employee.cost_center || null,
     supervisor_id: employee.supervisor?.id || null,
     supervisor_name: employee.supervisor?.name || null,
     supervisor_last_name: employee.supervisor?.last_name || null,
