@@ -2747,6 +2747,42 @@ export type Database = {
           },
         ]
       }
+      sync_logs: {
+        Row: {
+          completed_at: string | null
+          created_at: string | null
+          error_message: string | null
+          id: string
+          job_name: string
+          records_synced: number | null
+          response_data: Json | null
+          started_at: string | null
+          status: string | null
+        }
+        Insert: {
+          completed_at?: string | null
+          created_at?: string | null
+          error_message?: string | null
+          id?: string
+          job_name: string
+          records_synced?: number | null
+          response_data?: Json | null
+          started_at?: string | null
+          status?: string | null
+        }
+        Update: {
+          completed_at?: string | null
+          created_at?: string | null
+          error_message?: string | null
+          id?: string
+          job_name?: string
+          records_synced?: number | null
+          response_data?: Json | null
+          started_at?: string | null
+          status?: string | null
+        }
+        Relationships: []
+      }
       unidades: {
         Row: {
           cep: string | null
