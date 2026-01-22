@@ -102,28 +102,7 @@ Deno.serve(async (req) => {
   }
 
   try {
-    // Validar secret do webhook (opcional mas recomendado)
-    const webhookSecret = Deno.env.get("CONVENIA_WEBHOOK_SECRET");
-    const receivedSecret = req.headers.get("x-convenia-secret") || 
-                           req.headers.get("x-webhook-secret") ||
-                           req.headers.get("authorization");
-    
-    // Se o secret estiver configurado, validar
-    if (webhookSecret) {
-      // Remove "Bearer " prefix if present
-      const cleanReceivedSecret = receivedSecret?.replace(/^Bearer\s+/i, "");
-      
-      if (cleanReceivedSecret !== webhookSecret) {
-        console.error("Webhook secret inválido ou ausente");
-        return new Response(
-          JSON.stringify({ error: "Unauthorized - Invalid webhook secret" }), 
-          { status: 401, headers: { ...corsHeaders, "Content-Type": "application/json" } }
-        );
-      }
-      console.log("Webhook secret validado com sucesso");
-    } else {
-      console.warn("CONVENIA_WEBHOOK_SECRET não configurado - aceitando requisição sem validação");
-    }
+    console.log("Webhook recebido (sem validação de secret)");
 
     // Ler o payload do webhook
     const payload = await req.json();
