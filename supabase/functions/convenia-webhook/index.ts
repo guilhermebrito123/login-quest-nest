@@ -190,44 +190,64 @@ Deno.serve(async (req) => {
         method: "GET",
         headers: {
           "token": conveniaToken,
+          "Authorization": `Bearer ${conveniaToken}`,
           "Content-Type": "application/json",
         },
       }
     );
 
+    // ✅ Ajuste 1: Logar e retornar o erro real do Convenia
+    const responseText = await conveniaResponse.text();
+
     if (!conveniaResponse.ok) {
-      const errorText = await conveniaResponse.text();
-      console.error(`Erro ao buscar colaborador: ${conveniaResponse.status} - ${errorText}`);
+      console.error("Convenia erro:", conveniaResponse.status, responseText);
       
       await logWebhook(supabase, "convenia", eventType, payload, "error", `Convenia API error: ${conveniaResponse.status}`);
       
       return new Response(
-        JSON.stringify({ error: "Failed to fetch employee from Convenia", status: conveniaResponse.status }), 
+        JSON.stringify({ 
+          error: "Convenia API error", 
+          status: conveniaResponse.status, 
+          body: responseText 
+        }), 
         { status: 502, headers: { ...corsHeaders, "Content-Type": "application/json" } }
       );
     }
 
-    const employeeData = await conveniaResponse.json();
-
-    // 🔒 validação defensiva (não usar employeeData.data || employeeData)
-    if (!employeeData || typeof employeeData !== "object" || !employeeData.id) {
-      console.error("Resposta inválida da API do Convenia:", employeeData);
-
-      await logWebhook(supabase, "convenia", eventType, payload, "error", "Invalid employee data from Convenia");
-
+    // Parse JSON com tratamento de erro
+    let employeeData: Record<string, unknown>;
+    try {
+      employeeData = JSON.parse(responseText);
+    } catch {
+      console.error("Convenia retornou não-JSON:", responseText);
+      
+      await logWebhook(supabase, "convenia", eventType, payload, "error", "Convenia returned non-JSON");
+      
       return new Response(
-        JSON.stringify({
-          error: "Invalid employee data from Convenia",
-          received: employeeData,
-        }),
-        {
-          status: 502,
-          headers: corsHeaders,
-        }
+        JSON.stringify({ error: "Convenia returned non-JSON", body: responseText }), 
+        { status: 502, headers: { ...corsHeaders, "Content-Type": "application/json" } }
       );
     }
 
-    const employee = employeeData;
+    // ✅ Ajuste 2: Validação defensiva segura para diferentes formatos de resposta
+    const employee = 
+      (employeeData?.data && typeof employeeData.data === "object" && (employeeData.data as Record<string, unknown>).id) 
+        ? employeeData.data as Record<string, unknown>
+        : (employeeData?.id ? employeeData : null);
+
+    if (!employee) {
+      console.error("Resposta inesperada do Convenia:", employeeData);
+      
+      await logWebhook(supabase, "convenia", eventType, payload, "error", "Unexpected Convenia response structure");
+      
+      return new Response(
+        JSON.stringify({ 
+          error: "Unexpected Convenia response", 
+          received: employeeData 
+        }), 
+        { status: 502, headers: { ...corsHeaders, "Content-Type": "application/json" } }
+      );
+    }
     console.log(`Colaborador obtido: ${employee.name} ${employee.last_name}`);
 
     // Salvar / atualizar centro de custo se existir
