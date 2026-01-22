@@ -346,15 +346,36 @@ Deno.serve(async (req) => {
 
     console.log(`Total de colaboradores encontrados: ${allEmployeesBasic.length}`);
     
-    // PASSO 2: Buscar detalhes e salvar em lotes de 10 para evitar timeout
+    // PASSO 2: Buscar IDs já sincronizados com cost_center para sync incremental
+    console.log("Verificando registros já sincronizados com cost_center...");
+    
+    const { data: alreadySynced, error: syncCheckError } = await supabaseAdmin
+      .from("colaboradores_convenia")
+      .select("convenia_id")
+      .not("cost_center", "is", null);
+
+    const alreadySyncedIds = new Set(
+      syncCheckError ? [] : (alreadySynced || []).map(r => r.convenia_id)
+    );
+    
+    // Filtrar apenas colaboradores que precisam ser sincronizados
+    const employeesToSync = allEmployeesBasic.filter(e => !alreadySyncedIds.has(e.id));
+    
+    console.log(`Total: ${allEmployeesBasic.length}, Já sincronizados: ${alreadySyncedIds.size}, Pendentes: ${employeesToSync.length}`);
+    
+    if (employeesToSync.length === 0) {
+      console.log("Todos os colaboradores já estão sincronizados!");
+    }
+
+    // PASSO 3: Buscar detalhes e salvar em lotes de 10 para evitar timeout
     console.log("Buscando detalhes e salvando em lotes...");
     const allEmployees: ConveniaEmployee[] = [];
     let colaboradoresConveniaUpdated = 0;
     const colaboradoresConveniaErrors: string[] = [];
     const BATCH_SIZE = 10;
     
-    for (let i = 0; i < allEmployeesBasic.length; i++) {
-      const basicEmployee = allEmployeesBasic[i];
+    for (let i = 0; i < employeesToSync.length; i++) {
+      const basicEmployee = employeesToSync[i];
       const details = await fetchEmployeeDetails(basicEmployee.id, convenia_token);
       
       if (details) {
@@ -364,7 +385,7 @@ Deno.serve(async (req) => {
       }
       
       // Salvar em lotes de BATCH_SIZE ou quando for o último
-      if (allEmployees.length % BATCH_SIZE === 0 || i === allEmployeesBasic.length - 1) {
+      if (allEmployees.length % BATCH_SIZE === 0 || i === employeesToSync.length - 1) {
         const startIdx = Math.floor((allEmployees.length - 1) / BATCH_SIZE) * BATCH_SIZE;
         const batch = allEmployees.slice(startIdx);
         
@@ -381,14 +402,21 @@ Deno.serve(async (req) => {
             colaboradoresConveniaUpdated++;
           }
         }
-        console.log(`Lote salvo: ${colaboradoresConveniaUpdated}/${allEmployeesBasic.length}`);
+        console.log(`Lote salvo: ${colaboradoresConveniaUpdated}/${employeesToSync.length}`);
       }
       
       if ((i + 1) % 50 === 0) {
-        console.log(`Progresso: ${i + 1}/${allEmployeesBasic.length}`);
+        console.log(`Progresso: ${i + 1}/${employeesToSync.length}`);
       }
       
       await delay(100);
+    }
+    
+    // Adicionar colaboradores já sincronizados ao array para atualização da tabela colaboradores
+    for (const basicEmployee of allEmployeesBasic) {
+      if (alreadySyncedIds.has(basicEmployee.id) && !allEmployees.find(e => e.id === basicEmployee.id)) {
+        allEmployees.push(basicEmployee);
+      }
     }
 
     console.log(`Total sincronizado em colaboradores_convenia: ${colaboradoresConveniaUpdated}`);
