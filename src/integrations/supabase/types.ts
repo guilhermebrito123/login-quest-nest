@@ -695,6 +695,7 @@ export type Database = {
           bank_accounts: Json | null
           birth_date: string | null
           convenia_id: string
+          cost_center: Json | null
           cost_center_id: string | null
           cost_center_name: string | null
           cpf: string | null
@@ -758,6 +759,7 @@ export type Database = {
           bank_accounts?: Json | null
           birth_date?: string | null
           convenia_id: string
+          cost_center?: Json | null
           cost_center_id?: string | null
           cost_center_name?: string | null
           cpf?: string | null
@@ -821,6 +823,7 @@ export type Database = {
           bank_accounts?: Json | null
           birth_date?: string | null
           convenia_id?: string
+          cost_center?: Json | null
           cost_center_id?: string | null
           cost_center_name?: string | null
           cpf?: string | null
