@@ -932,7 +932,15 @@ export type Database = {
           team_name?: string | null
           updated_at?: string
         }
-        Relationships: []
+        Relationships: [
+          {
+            foreignKeyName: "colaboradores_convenia_cost_center_fk"
+            columns: ["cost_center_id"]
+            isOneToOne: false
+            referencedRelation: "cost_center"
+            referencedColumns: ["convenia_id"]
+          },
+        ]
       }
       contratos: {
         Row: {
