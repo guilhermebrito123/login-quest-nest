@@ -78,3 +78,6 @@ verify_jwt = false
 
 [functions.convenia-webhook]
 verify_jwt = false
+
+[functions.sync-convenia-cost-centers]
+verify_jwt = false
