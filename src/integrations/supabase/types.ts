@@ -2498,6 +2498,7 @@ export type Database = {
           assistencia_medica: boolean | null
           cesta: boolean | null
           cliente_id: number
+          cost_center_id: string | null
           created_at: string | null
           dias_semana: number[] | null
           efetivo_planejado: number | null
@@ -2538,6 +2539,7 @@ export type Database = {
           assistencia_medica?: boolean | null
           cesta?: boolean | null
           cliente_id: number
+          cost_center_id?: string | null
           created_at?: string | null
           dias_semana?: number[] | null
           efetivo_planejado?: number | null
@@ -2578,6 +2580,7 @@ export type Database = {
           assistencia_medica?: boolean | null
           cesta?: boolean | null
           cliente_id?: number
+          cost_center_id?: string | null
           created_at?: string | null
           dias_semana?: number[] | null
           efetivo_planejado?: number | null
@@ -2614,6 +2617,13 @@ export type Database = {
             columns: ["cliente_id"]
             isOneToOne: false
             referencedRelation: "clientes"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "postos_servico_cost_center_id_fkey"
+            columns: ["cost_center_id"]
+            isOneToOne: false
+            referencedRelation: "cost_center"
             referencedColumns: ["id"]
           },
           {
