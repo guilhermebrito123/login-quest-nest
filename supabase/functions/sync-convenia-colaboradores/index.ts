@@ -167,10 +167,16 @@ async function fetchEmployeeDetails(
 }
 
 // Mapear colaborador para tabela colaboradores_convenia (incluindo raw_data)
-function mapToColaboradoresConvenia(employee: ConveniaEmployee) {
+// costCenterMap é usado para converter convenia_id do cost_center para UUID interno
+function mapToColaboradoresConvenia(employee: ConveniaEmployee, costCenterMap: Map<string, string>) {
   const cpfFromDocument = cleanCpf(employee.document?.cpf);
   const cpfFromCpfObject = cleanCpf(employee.cpf?.cpf);
   const pisFromDocument = employee.document?.pis?.replace(/\D/g, '') || null;
+  
+  // Converter cost_center.id do Convenia para UUID interno
+  const costCenterUuid = employee.cost_center?.id 
+    ? costCenterMap.get(employee.cost_center.id) || null 
+    : null;
   
   return {
     convenia_id: employee.id,
@@ -196,7 +202,7 @@ function mapToColaboradoresConvenia(employee: ConveniaEmployee) {
     department_name: employee.department?.name || null,
     team_id: employee.team?.id || null,
     team_name: employee.team?.name || null,
-    cost_center_id: employee.cost_center?.id || null,
+    cost_center_id: costCenterUuid,
     cost_center_name: employee.cost_center?.name || null,
     cost_center: employee.cost_center || null,
     supervisor_id: employee.supervisor?.id || null,
@@ -305,6 +311,17 @@ Deno.serve(async (req) => {
       console.error("Erro ao buscar centros de custo:", costCentersResponse.status);
     }
 
+    // Buscar mapa de cost_center (convenia_id -> uuid interno) para uso posterior
+    const { data: costCenterRecords } = await supabaseAdmin
+      .from("cost_center")
+      .select("id, convenia_id");
+    
+    const costCenterMap = new Map<string, string>();
+    (costCenterRecords || []).forEach((cc: { id: string; convenia_id: string }) => {
+      costCenterMap.set(cc.convenia_id, cc.id);
+    });
+    console.log(`Mapa de cost centers carregado: ${costCenterMap.size} registros`);
+
     // PASSO 1: Buscar colaboradores do Convenia com paginação
     console.log("Buscando lista de colaboradores do Convenia...");
 
@@ -390,7 +407,7 @@ Deno.serve(async (req) => {
         const batch = allEmployees.slice(startIdx);
         
         for (const employee of batch) {
-          const mappedData = mapToColaboradoresConvenia(employee);
+          const mappedData = mapToColaboradoresConvenia(employee, costCenterMap);
           
           const { error: upsertError } = await supabaseAdmin
             .from("colaboradores_convenia")

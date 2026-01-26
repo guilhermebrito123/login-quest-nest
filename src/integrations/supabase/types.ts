@@ -938,7 +938,7 @@ export type Database = {
             columns: ["cost_center_id"]
             isOneToOne: false
             referencedRelation: "cost_center"
-            referencedColumns: ["convenia_id"]
+            referencedColumns: ["id"]
           },
         ]
       }
