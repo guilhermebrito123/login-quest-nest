@@ -1101,10 +1101,13 @@ export type Database = {
           aprovado_para_pgto_por: string | null
           cancelada_em: string | null
           cancelada_por: string | null
+          centro_custo_id: string | null
           cliente_id: number
           colaborador_ausente: string | null
+          colaborador_ausente_convenia: string | null
           colaborador_ausente_nome: string | null
           colaborador_demitido: string | null
+          colaborador_demitido_convenia: string | null
           colaborador_demitido_nome: string | null
           confirmada_em: string | null
           confirmada_por: string | null
@@ -1153,10 +1156,13 @@ export type Database = {
           aprovado_para_pgto_por?: string | null
           cancelada_em?: string | null
           cancelada_por?: string | null
+          centro_custo_id?: string | null
           cliente_id: number
           colaborador_ausente?: string | null
+          colaborador_ausente_convenia?: string | null
           colaborador_ausente_nome?: string | null
           colaborador_demitido?: string | null
+          colaborador_demitido_convenia?: string | null
           colaborador_demitido_nome?: string | null
           confirmada_em?: string | null
           confirmada_por?: string | null
@@ -1205,10 +1211,13 @@ export type Database = {
           aprovado_para_pgto_por?: string | null
           cancelada_em?: string | null
           cancelada_por?: string | null
+          centro_custo_id?: string | null
           cliente_id?: number
           colaborador_ausente?: string | null
+          colaborador_ausente_convenia?: string | null
           colaborador_ausente_nome?: string | null
           colaborador_demitido?: string | null
+          colaborador_demitido_convenia?: string | null
           colaborador_demitido_nome?: string | null
           confirmada_em?: string | null
           confirmada_por?: string | null
@@ -1347,6 +1356,27 @@ export type Database = {
             columns: ["reprovada_por"]
             isOneToOne: false
             referencedRelation: "usuarios"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "fk_centro_custo"
+            columns: ["centro_custo_id"]
+            isOneToOne: false
+            referencedRelation: "cost_center"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "fk_colab_ausente_convenia"
+            columns: ["colaborador_ausente_convenia"]
+            isOneToOne: false
+            referencedRelation: "colaboradores_convenia"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "fk_colab_demitido_convenia"
+            columns: ["colaborador_demitido_convenia"]
+            isOneToOne: false
+            referencedRelation: "colaboradores_convenia"
             referencedColumns: ["id"]
           },
         ]
