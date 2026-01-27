@@ -250,6 +250,18 @@ Deno.serve(async (req) => {
     }
     console.log(`Colaborador obtido: ${employee.name} ${employee.last_name}`);
 
+    // Buscar mapeamento de cost_center convenia_id para UUID interno
+    const { data: costCenters } = await supabase
+      .from("cost_center")
+      .select("id, convenia_id");
+    
+    const costCenterMap = new Map<string, string>();
+    if (costCenters) {
+      for (const cc of costCenters) {
+        costCenterMap.set(cc.convenia_id, cc.id);
+      }
+    }
+
     // Salvar / atualizar centro de custo se existir
     const costCenter = employee.cost_center as Record<string, unknown> | undefined;
     if (costCenter?.id) {
@@ -265,11 +277,28 @@ Deno.serve(async (req) => {
         console.error("Erro ao upsert cost_center:", ccError.message);
       } else {
         console.log(`Centro de custo atualizado: ${costCenter.name}`);
+        // Atualizar o mapa com o novo centro de custo (buscar o UUID interno)
+        const { data: newCc } = await supabase
+          .from("cost_center")
+          .select("id")
+          .eq("convenia_id", costCenter.id)
+          .single();
+        if (newCc) {
+          costCenterMap.set(costCenter.id as string, newCc.id);
+        }
       }
     }
 
     // Salvar / atualizar colaboradores_convenia com mapeamento completo
     const mappedData = mapToColaboradoresConvenia(employee);
+    
+    // Corrigir cost_center_id para usar UUID interno, não convenia_id
+    const employeeCostCenterId = (employee.cost_center as Record<string, unknown>)?.id as string | undefined;
+    if (employeeCostCenterId && costCenterMap.has(employeeCostCenterId)) {
+      mappedData.cost_center_id = costCenterMap.get(employeeCostCenterId)!;
+    } else {
+      mappedData.cost_center_id = null;
+    }
     
     const { error: conveniaError } = await supabase
       .from("colaboradores_convenia")
