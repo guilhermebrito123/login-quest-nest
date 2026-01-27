@@ -3315,28 +3315,6 @@ export type Database = {
         }
         Returns: undefined
       }
-      criar_diaria_falta_justificada: {
-        Args: {
-          p_atestado_path: string
-          p_cliente_id: number
-          p_colaborador_ausente?: string
-          p_colaborador_ausente_convenia?: string
-          p_colaborador_ausente_nome?: string
-          p_data_diaria: string
-          p_diarista_id: string
-          p_horario_fim?: string
-          p_horario_inicio?: string
-          p_intervalo?: number
-          p_jornada_diaria?: number
-          p_observacao?: string
-          p_posto_servico?: string
-          p_posto_servico_id?: string
-          p_unidade: string
-          p_user_id?: string
-          p_valor_diaria: number
-        }
-        Returns: number
-      }
       fn_diff_jsonb: { Args: { new_row: Json; old_row: Json }; Returns: Json }
       gerar_dias_trabalho_proximo_mes: { Args: never; Returns: undefined }
       has_role: {
@@ -3349,8 +3327,8 @@ export type Database = {
       is_admin: { Args: { _user_id: string }; Returns: boolean }
       justificar_falta_diaria_temporaria: {
         Args: {
-          p_atestado_path: string
           p_diaria_temporaria_id: number
+          p_documento_url: string
           p_user_id: string
         }
         Returns: undefined
