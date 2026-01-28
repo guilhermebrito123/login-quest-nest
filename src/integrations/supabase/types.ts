@@ -1864,6 +1864,67 @@ export type Database = {
           },
         ]
       }
+      faltas_colaboradores_convenia: {
+        Row: {
+          atestado_path: string | null
+          colaborador_convenia_id: string
+          created_at: string
+          data_falta: string
+          diaria_temporaria_id: number
+          id: number
+          justificada_em: string | null
+          justificada_por: string | null
+          motivo: Database["public"]["Enums"]["motivo_vago_type"]
+          updated_at: string
+        }
+        Insert: {
+          atestado_path?: string | null
+          colaborador_convenia_id: string
+          created_at?: string
+          data_falta: string
+          diaria_temporaria_id: number
+          id?: number
+          justificada_em?: string | null
+          justificada_por?: string | null
+          motivo: Database["public"]["Enums"]["motivo_vago_type"]
+          updated_at?: string
+        }
+        Update: {
+          atestado_path?: string | null
+          colaborador_convenia_id?: string
+          created_at?: string
+          data_falta?: string
+          diaria_temporaria_id?: number
+          id?: number
+          justificada_em?: string | null
+          justificada_por?: string | null
+          motivo?: Database["public"]["Enums"]["motivo_vago_type"]
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "faltas_colaboradores_convenia_colaborador_convenia_id_fkey"
+            columns: ["colaborador_convenia_id"]
+            isOneToOne: false
+            referencedRelation: "colaboradores_convenia"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "faltas_colaboradores_convenia_diaria_temporaria_id_fkey"
+            columns: ["diaria_temporaria_id"]
+            isOneToOne: true
+            referencedRelation: "diarias_temporarias"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "faltas_colaboradores_convenia_justificada_por_fkey"
+            columns: ["justificada_por"]
+            isOneToOne: false
+            referencedRelation: "usuarios"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       incidentes: {
         Row: {
           acao_tomada: string | null
@@ -3347,6 +3408,14 @@ export type Database = {
         Returns: boolean
       }
       is_admin: { Args: { _user_id: string }; Returns: boolean }
+      justificar_falta_convenia: {
+        Args: {
+          p_atestado_path: string
+          p_diaria_temporaria_id: number
+          p_user_id: string
+        }
+        Returns: undefined
+      }
       justificar_falta_diaria_temporaria: {
         Args: {
           p_atestado_path: string
