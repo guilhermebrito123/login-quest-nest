@@ -52,10 +52,10 @@ Deno.serve(async (req) => {
     // Fetch cost centers from Convenia API
     console.log("Buscando centros de custo da API Convenia...");
     
-    const response = await fetch("https://api.convenia.com.br/api/v3/companies/cost-centers", {
+    const response = await fetch("https://public-api.convenia.com.br/api/v3/companies/cost-centers", {
       method: "GET",
       headers: {
-        "Authorization": `Bearer ${token}`,
+        "token": token,
         "Content-Type": "application/json",
         "Accept": "application/json",
       },
