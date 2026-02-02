@@ -3430,6 +3430,7 @@ export type Database = {
       limpar_presencas_antigas: { Args: never; Returns: undefined }
       limpar_tokens_expirados: { Args: never; Returns: undefined }
       processar_movimentacoes_agendadas: { Args: never; Returns: undefined }
+      sync_paga_por_com_ok_pagamento_por: { Args: never; Returns: number }
     }
     Enums: {
       acumulo_funcao_options: "Sim" | "Não" | "Especial"
