@@ -394,15 +394,16 @@ const PostoCard = ({ posto, unidade, onEdit, onDelete }: PostoCardProps) => {
 
       const dataStr = selectedDayForAction.toISOString().split('T')[0];
 
-      // Mapear valores do frontend para os valores do banco
+      // Mapear valores do frontend para os valores do banco (UPPERCASE)
       const motivoMap: Record<string, string> = {
-        'falta_justificada': 'falta justificada',
-        'falta_injustificada': 'falta injustificada',
-        'pedido': 'Posto vago',
-        'afastamento_inss': 'afastamento INSS',
-        'folga': 'Posto vago',
-        'ferias': 'férias',
-        'suspensao': 'suspensão',
+        'falta_justificada': 'FALTA JUSTIFICADA',
+        'falta_injustificada': 'FALTA INJUSTIFICADA',
+        'pedido': 'VAGA EM ABERTO (COBERTURA SALÁRIO)',
+        'afastamento_inss': 'AFASTAMENTO INSS',
+        'folga': 'VAGA EM ABERTO (COBERTURA SALÁRIO)',
+        'ferias': 'FÉRIAS',
+        'suspensao': 'SUSPENSÃO',
+        'servico_extra': 'SERVIÇO EXTRA',
       };
 
       const motivoMapeado = motivoMap[motivoVago] || motivoVago;
@@ -663,6 +664,7 @@ const PostoCard = ({ posto, unidade, onEdit, onDelete }: PostoCardProps) => {
                   <SelectItem value="folga">Folga</SelectItem>
                   <SelectItem value="ferias">Férias</SelectItem>
                   <SelectItem value="suspensao">Suspensão</SelectItem>
+                  <SelectItem value="servico_extra">Serviço Extra</SelectItem>
                 </SelectContent>
               </Select>
             </div>

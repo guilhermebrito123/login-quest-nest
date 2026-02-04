@@ -3463,6 +3463,7 @@ export type Database = {
         | "LICENÇA PATERNIDADE"
         | "LICENÇA CASAMENTO"
         | "LICENÇA NOJO (FALECIMENTO)"
+        | "SERVIÇO EXTRA"
       observacao_pagamento_type:
         | "Valores divergentes"
         | "Beneficiário do pix não identificado"
@@ -3678,6 +3679,7 @@ export const Constants = {
         "LICENÇA PATERNIDADE",
         "LICENÇA CASAMENTO",
         "LICENÇA NOJO (FALECIMENTO)",
+        "SERVIÇO EXTRA",
       ],
       observacao_pagamento_type: [
         "Valores divergentes",
