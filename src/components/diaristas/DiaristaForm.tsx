@@ -43,6 +43,7 @@ export function DiaristaForm({ open, onClose, onSuccess, diarista }: DiaristaFor
     tipo_conta: "conta corrente" | "conta poupança" | "conta salário";
     numero_conta: string;
     pix: string;
+    reserva_tecnica: boolean;
   }>({
     nome_completo: "",
     cpf: "",
@@ -59,6 +60,7 @@ export function DiaristaForm({ open, onClose, onSuccess, diarista }: DiaristaFor
     tipo_conta: "conta corrente",
     numero_conta: "",
     pix: "",
+    reserva_tecnica: false,
   });
   
   const [anexos, setAnexos] = useState({
@@ -86,6 +88,7 @@ export function DiaristaForm({ open, onClose, onSuccess, diarista }: DiaristaFor
         tipo_conta: (diarista.tipo_conta || "conta corrente") as "conta corrente" | "conta poupança" | "conta salário",
         numero_conta: diarista.numero_conta || "",
         pix: diarista.pix || "",
+        reserva_tecnica: diarista.reserva_tecnica || false,
       });
     } else {
       setFormData({
@@ -104,6 +107,7 @@ export function DiaristaForm({ open, onClose, onSuccess, diarista }: DiaristaFor
         tipo_conta: "conta corrente",
         numero_conta: "",
         pix: "",
+        reserva_tecnica: false,
       });
     }
   }, [diarista, open]);
@@ -354,6 +358,24 @@ export function DiaristaForm({ open, onClose, onSuccess, diarista }: DiaristaFor
                 />
               </div>
             )}
+
+            <div className="space-y-2">
+              <Label htmlFor="reserva_tecnica">Reserva Técnica</Label>
+              <Select
+                value={formData.reserva_tecnica ? "true" : "false"}
+                onValueChange={(value) =>
+                  setFormData({ ...formData, reserva_tecnica: value === "true" })
+                }
+              >
+                <SelectTrigger>
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="false">Não</SelectItem>
+                  <SelectItem value="true">Sim</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
 
             <div className="space-y-2 col-span-2">
               <h3 className="text-lg font-semibold">Dados Bancários</h3>

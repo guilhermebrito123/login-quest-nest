@@ -111,19 +111,20 @@ export default function Diaristas() {
                 <TableHead>Email</TableHead>
                 <TableHead>Banco</TableHead>
                 <TableHead>Status</TableHead>
+                <TableHead>Reserva Técnica</TableHead>
                 <TableHead className="text-right">Ações</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
               {isLoading ? (
                 <TableRow>
-                  <TableCell colSpan={7} className="text-center">
+                  <TableCell colSpan={8} className="text-center">
                     Carregando...
                   </TableCell>
                 </TableRow>
               ) : filteredDiaristas?.length === 0 ? (
                 <TableRow>
-                  <TableCell colSpan={7} className="text-center">
+                  <TableCell colSpan={8} className="text-center">
                     Nenhum diarista encontrado
                   </TableCell>
                 </TableRow>
@@ -145,6 +146,15 @@ export default function Diaristas() {
                       >
                         {diarista.status}
                       </Badge>
+                    </TableCell>
+                    <TableCell>
+                      {diarista.reserva_tecnica ? (
+                        <Badge variant="outline" className="bg-accent text-accent-foreground border-border">
+                          Sim
+                        </Badge>
+                      ) : (
+                        <span className="text-muted-foreground">Não</span>
+                      )}
                     </TableCell>
                     <TableCell className="text-right">
                       <div className="flex justify-end gap-2">

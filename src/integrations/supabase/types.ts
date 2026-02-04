@@ -1484,6 +1484,7 @@ export type Database = {
           pix: string | null
           pix_pertence_beneficiario: boolean | null
           possui_antecedente: boolean | null
+          reserva_tecnica: boolean | null
           status: Database["public"]["Enums"]["status_diarista"] | null
           telefone: string | null
           tipo_conta: Database["public"]["Enums"]["tipo_conta_bancaria"] | null
@@ -1510,6 +1511,7 @@ export type Database = {
           pix?: string | null
           pix_pertence_beneficiario?: boolean | null
           possui_antecedente?: boolean | null
+          reserva_tecnica?: boolean | null
           status?: Database["public"]["Enums"]["status_diarista"] | null
           telefone?: string | null
           tipo_conta?: Database["public"]["Enums"]["tipo_conta_bancaria"] | null
@@ -1536,6 +1538,7 @@ export type Database = {
           pix?: string | null
           pix_pertence_beneficiario?: boolean | null
           possui_antecedente?: boolean | null
+          reserva_tecnica?: boolean | null
           status?: Database["public"]["Enums"]["status_diarista"] | null
           telefone?: string | null
           tipo_conta?: Database["public"]["Enums"]["tipo_conta_bancaria"] | null
