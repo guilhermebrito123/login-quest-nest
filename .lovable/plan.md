@@ -1,97 +1,53 @@
 
-# Plano: Criar Edge Function `sync-convenia-cost-centers`
+# Plano: Adicionar atributo `reserva_tecnica` na tabela `diaristas`
 
 ## Objetivo
-Criar uma Edge Function dedicada chamada `sync-convenia-cost-centers` que sincroniza **apenas** os centros de custo do Convenia, permitindo execução independente sem processar colaboradores.
+Adicionar um novo campo booleano opcional chamado `reserva_tecnica` na tabela `diaristas`, definindo o valor como `false` para todos os registros existentes.
 
-## Benefícios
-- Sincronização mais rápida (apenas centros de custo)
-- Menor consumo de recursos
-- Possibilidade de executar separadamente quando necessário
-- Endpoint dedicado para automações específicas
+## Etapas de Implementação
 
-## Implementação
+### 1. Migração do Banco de Dados
 
-### 1. Criar a Edge Function
+Criar uma migração SQL que:
+- Adiciona a coluna `reserva_tecnica` do tipo `boolean` com valor padrão `false`
+- Atualiza todos os registros existentes para `false`
 
-**Arquivo:** `supabase/functions/sync-convenia-cost-centers/index.ts`
+```sql
+-- Adicionar coluna reserva_tecnica à tabela diaristas
+ALTER TABLE public.diaristas 
+ADD COLUMN IF NOT EXISTS reserva_tecnica boolean DEFAULT false;
 
-A função irá:
-- Buscar centros de custo da API Convenia (`/companies/cost-centers`)
-- Usar upsert para inserir/atualizar na tabela `cost_center`
-- Retornar resumo da sincronização (total, sucessos, erros)
-- Incluir headers CORS para chamadas do frontend
-- Usar o token `CONVENIA_COST_CENTER_TOKEN` (ou `CONVENIA_API_TOKEN` como fallback)
-
-```text
-Fluxo:
-┌─────────────────────┐
-│  Frontend/Client    │
-└─────────┬───────────┘
-          │ POST
-          ▼
-┌─────────────────────────────────────┐
-│ sync-convenia-cost-centers          │
-│ (Edge Function)                     │
-└─────────┬───────────────────────────┘
-          │ GET /companies/cost-centers
-          ▼
-┌─────────────────────┐
-│   API Convenia      │
-└─────────┬───────────┘
-          │ Response
-          ▼
-┌─────────────────────────────────────┐
-│ Upsert → tabela cost_center         │
-└─────────────────────────────────────┘
+-- Atualizar todos os registros existentes para false
+UPDATE public.diaristas SET reserva_tecnica = false WHERE reserva_tecnica IS NULL;
 ```
 
-### 2. Atualizar Configuração
+### 2. Atualização do Formulário (DiaristaForm.tsx)
 
-**Arquivo:** `supabase/config.toml`
+- Adicionar `reserva_tecnica` ao estado do formulário com valor padrão `false`
+- Adicionar campo no `useEffect` para carregar o valor ao editar
+- Adicionar um campo de seleção (Sim/Não) no formulário para o usuário marcar se o diarista é reserva técnica
 
-Adicionar configuração da nova função:
-```toml
-[functions.sync-convenia-cost-centers]
-verify_jwt = false
-```
+### 3. Atualização da Listagem (Diaristas.tsx) - Opcional
+
+- Considerar adicionar uma coluna ou badge indicando se o diarista é reserva técnica na tabela de listagem
+
+---
 
 ## Detalhes Técnicos
 
-### Estrutura da Resposta
-```json
-{
-  "success": true,
-  "message": "Sincronização de centros de custo concluída",
-  "summary": {
-    "total_found": 31,
-    "synced": 31,
-    "errors": 0
-  },
-  "errors": []
-}
-```
+### Arquivos Impactados
+| Arquivo | Alteração |
+|---------|-----------|
+| Nova migração SQL | Adicionar coluna e atualizar dados existentes |
+| `src/integrations/supabase/types.ts` | Atualização automática |
+| `src/components/diaristas/DiaristaForm.tsx` | Adicionar campo no formulário |
+| `src/pages/Diaristas.tsx` | (Opcional) Exibir indicador de reserva técnica |
 
-### Endpoint Final
-```
-POST https://jcsmwkkytigomvibwsnb.supabase.co/functions/v1/sync-convenia-cost-centers
-```
+### Estrutura do Campo
+- **Nome**: `reserva_tecnica`
+- **Tipo**: `boolean`
+- **Nullable**: Sim (opcional)
+- **Default**: `false`
 
-### Chamada do Frontend
-```typescript
-const { data, error } = await supabase.functions.invoke('sync-convenia-cost-centers', {
-  method: 'POST'
-});
-```
-
-## Arquivos a Criar/Modificar
-
-| Arquivo | Ação |
-|---------|------|
-| `supabase/functions/sync-convenia-cost-centers/index.ts` | Criar |
-| `supabase/config.toml` | Adicionar configuração |
-
-## Observações
-- A função existente `sync-convenia-colaboradores` continuará funcionando normalmente
-- Ambas usam o mesmo token de API já configurado nos secrets
-- Não há necessidade de alterações no banco de dados
+### Impacto nas Políticas RLS
+Nenhuma alteração necessária - as políticas existentes já cobrem operações CRUD na tabela `diaristas`.
