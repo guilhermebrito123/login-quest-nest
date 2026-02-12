@@ -942,6 +942,96 @@ export type Database = {
           },
         ]
       }
+      colaboradores_demitidos_convenia: {
+        Row: {
+          accountancy_date: string | null
+          breaking_contract: string | null
+          comments: string | null
+          convenia_employee_id: string
+          corporate_email: string | null
+          created_at: string
+          dismissal_date: string | null
+          dismissal_id: string | null
+          dismissal_step_id: number | null
+          dismissal_step_name: string | null
+          dismissal_type_id: number | null
+          dismissal_type_title: string | null
+          finished_at: string | null
+          id: string
+          motive: string | null
+          new_supervisor_id: string | null
+          raw_data: Json | null
+          remove_access_date: string | null
+          remove_benefit: boolean | null
+          supervisor_id: string | null
+          supervisor_name: string | null
+          synced_at: string | null
+          termination_notice_date: string | null
+          termination_notice_id: string | null
+          termination_notice_type_id: number | null
+          termination_notice_type_name: string | null
+          updated_at: string
+        }
+        Insert: {
+          accountancy_date?: string | null
+          breaking_contract?: string | null
+          comments?: string | null
+          convenia_employee_id: string
+          corporate_email?: string | null
+          created_at?: string
+          dismissal_date?: string | null
+          dismissal_id?: string | null
+          dismissal_step_id?: number | null
+          dismissal_step_name?: string | null
+          dismissal_type_id?: number | null
+          dismissal_type_title?: string | null
+          finished_at?: string | null
+          id?: string
+          motive?: string | null
+          new_supervisor_id?: string | null
+          raw_data?: Json | null
+          remove_access_date?: string | null
+          remove_benefit?: boolean | null
+          supervisor_id?: string | null
+          supervisor_name?: string | null
+          synced_at?: string | null
+          termination_notice_date?: string | null
+          termination_notice_id?: string | null
+          termination_notice_type_id?: number | null
+          termination_notice_type_name?: string | null
+          updated_at?: string
+        }
+        Update: {
+          accountancy_date?: string | null
+          breaking_contract?: string | null
+          comments?: string | null
+          convenia_employee_id?: string
+          corporate_email?: string | null
+          created_at?: string
+          dismissal_date?: string | null
+          dismissal_id?: string | null
+          dismissal_step_id?: number | null
+          dismissal_step_name?: string | null
+          dismissal_type_id?: number | null
+          dismissal_type_title?: string | null
+          finished_at?: string | null
+          id?: string
+          motive?: string | null
+          new_supervisor_id?: string | null
+          raw_data?: Json | null
+          remove_access_date?: string | null
+          remove_benefit?: boolean | null
+          supervisor_id?: string | null
+          supervisor_name?: string | null
+          synced_at?: string | null
+          termination_notice_date?: string | null
+          termination_notice_id?: string | null
+          termination_notice_type_id?: number | null
+          termination_notice_type_name?: string | null
+          updated_at?: string
+        }
+        Relationships: []
+      }
       contratos: {
         Row: {
           cliente_id: number
