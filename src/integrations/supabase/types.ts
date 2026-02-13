@@ -3491,6 +3491,10 @@ export type Database = {
         }
         Returns: number
       }
+      current_internal_access_level: {
+        Args: never
+        Returns: Database["public"]["Enums"]["internal_access_level"]
+      }
       fn_diff_jsonb: { Args: { new_row: Json; old_row: Json }; Returns: Json }
       gerar_dias_trabalho_proximo_mes: { Args: never; Returns: undefined }
       has_role: {
@@ -3501,6 +3505,8 @@ export type Database = {
         Returns: boolean
       }
       is_admin: { Args: { _user_id: string }; Returns: boolean }
+      is_admin_user: { Args: never; Returns: boolean }
+      is_internal_user: { Args: never; Returns: boolean }
       justificar_falta_convenia: {
         Args: {
           p_atestado_path: string
