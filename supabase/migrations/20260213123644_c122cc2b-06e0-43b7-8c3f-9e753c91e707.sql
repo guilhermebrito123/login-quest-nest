@@ -1,0 +1,1 @@
+ALTER TYPE public.motivo_vago_type RENAME VALUE 'DIÁRIAS BÔNUS' TO 'DIÁRIA BÔNUS';
