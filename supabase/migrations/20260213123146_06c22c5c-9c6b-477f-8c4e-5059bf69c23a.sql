@@ -1,0 +1,1 @@
+ALTER TYPE public.motivo_vago_type ADD VALUE IF NOT EXISTS 'DIÁRIAS BÔNUS';

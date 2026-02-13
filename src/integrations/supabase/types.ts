@@ -3557,6 +3557,7 @@ export type Database = {
         | "LICENÇA CASAMENTO"
         | "LICENÇA NOJO (FALECIMENTO)"
         | "SERVIÇO EXTRA"
+        | "DIÁRIAS BÔNUS"
       observacao_pagamento_type:
         | "Valores divergentes"
         | "Beneficiário do pix não identificado"
@@ -3773,6 +3774,7 @@ export const Constants = {
         "LICENÇA CASAMENTO",
         "LICENÇA NOJO (FALECIMENTO)",
         "SERVIÇO EXTRA",
+        "DIÁRIAS BÔNUS",
       ],
       observacao_pagamento_type: [
         "Valores divergentes",
