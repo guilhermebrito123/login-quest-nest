@@ -3539,6 +3539,9 @@ export type Database = {
         | "analista_centro_controle"
         | "tecnico"
         | "cliente_view"
+        | "assistente_operacoes"
+        | "assistente_financeiro"
+        | "gestor_financeiro"
       motivo_contratacao:
         | "Substituição efetivo"
         | "Substituição férias licença"
@@ -3754,6 +3757,9 @@ export const Constants = {
         "analista_centro_controle",
         "tecnico",
         "cliente_view",
+        "assistente_operacoes",
+        "assistente_financeiro",
+        "gestor_financeiro",
       ],
       motivo_contratacao: [
         "Substituição efetivo",
