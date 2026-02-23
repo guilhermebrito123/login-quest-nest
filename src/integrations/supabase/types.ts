@@ -1963,7 +1963,7 @@ export type Database = {
           colaborador_convenia_id: string
           created_at: string
           data_falta: string
-          diaria_temporaria_id: number
+          diaria_temporaria_id: number | null
           id: number
           justificada_em: string | null
           justificada_por: string | null
@@ -1975,7 +1975,7 @@ export type Database = {
           colaborador_convenia_id: string
           created_at?: string
           data_falta: string
-          diaria_temporaria_id: number
+          diaria_temporaria_id?: number | null
           id?: number
           justificada_em?: string | null
           justificada_por?: string | null
@@ -1987,7 +1987,7 @@ export type Database = {
           colaborador_convenia_id?: string
           created_at?: string
           data_falta?: string
-          diaria_temporaria_id?: number
+          diaria_temporaria_id?: number | null
           id?: number
           justificada_em?: string | null
           justificada_por?: string | null
@@ -2005,7 +2005,7 @@ export type Database = {
           {
             foreignKeyName: "faltas_colaboradores_convenia_diaria_temporaria_id_fkey"
             columns: ["diaria_temporaria_id"]
-            isOneToOne: true
+            isOneToOne: false
             referencedRelation: "diarias_temporarias"
             referencedColumns: ["id"]
           },
