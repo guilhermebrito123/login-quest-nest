@@ -3531,7 +3531,7 @@ export type Database = {
       processar_movimentacoes_agendadas: { Args: never; Returns: undefined }
       reverter_justificativa_falta_convenia: {
         Args: { p_bucket_id?: string; p_falta_id: number; p_user_id: string }
-        Returns: undefined
+        Returns: string
       }
     }
     Enums: {
