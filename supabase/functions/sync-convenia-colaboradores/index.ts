@@ -530,6 +530,76 @@ Deno.serve(async (req) => {
       console.log(`Registros órfãos marcados como desligados: ${orphanRows.length}`);
     }
 
+    // PASSO 5: Buscar e inserir demitidos ausentes em colaboradores_convenia
+    console.log("Verificando demitidos ausentes em colaboradores_convenia...");
+    
+    // Buscar convenia_ids dos demitidos que NÃO existem em colaboradores_convenia
+    const { data: existingConveniaIds } = await supabaseAdmin
+      .from("colaboradores_convenia")
+      .select("convenia_id");
+    
+    const existingIdsSet = new Set((existingConveniaIds || []).map((r: { convenia_id: string }) => r.convenia_id));
+    const missingDemitidosIds = demitidosIds.filter((id: string) => !existingIdsSet.has(id));
+    
+    console.log(`Demitidos ausentes em colaboradores_convenia: ${missingDemitidosIds.length}`);
+    
+    let demitidosInseridos = 0;
+    const demitidosInsertErrors: string[] = [];
+    
+    if (missingDemitidosIds.length > 0) {
+      for (const employeeId of missingDemitidosIds) {
+        // Buscar detalhes na API do Convenia
+        const details = await fetchEmployeeDetails(employeeId, convenia_token);
+        
+        if (details) {
+          const mappedData = mapToColaboradoresConvenia(details, costCenterMap);
+          // Forçar status como Desligado
+          mappedData.status = "Desligado";
+          
+          const { error: insertErr } = await supabaseAdmin
+            .from("colaboradores_convenia")
+            .upsert(mappedData, { onConflict: "convenia_id" });
+          
+          if (insertErr) {
+            demitidosInsertErrors.push(`Erro ${details.name}: ${insertErr.message}`);
+          } else {
+            demitidosInseridos++;
+          }
+        } else {
+          // API não retornou dados - inserir registro mínimo a partir dos dados de demissão
+          const { data: demitidoData } = await supabaseAdmin
+            .from("colaboradores_demitidos_convenia")
+            .select("convenia_employee_id, corporate_email, raw_data")
+            .eq("convenia_employee_id", employeeId)
+            .single();
+          
+          if (demitidoData) {
+            const minimalData = {
+              convenia_id: employeeId,
+              email: demitidoData.corporate_email || null,
+              status: "Desligado",
+              synced_at: new Date().toISOString(),
+              raw_data: demitidoData.raw_data,
+            };
+            
+            const { error: minInsertErr } = await supabaseAdmin
+              .from("colaboradores_convenia")
+              .upsert(minimalData, { onConflict: "convenia_id" });
+            
+            if (minInsertErr) {
+              demitidosInsertErrors.push(`Erro minimal ${employeeId}: ${minInsertErr.message}`);
+            } else {
+              demitidosInseridos++;
+            }
+          }
+        }
+        
+        // Pequeno delay para evitar rate limiting
+        await delay(200);
+      }
+      console.log(`Demitidos inseridos em colaboradores_convenia: ${demitidosInseridos}`);
+    }
+
     const result = {
       success: true,
       message: "Sincronização concluída",
@@ -543,6 +613,8 @@ Deno.serve(async (req) => {
           synced: colaboradoresConveniaUpdated,
           errors: colaboradoresConveniaErrors.length,
           marcados_desligados: marcadosDesligados,
+          demitidos_inseridos: demitidosInseridos,
+          demitidos_ausentes: missingDemitidosIds.length,
         },
         colaboradores: {
           total_banco: existingColaboradores?.length || 0,
@@ -551,8 +623,8 @@ Deno.serve(async (req) => {
           errors: errors.length,
         },
       },
-      errors: errors.length > 0 || colaboradoresConveniaErrors.length > 0 || costCentersErrors.length > 0
-        ? { colaboradores: errors, colaboradores_convenia: colaboradoresConveniaErrors, cost_centers: costCentersErrors } 
+      errors: errors.length > 0 || colaboradoresConveniaErrors.length > 0 || costCentersErrors.length > 0 || demitidosInsertErrors.length > 0
+        ? { colaboradores: errors, colaboradores_convenia: colaboradoresConveniaErrors, cost_centers: costCentersErrors, demitidos_insert: demitidosInsertErrors } 
         : undefined,
     };
 
