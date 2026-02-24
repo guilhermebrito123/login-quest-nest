@@ -507,7 +507,6 @@ Deno.serve(async (req) => {
         .from("colaboradores_convenia")
         .update({ status: "Desligado", synced_at: new Date().toISOString() })
         .in("convenia_id", demitidosIds)
-        .or("status.is.null,status.neq.Desligado")
         .select("id");
       
       if (updateDismissedError) {
@@ -516,6 +515,19 @@ Deno.serve(async (req) => {
         marcadosDesligados = updatedRows?.length || 0;
         console.log(`Marcados como desligados: ${marcadosDesligados}`);
       }
+    }
+
+    // Marcar também registros que não estão mais na API ativa nem na lista de demitidos
+    const allKnownIds = [...new Set([...activeConveniaIds, ...demitidosIds])];
+    const { data: orphanRows, error: orphanError } = await supabaseAdmin
+      .from("colaboradores_convenia")
+      .update({ status: "Desligado", synced_at: new Date().toISOString() })
+      .not("convenia_id", "in", `(${allKnownIds.join(",")})`)
+      .select("id");
+    
+    if (!orphanError && orphanRows) {
+      marcadosDesligados += orphanRows.length;
+      console.log(`Registros órfãos marcados como desligados: ${orphanRows.length}`);
     }
 
     const result = {
