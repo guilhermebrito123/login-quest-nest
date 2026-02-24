@@ -485,6 +485,39 @@ Deno.serve(async (req) => {
       }
     }
 
+    // PASSO 4: Marcar colaboradores desligados na tabela colaboradores_convenia
+    // (preserva os registros e IDs para referências em diarias_temporarias e faltas)
+    console.log("Marcando colaboradores desligados em colaboradores_convenia...");
+    
+    const activeConveniaIds = allEmployees.map(e => e.id);
+    
+    // Buscar IDs de demitidos que ainda estão em colaboradores_convenia sem status "Desligado"
+    const { data: demitidosConvenia } = await supabaseAdmin
+      .from("colaboradores_demitidos_convenia")
+      .select("convenia_employee_id");
+    
+    const demitidosIds = (demitidosConvenia || []).map((d: { convenia_employee_id: string }) => d.convenia_employee_id);
+    
+    let marcadosDesligados = 0;
+    
+    if (demitidosIds.length > 0) {
+      // Atualizar status para "Desligado" nos registros que existem em colaboradores_convenia
+      // e estão na lista de demitidos
+      const { data: updatedRows, error: updateDismissedError } = await supabaseAdmin
+        .from("colaboradores_convenia")
+        .update({ status: "Desligado", synced_at: new Date().toISOString() })
+        .in("convenia_id", demitidosIds)
+        .or("status.is.null,status.neq.Desligado")
+        .select("id");
+      
+      if (updateDismissedError) {
+        console.error("Erro ao marcar desligados:", updateDismissedError.message);
+      } else {
+        marcadosDesligados = updatedRows?.length || 0;
+        console.log(`Marcados como desligados: ${marcadosDesligados}`);
+      }
+    }
+
     const result = {
       success: true,
       message: "Sincronização concluída",
@@ -497,6 +530,7 @@ Deno.serve(async (req) => {
         colaboradores_convenia: {
           synced: colaboradoresConveniaUpdated,
           errors: colaboradoresConveniaErrors.length,
+          marcados_desligados: marcadosDesligados,
         },
         colaboradores: {
           total_banco: existingColaboradores?.length || 0,
