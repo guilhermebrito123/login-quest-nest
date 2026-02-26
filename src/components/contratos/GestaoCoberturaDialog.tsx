@@ -496,18 +496,19 @@ export function GestaoCoberturaDialog({ open, onClose }: GestaoCoberturaDialogPr
                               <div className="mt-2 text-sm">
                                 <span className="text-muted-foreground">Motivo: </span>
                                 <Badge variant="secondary">
-                                  {dia.motivo === 'FALTA JUSTIFICADA' ? 'Falta Justificada' :
-                                   dia.motivo === 'FALTA INJUSTIFICADA' ? 'Falta Injustificada' :
-                                   dia.motivo === 'VAGA EM ABERTO (COBERTURA SALÁRIO)' ? 'Vaga em Aberto' :
-                                   dia.motivo === 'AFASTAMENTO INSS' ? 'Afastamento INSS' :
-                                   dia.motivo === 'FÉRIAS' ? 'Férias' :
-                                   dia.motivo === 'SUSPENSÃO' ? 'Suspensão' :
-                                   dia.motivo === 'LICENÇA MATERNIDADE' ? 'Licença Maternidade' :
-                                   dia.motivo === 'LICENÇA PATERNIDADE' ? 'Licença Paternidade' :
-                                   dia.motivo === 'LICENÇA CASAMENTO' ? 'Licença Casamento' :
-                                   dia.motivo === 'LICENÇA NOJO (FALECIMENTO)' ? 'Licença Nojo' :
-                                   dia.motivo === 'SERVIÇO EXTRA' ? 'Serviço Extra' :
-                                   dia.motivo}
+                                   {dia.motivo === 'DIÁRIA - FALTA ATESTADO' ? 'Falta Atestado' :
+                                    dia.motivo === 'DIÁRIA - FALTA' ? 'Falta' :
+                                    dia.motivo === 'DIÁRIA - SALÁRIO' ? 'Salário' :
+                                    dia.motivo === 'AFASTAMENTO INSS' ? 'Afastamento INSS' :
+                                    dia.motivo === 'DIÁRIA - FÉRIAS' ? 'Férias' :
+                                    dia.motivo === 'SUSPENSÃO' ? 'Suspensão' :
+                                    dia.motivo === 'LICENÇA MATERNIDADE' ? 'Licença Maternidade' :
+                                    dia.motivo === 'LICENÇA PATERNIDADE' ? 'Licença Paternidade' :
+                                    dia.motivo === 'LICENÇA CASAMENTO' ? 'Licença Casamento' :
+                                    dia.motivo === 'LICENÇA NOJO (FALECIMENTO)' ? 'Licença Nojo' :
+                                    dia.motivo === 'DIÁRIA - DEMANDA EXTRA' ? 'Demanda Extra' :
+                                    dia.motivo === 'DIÁRIA - BÔNUS' ? 'Bônus' :
+                                    dia.motivo}
                                 </Badge>
                               </div>
                             )}
