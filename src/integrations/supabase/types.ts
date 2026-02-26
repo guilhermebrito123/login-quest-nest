@@ -3538,23 +3538,10 @@ export type Database = {
         }
         Returns: undefined
       }
-      justificar_falta_convenia_por_falta_id:
-        | {
-            Args: {
-              p_atestado_path: string
-              p_falta_id: number
-              p_user_id: string
-            }
-            Returns: undefined
-          }
-        | {
-            Args: {
-              p_atestado_path: string
-              p_falta_id: string
-              p_user_id: string
-            }
-            Returns: undefined
-          }
+      justificar_falta_convenia_por_falta_id: {
+        Args: { p_atestado_path: string; p_falta_id: number; p_user_id: string }
+        Returns: undefined
+      }
       justificar_falta_diaria_temporaria: {
         Args: {
           p_atestado_path: string
