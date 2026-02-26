@@ -396,14 +396,14 @@ const PostoCard = ({ posto, unidade, onEdit, onDelete }: PostoCardProps) => {
 
       // Mapear valores do frontend para os valores do banco (UPPERCASE)
       const motivoMap: Record<string, string> = {
-        'falta_justificada': 'FALTA JUSTIFICADA',
-        'falta_injustificada': 'FALTA INJUSTIFICADA',
-        'pedido': 'VAGA EM ABERTO (COBERTURA SALÁRIO)',
+        'falta_justificada': 'DIÁRIA - FALTA ATESTADO',
+        'falta_injustificada': 'DIÁRIA - FALTA',
+        'pedido': 'DIÁRIA - SALÁRIO',
         'afastamento_inss': 'AFASTAMENTO INSS',
-        'folga': 'VAGA EM ABERTO (COBERTURA SALÁRIO)',
-        'ferias': 'FÉRIAS',
+        'folga': 'DIÁRIA - SALÁRIO',
+        'ferias': 'DIÁRIA - FÉRIAS',
         'suspensao': 'SUSPENSÃO',
-        'servico_extra': 'SERVIÇO EXTRA',
+        'servico_extra': 'DIÁRIA - DEMANDA EXTRA',
       };
 
       const motivoMapeado = motivoMap[motivoVago] || motivoVago;
@@ -657,14 +657,14 @@ const PostoCard = ({ posto, unidade, onEdit, onDelete }: PostoCardProps) => {
                   <SelectValue placeholder="Selecione o motivo" />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="falta_justificada">Falta Justificada</SelectItem>
-                  <SelectItem value="falta_injustificada">Falta Injustificada</SelectItem>
-                  <SelectItem value="pedido">Pedido</SelectItem>
+                  <SelectItem value="falta_justificada">Diária - Falta Atestado</SelectItem>
+                  <SelectItem value="falta_injustificada">Diária - Falta</SelectItem>
+                  <SelectItem value="pedido">Diária - Salário</SelectItem>
                   <SelectItem value="afastamento_inss">Afastamento INSS</SelectItem>
                   <SelectItem value="folga">Folga</SelectItem>
-                  <SelectItem value="ferias">Férias</SelectItem>
+                  <SelectItem value="ferias">Diária - Férias</SelectItem>
                   <SelectItem value="suspensao">Suspensão</SelectItem>
-                  <SelectItem value="servico_extra">Serviço Extra</SelectItem>
+                  <SelectItem value="servico_extra">Diária - Demanda Extra</SelectItem>
                 </SelectContent>
               </Select>
             </div>

@@ -3469,28 +3469,51 @@ export type Database = {
         }
         Returns: undefined
       }
-      criar_diaria_falta_justificada: {
-        Args: {
-          p_atestado_path: string
-          p_cliente_id: number
-          p_colaborador_ausente?: string
-          p_colaborador_ausente_convenia?: string
-          p_colaborador_ausente_nome?: string
-          p_data_diaria: string
-          p_diarista_id: string
-          p_horario_fim?: string
-          p_horario_inicio?: string
-          p_intervalo?: number
-          p_jornada_diaria?: number
-          p_observacao?: string
-          p_posto_servico?: string
-          p_posto_servico_id?: string
-          p_unidade: string
-          p_user_id?: string
-          p_valor_diaria: number
-        }
-        Returns: number
-      }
+      criar_diaria_falta_justificada:
+        | {
+            Args: {
+              p_atestado_path: string
+              p_cliente_id: number
+              p_colaborador_ausente?: string
+              p_colaborador_ausente_convenia?: string
+              p_colaborador_ausente_nome?: string
+              p_data_diaria: string
+              p_diarista_id: string
+              p_horario_fim?: string
+              p_horario_inicio?: string
+              p_intervalo?: number
+              p_jornada_diaria?: number
+              p_observacao?: string
+              p_posto_servico?: string
+              p_posto_servico_id?: string
+              p_unidade: string
+              p_user_id?: string
+              p_valor_diaria: number
+            }
+            Returns: number
+          }
+        | {
+            Args: {
+              p_atestado_path: string
+              p_cliente_id: number
+              p_colaborador_ausente?: string
+              p_colaborador_ausente_convenia?: string
+              p_colaborador_ausente_nome?: string
+              p_data_diaria: string
+              p_diarista_id: string
+              p_horario_fim?: string
+              p_horario_inicio?: string
+              p_intervalo?: number
+              p_jornada_diaria?: number
+              p_observacao?: string
+              p_posto_servico?: string
+              p_posto_servico_id?: string
+              p_unidade: string
+              p_user_id: string
+              p_valor_diaria: number
+            }
+            Returns: number
+          }
       current_internal_access_level: {
         Args: never
         Returns: Database["public"]["Enums"]["internal_access_level"]
@@ -3515,10 +3538,23 @@ export type Database = {
         }
         Returns: undefined
       }
-      justificar_falta_convenia_por_falta_id: {
-        Args: { p_atestado_path: string; p_falta_id: number; p_user_id: string }
-        Returns: undefined
-      }
+      justificar_falta_convenia_por_falta_id:
+        | {
+            Args: {
+              p_atestado_path: string
+              p_falta_id: number
+              p_user_id: string
+            }
+            Returns: undefined
+          }
+        | {
+            Args: {
+              p_atestado_path: string
+              p_falta_id: string
+              p_user_id: string
+            }
+            Returns: undefined
+          }
       justificar_falta_diaria_temporaria: {
         Args: {
           p_atestado_path: string
@@ -3533,10 +3569,16 @@ export type Database = {
       limpar_presencas_antigas: { Args: never; Returns: undefined }
       limpar_tokens_expirados: { Args: never; Returns: undefined }
       processar_movimentacoes_agendadas: { Args: never; Returns: undefined }
-      reverter_justificativa_falta_convenia: {
-        Args: { p_bucket_id?: string; p_falta_id: number; p_user_id: string }
-        Returns: string
-      }
+      reverter_justificativa_falta_convenia:
+        | {
+            Args: {
+              p_bucket_id?: string
+              p_falta_id: number
+              p_user_id: string
+            }
+            Returns: string
+          }
+        | { Args: { p_falta_id: string; p_user_id: string }; Returns: string }
     }
     Enums: {
       acumulo_funcao_options: "Sim" | "Não" | "Especial"
@@ -3563,18 +3605,18 @@ export type Database = {
         | "Solicitação do cliente"
       motivo_reprovacao: "Diarista ausente" | "Dados incorretos"
       motivo_vago_type:
-        | "FALTA JUSTIFICADA"
-        | "FALTA INJUSTIFICADA"
+        | "DIÁRIA - FALTA ATESTADO"
+        | "DIÁRIA - FALTA"
         | "AFASTAMENTO INSS"
-        | "FÉRIAS"
+        | "DIÁRIA - FÉRIAS"
         | "SUSPENSÃO"
-        | "VAGA EM ABERTO (COBERTURA SALÁRIO)"
+        | "DIÁRIA - SALÁRIO"
         | "LICENÇA MATERNIDADE"
         | "LICENÇA PATERNIDADE"
         | "LICENÇA CASAMENTO"
         | "LICENÇA NOJO (FALECIMENTO)"
-        | "SERVIÇO EXTRA"
-        | "DIÁRIA BÔNUS"
+        | "DIÁRIA - DEMANDA EXTRA"
+        | "DIÁRIA - BÔNUS"
       observacao_pagamento_type:
         | "Valores divergentes"
         | "Beneficiário do pix não identificado"
@@ -3783,18 +3825,18 @@ export const Constants = {
       ],
       motivo_reprovacao: ["Diarista ausente", "Dados incorretos"],
       motivo_vago_type: [
-        "FALTA JUSTIFICADA",
-        "FALTA INJUSTIFICADA",
+        "DIÁRIA - FALTA ATESTADO",
+        "DIÁRIA - FALTA",
         "AFASTAMENTO INSS",
-        "FÉRIAS",
+        "DIÁRIA - FÉRIAS",
         "SUSPENSÃO",
-        "VAGA EM ABERTO (COBERTURA SALÁRIO)",
+        "DIÁRIA - SALÁRIO",
         "LICENÇA MATERNIDADE",
         "LICENÇA PATERNIDADE",
         "LICENÇA CASAMENTO",
         "LICENÇA NOJO (FALECIMENTO)",
-        "SERVIÇO EXTRA",
-        "DIÁRIA BÔNUS",
+        "DIÁRIA - DEMANDA EXTRA",
+        "DIÁRIA - BÔNUS",
       ],
       observacao_pagamento_type: [
         "Valores divergentes",
