@@ -3569,16 +3569,10 @@ export type Database = {
       limpar_presencas_antigas: { Args: never; Returns: undefined }
       limpar_tokens_expirados: { Args: never; Returns: undefined }
       processar_movimentacoes_agendadas: { Args: never; Returns: undefined }
-      reverter_justificativa_falta_convenia:
-        | {
-            Args: {
-              p_bucket_id?: string
-              p_falta_id: number
-              p_user_id: string
-            }
-            Returns: string
-          }
-        | { Args: { p_falta_id: string; p_user_id: string }; Returns: string }
+      reverter_justificativa_falta_convenia: {
+        Args: { p_falta_id: string; p_user_id: string }
+        Returns: string
+      }
     }
     Enums: {
       acumulo_funcao_options: "Sim" | "Não" | "Especial"
