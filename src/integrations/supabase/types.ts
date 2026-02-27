@@ -1967,7 +1967,7 @@ export type Database = {
           id: number
           justificada_em: string | null
           justificada_por: string | null
-          motivo: Database["public"]["Enums"]["motivo_vago_type"]
+          motivo: string
           updated_at: string
         }
         Insert: {
@@ -1979,7 +1979,7 @@ export type Database = {
           id?: number
           justificada_em?: string | null
           justificada_por?: string | null
-          motivo: Database["public"]["Enums"]["motivo_vago_type"]
+          motivo: string
           updated_at?: string
         }
         Update: {
@@ -1991,7 +1991,7 @@ export type Database = {
           id?: number
           justificada_em?: string | null
           justificada_por?: string | null
-          motivo?: Database["public"]["Enums"]["motivo_vago_type"]
+          motivo?: string
           updated_at?: string
         }
         Relationships: [
