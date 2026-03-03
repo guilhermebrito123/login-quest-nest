@@ -1,53 +1,31 @@
 
-# Plano: Adicionar atributo `reserva_tecnica` na tabela `diaristas`
 
-## Objetivo
-Adicionar um novo campo booleano opcional chamado `reserva_tecnica` na tabela `diaristas`, definindo o valor como `false` para todos os registros existentes.
+## Configurar Redirect URLs para Vercel
 
-## Etapas de Implementação
+### Situação
 
-### 1. Migração do Banco de Dados
+O domínio do seu deploy Vercel é: `https://login-quest-nest-main-definitivo-h8.vercel.app`
 
-Criar uma migração SQL que:
-- Adiciona a coluna `reserva_tecnica` do tipo `boolean` com valor padrão `false`
-- Atualiza todos os registros existentes para `false`
+O arquivo `supabase/config.toml` é gerenciado automaticamente pela Lovable e não deve ser editado manualmente. No entanto, as configurações de `additional_redirect_urls` nele só se aplicam ao ambiente local.
 
-```sql
--- Adicionar coluna reserva_tecnica à tabela diaristas
-ALTER TABLE public.diaristas 
-ADD COLUMN IF NOT EXISTS reserva_tecnica boolean DEFAULT false;
+### O que precisa ser feito
 
--- Atualizar todos os registros existentes para false
-UPDATE public.diaristas SET reserva_tecnica = false WHERE reserva_tecnica IS NULL;
+Para que a autenticação funcione no seu deploy Vercel, é necessário adicionar o domínio aos redirect URLs permitidos nas configurações de autenticação do backend.
+
+**Ação**: Vou atualizar o `config.toml` para incluir seu domínio Vercel na lista de `additional_redirect_urls` e no `site_url`:
+
+```
+site_url = "https://login-quest-nest-main-definitivo-h8.vercel.app"
+additional_redirect_urls = [
+  "https://127.0.0.1:3000",
+  "https://login-quest-nest-main-definitivo-h8.vercel.app",
+  "https://login-quest-nest-main-definitivo-h8.vercel.app/**"
+]
 ```
 
-### 2. Atualização do Formulário (DiaristaForm.tsx)
+**Nota importante**: Como o `config.toml` é gerenciado automaticamente, pode ser necessário aplicar essa configuração diretamente no painel do Lovable Cloud. Vou verificar se essa alteração pode ser feita via as ferramentas disponíveis.
 
-- Adicionar `reserva_tecnica` ao estado do formulário com valor padrão `false`
-- Adicionar campo no `useEffect` para carregar o valor ao editar
-- Adicionar um campo de seleção (Sim/Não) no formulário para o usuário marcar se o diarista é reserva técnica
+### Ação adicional no código
 
-### 3. Atualização da Listagem (Diaristas.tsx) - Opcional
+Verificar se o `emailRedirectTo` no `Auth.tsx` está usando `window.location.origin`, o que já funcionará automaticamente com qualquer domínio.
 
-- Considerar adicionar uma coluna ou badge indicando se o diarista é reserva técnica na tabela de listagem
-
----
-
-## Detalhes Técnicos
-
-### Arquivos Impactados
-| Arquivo | Alteração |
-|---------|-----------|
-| Nova migração SQL | Adicionar coluna e atualizar dados existentes |
-| `src/integrations/supabase/types.ts` | Atualização automática |
-| `src/components/diaristas/DiaristaForm.tsx` | Adicionar campo no formulário |
-| `src/pages/Diaristas.tsx` | (Opcional) Exibir indicador de reserva técnica |
-
-### Estrutura do Campo
-- **Nome**: `reserva_tecnica`
-- **Tipo**: `boolean`
-- **Nullable**: Sim (opcional)
-- **Default**: `false`
-
-### Impacto nas Políticas RLS
-Nenhuma alteração necessária - as políticas existentes já cobrem operações CRUD na tabela `diaristas`.
