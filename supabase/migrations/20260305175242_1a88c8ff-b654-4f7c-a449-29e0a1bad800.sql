@@ -1,0 +1,1 @@
+ALTER TYPE public.observacao_pagamento_type ADD VALUE IF NOT EXISTS 'Outros';

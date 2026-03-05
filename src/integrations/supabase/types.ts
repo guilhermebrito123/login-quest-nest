@@ -3607,6 +3607,7 @@ export type Database = {
       observacao_pagamento_type:
         | "Valores divergentes"
         | "Beneficiário do pix não identificado"
+        | "Outros"
       periodicidade_type:
         | "diaria"
         | "semanal"
@@ -3828,6 +3829,7 @@ export const Constants = {
       observacao_pagamento_type: [
         "Valores divergentes",
         "Beneficiário do pix não identificado",
+        "Outros",
       ],
       periodicidade_type: [
         "diaria",
