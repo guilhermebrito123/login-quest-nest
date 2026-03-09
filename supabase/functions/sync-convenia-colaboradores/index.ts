@@ -178,12 +178,23 @@ async function fetchEmployeeDetails(
 function mapToColaboradoresConvenia(employee: ConveniaEmployee, costCenterMap: Map<string, string>) {
   const cpfFromDocument = cleanCpf(employee.document?.cpf) || cleanCpf(employee.documents?.cpf);
   const cpfFromCpfObject = cleanCpf(employee.cpf?.cpf);
-  const pisFromDocument = employee.document?.pis?.replace(/\D/g, '') || employee.documents?.pis?.replace(/\D/g, '') || null;
+  const pisFromDocument = cleanCpf(employee.document?.pis) || cleanCpf(employee.documents?.pis) || null;
   
   // Converter cost_center.id do Convenia para UUID interno
   const costCenterUuid = employee.cost_center?.id 
     ? costCenterMap.get(employee.cost_center.id) || null 
     : null;
+
+  // O endpoint de detalhe retorna phone/cellphone no nível raiz
+  // O endpoint de listagem retorna contact_information com residential_phone/personal_phone
+  const personalPhone = formatPhone(employee.contact_information?.personal_phone) 
+    || formatPhone((employee as any).cellphone)
+    || formatPhone((employee as any).phone);
+  const residentialPhone = formatPhone(employee.contact_information?.residential_phone) 
+    || formatPhone((employee as any).phone);
+  const personalEmail = employee.contact_information?.personal_email 
+    || (employee as any).alternative_email 
+    || null;
   
   return {
     convenia_id: employee.id,
@@ -195,9 +206,9 @@ function mapToColaboradoresConvenia(employee: ConveniaEmployee, costCenterMap: M
     salary: employee.salary || null,
     birth_date: employee.birth_date || null,
     social_name: employee.social_name || null,
-    registration: employee.registration || null,
+    registration: employee.registration || (employee as any).payroll?.registration || null,
     cpf: cpfFromDocument || cpfFromCpfObject || null,
-    pis: pisFromDocument || employee.ctps?.pis?.replace(/\D/g, '') || null,
+    pis: pisFromDocument || cleanCpf(employee.ctps?.pis) || null,
     address_zip_code: employee.address?.zip_code || null,
     address_street: employee.address?.address || null,
     address_number: employee.address?.number || null,
@@ -217,17 +228,17 @@ function mapToColaboradoresConvenia(employee: ConveniaEmployee, costCenterMap: M
     supervisor_last_name: employee.supervisor?.last_name || null,
     job_id: employee.job?.id || null,
     job_name: employee.job?.name || null,
-    residential_phone: formatPhone(employee.contact_information?.residential_phone),
-    personal_phone: formatPhone(employee.contact_information?.personal_phone),
-    personal_email: employee.contact_information?.personal_email || null,
+    residential_phone: residentialPhone,
+    personal_phone: personalPhone,
+    personal_email: personalEmail,
     // JSONB columns - passar objetos diretamente, não strings
-    bank_accounts: employee.bank_accounts || null,
-    rg_number: employee.rg?.number || null,
-    rg_emission_date: employee.rg?.emission_date || null,
-    rg_issuing_agency: employee.rg?.issuing_agency || null,
-    ctps_number: employee.ctps?.number || null,
-    ctps_serial_number: employee.ctps?.serial_number || null,
-    ctps_emission_date: employee.ctps?.emission_date || null,
+    bank_accounts: employee.bank_accounts || (employee as any).bank_account ? [employee.bank_accounts || (employee as any).bank_account].flat().filter(Boolean) : null,
+    rg_number: employee.rg?.number || (employee.documents as any)?.rg || null,
+    rg_emission_date: employee.rg?.emission_date || (employee.documents as any)?.rg_emission || null,
+    rg_issuing_agency: employee.rg?.issuing_agency || (employee.documents as any)?.rg_expedition || null,
+    ctps_number: employee.ctps?.number || (employee.documents as any)?.ctps || null,
+    ctps_serial_number: employee.ctps?.serial_number || (employee.documents as any)?.ctps_serial || null,
+    ctps_emission_date: employee.ctps?.emission_date || (employee.documents as any)?.ctps_emission_date || null,
     driver_license_number: employee.driver_license?.number || null,
     driver_license_category: employee.driver_license?.category || null,
     driver_license_emission_date: employee.driver_license?.emission_date || null,
