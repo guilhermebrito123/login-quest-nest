@@ -114,14 +114,17 @@ interface ConveniaListResponse {
   success?: boolean;
 }
 
-function cleanCpf(cpf: string | undefined): string | null {
-  if (!cpf) return null;
-  return cpf.replace(/\D/g, '');
+function cleanCpf(cpf: string | number | undefined | null): string | null {
+  if (cpf === null || cpf === undefined || cpf === '') return null;
+  const str = String(cpf);
+  const cleaned = str.replace(/\D/g, '');
+  return cleaned || null;
 }
 
-function formatPhone(phone: string | undefined): string | null {
-  if (!phone) return null;
-  const cleaned = phone.replace(/\D/g, '');
+function formatPhone(phone: string | number | undefined | null): string | null {
+  if (phone === null || phone === undefined || phone === '') return null;
+  const str = String(phone);
+  const cleaned = str.replace(/\D/g, '');
   return cleaned || null;
 }
 
