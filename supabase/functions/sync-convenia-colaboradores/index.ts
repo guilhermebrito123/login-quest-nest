@@ -682,6 +682,8 @@ Deno.serve(async (req) => {
           marcados_desligados: marcadosDesligados,
           demitidos_inseridos: demitidosInseridos,
           demitidos_ausentes: missingDemitidosIds.length,
+          reparados: reparados,
+          reparos_total: incompleteRecords?.length || 0,
         },
         colaboradores: {
           total_banco: existingColaboradores?.length || 0,
@@ -690,8 +692,8 @@ Deno.serve(async (req) => {
           errors: errors.length,
         },
       },
-      errors: errors.length > 0 || colaboradoresConveniaErrors.length > 0 || costCentersErrors.length > 0 || demitidosInsertErrors.length > 0
-        ? { colaboradores: errors, colaboradores_convenia: colaboradoresConveniaErrors, cost_centers: costCentersErrors, demitidos_insert: demitidosInsertErrors } 
+      errors: errors.length > 0 || colaboradoresConveniaErrors.length > 0 || costCentersErrors.length > 0 || demitidosInsertErrors.length > 0 || repairErrors.length > 0
+        ? { colaboradores: errors, colaboradores_convenia: colaboradoresConveniaErrors, cost_centers: costCentersErrors, demitidos_insert: demitidosInsertErrors, reparos: repairErrors } 
         : undefined,
     };
 
