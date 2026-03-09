@@ -114,14 +114,17 @@ interface ConveniaListResponse {
   success?: boolean;
 }
 
-function cleanCpf(cpf: string | undefined): string | null {
-  if (!cpf) return null;
-  return cpf.replace(/\D/g, '');
+function cleanCpf(cpf: string | number | undefined | null): string | null {
+  if (cpf === null || cpf === undefined || cpf === '') return null;
+  const str = String(cpf);
+  const cleaned = str.replace(/\D/g, '');
+  return cleaned || null;
 }
 
-function formatPhone(phone: string | undefined): string | null {
-  if (!phone) return null;
-  const cleaned = phone.replace(/\D/g, '');
+function formatPhone(phone: string | number | undefined | null): string | null {
+  if (phone === null || phone === undefined || phone === '') return null;
+  const str = String(phone);
+  const cleaned = str.replace(/\D/g, '');
   return cleaned || null;
 }
 
@@ -175,12 +178,23 @@ async function fetchEmployeeDetails(
 function mapToColaboradoresConvenia(employee: ConveniaEmployee, costCenterMap: Map<string, string>) {
   const cpfFromDocument = cleanCpf(employee.document?.cpf) || cleanCpf(employee.documents?.cpf);
   const cpfFromCpfObject = cleanCpf(employee.cpf?.cpf);
-  const pisFromDocument = employee.document?.pis?.replace(/\D/g, '') || employee.documents?.pis?.replace(/\D/g, '') || null;
+  const pisFromDocument = cleanCpf(employee.document?.pis) || cleanCpf(employee.documents?.pis) || null;
   
   // Converter cost_center.id do Convenia para UUID interno
   const costCenterUuid = employee.cost_center?.id 
     ? costCenterMap.get(employee.cost_center.id) || null 
     : null;
+
+  // O endpoint de detalhe retorna phone/cellphone no nível raiz
+  // O endpoint de listagem retorna contact_information com residential_phone/personal_phone
+  const personalPhone = formatPhone(employee.contact_information?.personal_phone) 
+    || formatPhone((employee as any).cellphone)
+    || formatPhone((employee as any).phone);
+  const residentialPhone = formatPhone(employee.contact_information?.residential_phone) 
+    || formatPhone((employee as any).phone);
+  const personalEmail = employee.contact_information?.personal_email 
+    || (employee as any).alternative_email 
+    || null;
   
   return {
     convenia_id: employee.id,
@@ -192,9 +206,9 @@ function mapToColaboradoresConvenia(employee: ConveniaEmployee, costCenterMap: M
     salary: employee.salary || null,
     birth_date: employee.birth_date || null,
     social_name: employee.social_name || null,
-    registration: employee.registration || null,
+    registration: employee.registration || (employee as any).payroll?.registration || null,
     cpf: cpfFromDocument || cpfFromCpfObject || null,
-    pis: pisFromDocument || employee.ctps?.pis?.replace(/\D/g, '') || null,
+    pis: pisFromDocument || cleanCpf(employee.ctps?.pis) || null,
     address_zip_code: employee.address?.zip_code || null,
     address_street: employee.address?.address || null,
     address_number: employee.address?.number || null,
@@ -214,17 +228,17 @@ function mapToColaboradoresConvenia(employee: ConveniaEmployee, costCenterMap: M
     supervisor_last_name: employee.supervisor?.last_name || null,
     job_id: employee.job?.id || null,
     job_name: employee.job?.name || null,
-    residential_phone: formatPhone(employee.contact_information?.residential_phone),
-    personal_phone: formatPhone(employee.contact_information?.personal_phone),
-    personal_email: employee.contact_information?.personal_email || null,
+    residential_phone: residentialPhone,
+    personal_phone: personalPhone,
+    personal_email: personalEmail,
     // JSONB columns - passar objetos diretamente, não strings
-    bank_accounts: employee.bank_accounts || null,
-    rg_number: employee.rg?.number || null,
+    bank_accounts: employee.bank_accounts || (employee as any).bank_account ? [employee.bank_accounts || (employee as any).bank_account].flat().filter(Boolean) : null,
+    rg_number: employee.rg?.number || (employee.documents as any)?.rg || null,
     rg_emission_date: employee.rg?.emission_date || null,
-    rg_issuing_agency: employee.rg?.issuing_agency || null,
-    ctps_number: employee.ctps?.number || null,
-    ctps_serial_number: employee.ctps?.serial_number || null,
-    ctps_emission_date: employee.ctps?.emission_date || null,
+    rg_issuing_agency: employee.rg?.issuing_agency || (employee.documents as any)?.rg_expedition || (employee.documents as any)?.rg_emission || null,
+    ctps_number: employee.ctps?.number || (employee.documents as any)?.ctps || null,
+    ctps_serial_number: employee.ctps?.serial_number || (employee.documents as any)?.ctps_serial || null,
+    ctps_emission_date: employee.ctps?.emission_date || (employee.documents as any)?.ctps_emission_date || null,
     driver_license_number: employee.driver_license?.number || null,
     driver_license_category: employee.driver_license?.category || null,
     driver_license_emission_date: employee.driver_license?.emission_date || null,
@@ -600,6 +614,59 @@ Deno.serve(async (req) => {
       console.log(`Demitidos inseridos em colaboradores_convenia: ${demitidosInseridos}`);
     }
 
+    // PASSO 6: Reparar registros incompletos usando raw_data
+    console.log("Reparando registros com dados incompletos a partir de raw_data...");
+    
+    const { data: incompleteRecords } = await supabaseAdmin
+      .from("colaboradores_convenia")
+      .select("id, convenia_id, cpf, personal_phone, rg_number, pis, raw_data")
+      .is("cpf", null)
+      .not("raw_data", "is", null);
+    
+    let reparados = 0;
+    const repairErrors: string[] = [];
+    
+    for (const record of (incompleteRecords || [])) {
+      if (!record.raw_data) continue;
+      
+      const rawEmployee = record.raw_data as ConveniaEmployee;
+      const mappedData = mapToColaboradoresConvenia(rawEmployee, costCenterMap);
+      
+      // Só atualizar se conseguiu extrair dados novos
+      const updates: Record<string, any> = {};
+      if (!record.cpf && mappedData.cpf) updates.cpf = mappedData.cpf;
+      if (!record.personal_phone && mappedData.personal_phone) updates.personal_phone = mappedData.personal_phone;
+      if (!record.rg_number && mappedData.rg_number) updates.rg_number = mappedData.rg_number;
+      if (!record.pis && mappedData.pis) updates.pis = mappedData.pis;
+      
+      // Atualizar outros campos derivados que podem estar faltando
+      if (mappedData.residential_phone) updates.residential_phone = mappedData.residential_phone;
+      if (mappedData.personal_email) updates.personal_email = mappedData.personal_email;
+      if (mappedData.rg_emission_date) updates.rg_emission_date = mappedData.rg_emission_date;
+      if (mappedData.rg_issuing_agency) updates.rg_issuing_agency = mappedData.rg_issuing_agency;
+      if (mappedData.ctps_number) updates.ctps_number = mappedData.ctps_number;
+      if (mappedData.ctps_serial_number) updates.ctps_serial_number = mappedData.ctps_serial_number;
+      if (mappedData.ctps_emission_date) updates.ctps_emission_date = mappedData.ctps_emission_date;
+      if (mappedData.driver_license_number) updates.driver_license_number = mappedData.driver_license_number;
+      if (mappedData.driver_license_category) updates.driver_license_category = mappedData.driver_license_category;
+      
+      if (Object.keys(updates).length > 0) {
+        updates.synced_at = new Date().toISOString();
+        const { error: repairErr } = await supabaseAdmin
+          .from("colaboradores_convenia")
+          .update(updates)
+          .eq("id", record.id);
+        
+        if (repairErr) {
+          repairErrors.push(`Reparo ${record.convenia_id}: ${repairErr.message}`);
+        } else {
+          reparados++;
+        }
+      }
+    }
+    
+    console.log(`Registros reparados: ${reparados}/${incompleteRecords?.length || 0}`);
+
     const result = {
       success: true,
       message: "Sincronização concluída",
@@ -615,6 +682,8 @@ Deno.serve(async (req) => {
           marcados_desligados: marcadosDesligados,
           demitidos_inseridos: demitidosInseridos,
           demitidos_ausentes: missingDemitidosIds.length,
+          reparados: reparados,
+          reparos_total: incompleteRecords?.length || 0,
         },
         colaboradores: {
           total_banco: existingColaboradores?.length || 0,
@@ -623,8 +692,8 @@ Deno.serve(async (req) => {
           errors: errors.length,
         },
       },
-      errors: errors.length > 0 || colaboradoresConveniaErrors.length > 0 || costCentersErrors.length > 0 || demitidosInsertErrors.length > 0
-        ? { colaboradores: errors, colaboradores_convenia: colaboradoresConveniaErrors, cost_centers: costCentersErrors, demitidos_insert: demitidosInsertErrors } 
+      errors: errors.length > 0 || colaboradoresConveniaErrors.length > 0 || costCentersErrors.length > 0 || demitidosInsertErrors.length > 0 || repairErrors.length > 0
+        ? { colaboradores: errors, colaboradores_convenia: colaboradoresConveniaErrors, cost_centers: costCentersErrors, demitidos_insert: demitidosInsertErrors, reparos: repairErrors } 
         : undefined,
     };
 
