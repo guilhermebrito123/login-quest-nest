@@ -614,6 +614,59 @@ Deno.serve(async (req) => {
       console.log(`Demitidos inseridos em colaboradores_convenia: ${demitidosInseridos}`);
     }
 
+    // PASSO 6: Reparar registros incompletos usando raw_data
+    console.log("Reparando registros com dados incompletos a partir de raw_data...");
+    
+    const { data: incompleteRecords } = await supabaseAdmin
+      .from("colaboradores_convenia")
+      .select("id, convenia_id, cpf, personal_phone, rg_number, pis, raw_data")
+      .is("cpf", null)
+      .not("raw_data", "is", null);
+    
+    let reparados = 0;
+    const repairErrors: string[] = [];
+    
+    for (const record of (incompleteRecords || [])) {
+      if (!record.raw_data) continue;
+      
+      const rawEmployee = record.raw_data as ConveniaEmployee;
+      const mappedData = mapToColaboradoresConvenia(rawEmployee, costCenterMap);
+      
+      // Só atualizar se conseguiu extrair dados novos
+      const updates: Record<string, any> = {};
+      if (!record.cpf && mappedData.cpf) updates.cpf = mappedData.cpf;
+      if (!record.personal_phone && mappedData.personal_phone) updates.personal_phone = mappedData.personal_phone;
+      if (!record.rg_number && mappedData.rg_number) updates.rg_number = mappedData.rg_number;
+      if (!record.pis && mappedData.pis) updates.pis = mappedData.pis;
+      
+      // Atualizar outros campos derivados que podem estar faltando
+      if (mappedData.residential_phone) updates.residential_phone = mappedData.residential_phone;
+      if (mappedData.personal_email) updates.personal_email = mappedData.personal_email;
+      if (mappedData.rg_emission_date) updates.rg_emission_date = mappedData.rg_emission_date;
+      if (mappedData.rg_issuing_agency) updates.rg_issuing_agency = mappedData.rg_issuing_agency;
+      if (mappedData.ctps_number) updates.ctps_number = mappedData.ctps_number;
+      if (mappedData.ctps_serial_number) updates.ctps_serial_number = mappedData.ctps_serial_number;
+      if (mappedData.ctps_emission_date) updates.ctps_emission_date = mappedData.ctps_emission_date;
+      if (mappedData.driver_license_number) updates.driver_license_number = mappedData.driver_license_number;
+      if (mappedData.driver_license_category) updates.driver_license_category = mappedData.driver_license_category;
+      
+      if (Object.keys(updates).length > 0) {
+        updates.synced_at = new Date().toISOString();
+        const { error: repairErr } = await supabaseAdmin
+          .from("colaboradores_convenia")
+          .update(updates)
+          .eq("id", record.id);
+        
+        if (repairErr) {
+          repairErrors.push(`Reparo ${record.convenia_id}: ${repairErr.message}`);
+        } else {
+          reparados++;
+        }
+      }
+    }
+    
+    console.log(`Registros reparados: ${reparados}/${incompleteRecords?.length || 0}`);
+
     const result = {
       success: true,
       message: "Sincronização concluída",
