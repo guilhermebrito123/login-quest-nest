@@ -234,8 +234,8 @@ function mapToColaboradoresConvenia(employee: ConveniaEmployee, costCenterMap: M
     // JSONB columns - passar objetos diretamente, não strings
     bank_accounts: employee.bank_accounts || (employee as any).bank_account ? [employee.bank_accounts || (employee as any).bank_account].flat().filter(Boolean) : null,
     rg_number: employee.rg?.number || (employee.documents as any)?.rg || null,
-    rg_emission_date: employee.rg?.emission_date || (employee.documents as any)?.rg_emission || null,
-    rg_issuing_agency: employee.rg?.issuing_agency || (employee.documents as any)?.rg_expedition || null,
+    rg_emission_date: employee.rg?.emission_date || null,
+    rg_issuing_agency: employee.rg?.issuing_agency || (employee.documents as any)?.rg_expedition || (employee.documents as any)?.rg_emission || null,
     ctps_number: employee.ctps?.number || (employee.documents as any)?.ctps || null,
     ctps_serial_number: employee.ctps?.serial_number || (employee.documents as any)?.ctps_serial || null,
     ctps_emission_date: employee.ctps?.emission_date || (employee.documents as any)?.ctps_emission_date || null,
