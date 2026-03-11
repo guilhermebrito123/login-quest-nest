@@ -1571,6 +1571,7 @@ export type Database = {
           motivo_restricao: string | null
           nome_completo: string
           numero_conta: string | null
+          observacoes: string | null
           pix: string | null
           pix_pertence_beneficiario: boolean | null
           possui_antecedente: boolean | null
@@ -1598,6 +1599,7 @@ export type Database = {
           motivo_restricao?: string | null
           nome_completo: string
           numero_conta?: string | null
+          observacoes?: string | null
           pix?: string | null
           pix_pertence_beneficiario?: boolean | null
           possui_antecedente?: boolean | null
@@ -1625,6 +1627,7 @@ export type Database = {
           motivo_restricao?: string | null
           nome_completo?: string
           numero_conta?: string | null
+          observacoes?: string | null
           pix?: string | null
           pix_pertence_beneficiario?: boolean | null
           possui_antecedente?: boolean | null
