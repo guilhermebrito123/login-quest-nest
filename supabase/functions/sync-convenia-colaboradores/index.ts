@@ -221,12 +221,16 @@ function mapToColaboradoresConvenia(employee: ConveniaEmployee, costCenterMap: M
     || (employee as any).alternative_email 
     || null;
   
+  // Determinar status: se tem dismissal.date, é Desligado; senão, usa o status da API
+  const dismissalDate = (employee as any).dismissal?.date || null;
+  const resolvedStatus = dismissalDate ? "Desligado" : (employee.status || null);
+
   return {
     convenia_id: employee.id,
     name: employee.name || null,
     last_name: employee.last_name || null,
     email: employee.email || null,
-    status: employee.status || null,
+    status: resolvedStatus,
     hiring_date: employee.hiring_date || null,
     salary: employee.salary || null,
     birth_date: employee.birth_date || null,
