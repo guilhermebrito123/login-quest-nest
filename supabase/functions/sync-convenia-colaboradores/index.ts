@@ -664,7 +664,7 @@ Deno.serve(async (req) => {
           }
         }
         
-        await delay(200);
+      await delay(500);
       }
       console.log(`Demitidos inseridos em colaboradores_convenia: ${demitidosInseridos}`);
     }
