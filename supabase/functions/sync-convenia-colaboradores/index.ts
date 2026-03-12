@@ -173,8 +173,39 @@ async function fetchEmployeeDetails(
   return null;
 }
 
-// Mapear colaborador para tabela colaboradores_convenia (incluindo raw_data)
-// costCenterMap é usado para converter convenia_id do cost_center para UUID interno
+// Extrair bank_accounts de forma segura
+function extractBankAccounts(employee: ConveniaEmployee): Record<string, unknown>[] | null {
+  const raw = employee.bank_accounts ?? (employee as any).bank_account ?? null;
+  if (!raw) return null;
+  const arr = Array.isArray(raw) ? raw : [raw];
+  const filtered = arr.filter(Boolean);
+  return filtered.length > 0 ? filtered : null;
+}
+
+// Extrair telefones sem sobrescrever com o mesmo valor
+function extractPhones(employee: ConveniaEmployee): { personalPhone: string | null; residentialPhone: string | null } {
+  const contactPersonal = formatPhone(employee.contact_information?.personal_phone);
+  const contactResidential = formatPhone(employee.contact_information?.residential_phone);
+  const cellphone = formatPhone((employee as any).cellphone);
+  const phone = formatPhone((employee as any).phone);
+
+  // Prioridade para personal: contact_information.personal_phone > cellphone > phone (somente se phone != residential)
+  let personalPhone = contactPersonal || cellphone || null;
+  let residentialPhone = contactResidential || null;
+
+  // Se personal ainda null, usar phone somente se não já usado como residential
+  if (!personalPhone && phone && phone !== residentialPhone) {
+    personalPhone = phone;
+  }
+  // Se residential ainda null e phone disponível e diferente de personal
+  if (!residentialPhone && phone && phone !== personalPhone) {
+    residentialPhone = phone;
+  }
+
+  return { personalPhone, residentialPhone };
+}
+
+// Mapear colaborador para tabela colaboradores_convenia
 function mapToColaboradoresConvenia(employee: ConveniaEmployee, costCenterMap: Map<string, string>) {
   const cpfFromDocument = cleanCpf(employee.document?.cpf) || cleanCpf(employee.documents?.cpf);
   const cpfFromCpfObject = cleanCpf(employee.cpf?.cpf);
@@ -185,13 +216,7 @@ function mapToColaboradoresConvenia(employee: ConveniaEmployee, costCenterMap: M
     ? costCenterMap.get(employee.cost_center.id) || null 
     : null;
 
-  // O endpoint de detalhe retorna phone/cellphone no nível raiz
-  // O endpoint de listagem retorna contact_information com residential_phone/personal_phone
-  const personalPhone = formatPhone(employee.contact_information?.personal_phone) 
-    || formatPhone((employee as any).cellphone)
-    || formatPhone((employee as any).phone);
-  const residentialPhone = formatPhone(employee.contact_information?.residential_phone) 
-    || formatPhone((employee as any).phone);
+  const { personalPhone, residentialPhone } = extractPhones(employee);
   const personalEmail = employee.contact_information?.personal_email 
     || (employee as any).alternative_email 
     || null;
@@ -231,8 +256,7 @@ function mapToColaboradoresConvenia(employee: ConveniaEmployee, costCenterMap: M
     residential_phone: residentialPhone,
     personal_phone: personalPhone,
     personal_email: personalEmail,
-    // JSONB columns - passar objetos diretamente, não strings
-    bank_accounts: employee.bank_accounts || (employee as any).bank_account ? [employee.bank_accounts || (employee as any).bank_account].flat().filter(Boolean) : null,
+    bank_accounts: extractBankAccounts(employee),
     rg_number: employee.rg?.number || (employee.documents as any)?.rg || null,
     rg_emission_date: employee.rg?.emission_date || null,
     rg_issuing_agency: employee.rg?.issuing_agency || (employee.documents as any)?.rg_expedition || (employee.documents as any)?.rg_emission || null,
@@ -243,7 +267,6 @@ function mapToColaboradoresConvenia(employee: ConveniaEmployee, costCenterMap: M
     driver_license_category: employee.driver_license?.category || null,
     driver_license_emission_date: employee.driver_license?.emission_date || null,
     driver_license_validate_date: employee.driver_license?.validate_date || null,
-    // JSONB columns - passar objetos diretamente
     intern_data: employee.intern || null,
     annotations: employee.annotations || null,
     aso: employee.aso || null,
@@ -256,9 +279,16 @@ function mapToColaboradoresConvenia(employee: ConveniaEmployee, costCenterMap: M
     electoral_card: employee.electoral_card || null,
     reservist: employee.reservist || null,
     payroll: employee.payroll || null,
-    raw_data: employee, // Armazena payload completo como JSONB
+    raw_data: employee,
     synced_at: new Date().toISOString(),
   };
+}
+
+// Campos críticos que indicam registro incompleto
+const CRITICAL_FIELDS = ["cpf", "personal_phone", "pis", "rg_number", "job_name", "cost_center_id", "name"] as const;
+
+function isRecordIncomplete(record: Record<string, any>): boolean {
+  return CRITICAL_FIELDS.some(field => !record[field]);
 }
 
 Deno.serve(async (req) => {
@@ -329,7 +359,7 @@ Deno.serve(async (req) => {
       console.error("Erro ao buscar centros de custo:", costCentersResponse.status);
     }
 
-    // Buscar mapa de cost_center (convenia_id -> uuid interno) para uso posterior
+    // Buscar mapa de cost_center (convenia_id -> uuid interno)
     const { data: costCenterRecords } = await supabaseAdmin
       .from("cost_center")
       .select("id, convenia_id");
@@ -340,7 +370,7 @@ Deno.serve(async (req) => {
     });
     console.log(`Mapa de cost centers carregado: ${costCenterMap.size} registros`);
 
-    // PASSO 1: Buscar colaboradores do Convenia com paginação
+    // PASSO 1: Buscar colaboradores ativos do Convenia com paginação
     console.log("Buscando lista de colaboradores do Convenia...");
 
     let allEmployeesBasic: ConveniaEmployee[] = [];
@@ -381,13 +411,9 @@ Deno.serve(async (req) => {
 
     console.log(`Total de colaboradores encontrados: ${allEmployeesBasic.length}`);
     
-    // PASSO 2: Sincronizar TODOS os colaboradores (full sync para atualizar campos como job_name)
-    const employeesToSync = allEmployeesBasic;
-    console.log(`Total de colaboradores para sincronizar: ${employeesToSync.length}`);
-
-    // PASSO 3: Usar dados da listagem diretamente (já inclui job, cost_center, documents, etc.)
+    // PASSO 2: Sincronizar colaboradores ativos da listagem
     console.log("Salvando colaboradores em lotes...");
-    const allEmployees: ConveniaEmployee[] = employeesToSync;
+    const allEmployees: ConveniaEmployee[] = allEmployeesBasic;
     let colaboradoresConveniaUpdated = 0;
     const colaboradoresConveniaErrors: string[] = [];
     const BATCH_SIZE = 20;
@@ -499,55 +525,79 @@ Deno.serve(async (req) => {
       }
     }
 
-    // PASSO 4: Marcar colaboradores desligados na tabela colaboradores_convenia
-    // (preserva os registros e IDs para referências em diarias_temporarias e faltas)
+    // PASSO 4: Marcar colaboradores desligados em colaboradores_convenia
+    // Usando cálculo em memória para evitar problemas com .not("convenia_id", "in", ...)
     console.log("Marcando colaboradores desligados em colaboradores_convenia...");
     
-    const activeConveniaIds = allEmployees.map(e => e.id);
+    const activeConveniaIds = new Set(allEmployees.map(e => e.id));
     
-    // Buscar IDs de demitidos que ainda estão em colaboradores_convenia sem status "Desligado"
+    // Buscar IDs de demitidos conhecidos
     const { data: demitidosConvenia } = await supabaseAdmin
       .from("colaboradores_demitidos_convenia")
       .select("convenia_employee_id");
     
     const demitidosIds = (demitidosConvenia || []).map((d: { convenia_employee_id: string }) => d.convenia_employee_id);
+    const demitidosIdsSet = new Set(demitidosIds);
     
     let marcadosDesligados = 0;
     
+    // Marcar demitidos conhecidos
     if (demitidosIds.length > 0) {
-      // Atualizar status para "Desligado" nos registros que existem em colaboradores_convenia
-      // e estão na lista de demitidos
-      const { data: updatedRows, error: updateDismissedError } = await supabaseAdmin
-        .from("colaboradores_convenia")
-        .update({ status: "Desligado", synced_at: new Date().toISOString() })
-        .in("convenia_id", demitidosIds)
-        .select("id");
-      
-      if (updateDismissedError) {
-        console.error("Erro ao marcar desligados:", updateDismissedError.message);
-      } else {
-        marcadosDesligados = updatedRows?.length || 0;
-        console.log(`Marcados como desligados: ${marcadosDesligados}`);
+      // Processar em lotes de 100 para evitar limites do .in()
+      for (let i = 0; i < demitidosIds.length; i += 100) {
+        const batch = demitidosIds.slice(i, i + 100);
+        const { data: updatedRows, error: updateDismissedError } = await supabaseAdmin
+          .from("colaboradores_convenia")
+          .update({ status: "Desligado", synced_at: new Date().toISOString() })
+          .in("convenia_id", batch)
+          .select("id");
+        
+        if (updateDismissedError) {
+          console.error("Erro ao marcar desligados:", updateDismissedError.message);
+        } else {
+          marcadosDesligados += updatedRows?.length || 0;
+        }
       }
+      console.log(`Marcados como desligados (demitidos conhecidos): ${marcadosDesligados}`);
     }
 
-    // Marcar também registros que não estão mais na API ativa nem na lista de demitidos
-    const allKnownIds = [...new Set([...activeConveniaIds, ...demitidosIds])];
-    const { data: orphanRows, error: orphanError } = await supabaseAdmin
+    // Detectar órfãos em memória: buscar todos os convenia_id da tabela e calcular diferença
+    console.log("Detectando registros órfãos...");
+    const { data: allConveniaRecords } = await supabaseAdmin
       .from("colaboradores_convenia")
-      .update({ status: "Desligado", synced_at: new Date().toISOString() })
-      .not("convenia_id", "in", `(${allKnownIds.join(",")})`)
-      .select("id");
+      .select("convenia_id")
+      .neq("status", "Desligado");
     
-    if (!orphanError && orphanRows) {
-      marcadosDesligados += orphanRows.length;
-      console.log(`Registros órfãos marcados como desligados: ${orphanRows.length}`);
+    const orphanIds: string[] = [];
+    for (const record of (allConveniaRecords || [])) {
+      if (!activeConveniaIds.has(record.convenia_id) && !demitidosIdsSet.has(record.convenia_id)) {
+        orphanIds.push(record.convenia_id);
+      }
+    }
+    
+    let orphanCount = 0;
+    if (orphanIds.length > 0) {
+      for (let i = 0; i < orphanIds.length; i += 100) {
+        const batch = orphanIds.slice(i, i + 100);
+        const { data: orphanRows, error: orphanError } = await supabaseAdmin
+          .from("colaboradores_convenia")
+          .update({ status: "Desligado", synced_at: new Date().toISOString() })
+          .in("convenia_id", batch)
+          .select("id");
+        
+        if (!orphanError && orphanRows) {
+          orphanCount += orphanRows.length;
+        }
+      }
+      marcadosDesligados += orphanCount;
+      console.log(`Registros órfãos marcados como desligados: ${orphanCount}`);
+    } else {
+      console.log("Nenhum registro órfão encontrado.");
     }
 
     // PASSO 5: Buscar e inserir demitidos ausentes em colaboradores_convenia
     console.log("Verificando demitidos ausentes em colaboradores_convenia...");
     
-    // Buscar convenia_ids dos demitidos que NÃO existem em colaboradores_convenia
     const { data: existingConveniaIds } = await supabaseAdmin
       .from("colaboradores_convenia")
       .select("convenia_id");
@@ -562,12 +612,10 @@ Deno.serve(async (req) => {
     
     if (missingDemitidosIds.length > 0) {
       for (const employeeId of missingDemitidosIds) {
-        // Buscar detalhes na API do Convenia
         const details = await fetchEmployeeDetails(employeeId, convenia_token);
         
         if (details) {
           const mappedData = mapToColaboradoresConvenia(details, costCenterMap);
-          // Forçar status como Desligado
           mappedData.status = "Desligado";
           
           const { error: insertErr } = await supabaseAdmin
@@ -588,13 +636,21 @@ Deno.serve(async (req) => {
             .single();
           
           if (demitidoData) {
-            const minimalData = {
+            // Tentar extrair name/cpf do raw_data de demissão se disponível
+            const rawDemitido = demitidoData.raw_data as Record<string, any> | null;
+            const minimalData: Record<string, any> = {
               convenia_id: employeeId,
               email: demitidoData.corporate_email || null,
               status: "Desligado",
               synced_at: new Date().toISOString(),
               raw_data: demitidoData.raw_data,
             };
+            // Extrair o que for possível do raw_data de demissão
+            if (rawDemitido) {
+              if (rawDemitido.name) minimalData.name = rawDemitido.name;
+              if (rawDemitido.last_name) minimalData.last_name = rawDemitido.last_name;
+              if (rawDemitido.corporate_email) minimalData.email = rawDemitido.corporate_email;
+            }
             
             const { error: minInsertErr } = await supabaseAdmin
               .from("colaboradores_convenia")
@@ -608,20 +664,60 @@ Deno.serve(async (req) => {
           }
         }
         
-        // Pequeno delay para evitar rate limiting
-        await delay(200);
+      await delay(500);
       }
       console.log(`Demitidos inseridos em colaboradores_convenia: ${demitidosInseridos}`);
     }
 
-    // PASSO 6: Reparar registros incompletos usando raw_data
+    // PASSO 6: Enriquecer ativos incompletos buscando detalhe na API
+    console.log("Enriquecendo registros incompletos com endpoint de detalhe...");
+    
+    // Buscar registros com campos críticos faltando (qualquer um, não só cpf)
+    const { data: incompleteActiveRecords } = await supabaseAdmin
+      .from("colaboradores_convenia")
+      .select("id, convenia_id, cpf, personal_phone, pis, rg_number, job_name, cost_center_id, name")
+      .neq("status", "Desligado")
+      .or("cpf.is.null,personal_phone.is.null,pis.is.null,rg_number.is.null,job_name.is.null,name.is.null");
+
+    let enriched = 0;
+    const enrichErrors: string[] = [];
+    const MAX_ENRICH = 50; // Limitar para não estourar timeout
+    
+    const toEnrich = (incompleteActiveRecords || []).slice(0, MAX_ENRICH);
+    console.log(`Registros ativos incompletos para enriquecer: ${incompleteActiveRecords?.length || 0} (processando ${toEnrich.length})`);
+    
+    for (const record of toEnrich) {
+      const details = await fetchEmployeeDetails(record.convenia_id, convenia_token);
+      if (details) {
+        const mappedData = mapToColaboradoresConvenia(details, costCenterMap);
+        // Preservar status atual (não sobrescrever com o do detalhe)
+        delete (mappedData as any).status;
+        // Atualizar raw_data com o payload completo do detalhe
+        mappedData.raw_data = details;
+        
+        const { error: enrichErr } = await supabaseAdmin
+          .from("colaboradores_convenia")
+          .update(mappedData)
+          .eq("id", record.id);
+        
+        if (enrichErr) {
+          enrichErrors.push(`Enrich ${record.convenia_id}: ${enrichErr.message}`);
+        } else {
+          enriched++;
+        }
+      }
+      await delay(200);
+    }
+    console.log(`Registros enriquecidos com detalhe: ${enriched}`);
+
+    // PASSO 7: Reparar registros incompletos usando raw_data (filtro amplo)
     console.log("Reparando registros com dados incompletos a partir de raw_data...");
     
     const { data: incompleteRecords } = await supabaseAdmin
       .from("colaboradores_convenia")
-      .select("id, convenia_id, cpf, personal_phone, rg_number, pis, raw_data")
-      .is("cpf", null)
-      .not("raw_data", "is", null);
+      .select("id, convenia_id, cpf, personal_phone, rg_number, pis, job_name, cost_center_id, name, residential_phone, personal_email, rg_emission_date, rg_issuing_agency, ctps_number, ctps_serial_number, ctps_emission_date, driver_license_number, driver_license_category, raw_data")
+      .not("raw_data", "is", null)
+      .or("cpf.is.null,personal_phone.is.null,pis.is.null,rg_number.is.null,job_name.is.null,name.is.null");
     
     let reparados = 0;
     const repairErrors: string[] = [];
@@ -632,23 +728,32 @@ Deno.serve(async (req) => {
       const rawEmployee = record.raw_data as ConveniaEmployee;
       const mappedData = mapToColaboradoresConvenia(rawEmployee, costCenterMap);
       
-      // Só atualizar se conseguiu extrair dados novos
+      // Só atualizar campos que estão nulos no registro atual
       const updates: Record<string, any> = {};
-      if (!record.cpf && mappedData.cpf) updates.cpf = mappedData.cpf;
-      if (!record.personal_phone && mappedData.personal_phone) updates.personal_phone = mappedData.personal_phone;
-      if (!record.rg_number && mappedData.rg_number) updates.rg_number = mappedData.rg_number;
-      if (!record.pis && mappedData.pis) updates.pis = mappedData.pis;
+      const fieldsToRepair: Array<{ dbField: string; mappedField: string }> = [
+        { dbField: "cpf", mappedField: "cpf" },
+        { dbField: "personal_phone", mappedField: "personal_phone" },
+        { dbField: "residential_phone", mappedField: "residential_phone" },
+        { dbField: "personal_email", mappedField: "personal_email" },
+        { dbField: "rg_number", mappedField: "rg_number" },
+        { dbField: "rg_emission_date", mappedField: "rg_emission_date" },
+        { dbField: "rg_issuing_agency", mappedField: "rg_issuing_agency" },
+        { dbField: "pis", mappedField: "pis" },
+        { dbField: "ctps_number", mappedField: "ctps_number" },
+        { dbField: "ctps_serial_number", mappedField: "ctps_serial_number" },
+        { dbField: "ctps_emission_date", mappedField: "ctps_emission_date" },
+        { dbField: "driver_license_number", mappedField: "driver_license_number" },
+        { dbField: "driver_license_category", mappedField: "driver_license_category" },
+        { dbField: "job_name", mappedField: "job_name" },
+        { dbField: "name", mappedField: "name" },
+        { dbField: "cost_center_id", mappedField: "cost_center_id" },
+      ];
       
-      // Atualizar outros campos derivados que podem estar faltando
-      if (mappedData.residential_phone) updates.residential_phone = mappedData.residential_phone;
-      if (mappedData.personal_email) updates.personal_email = mappedData.personal_email;
-      if (mappedData.rg_emission_date) updates.rg_emission_date = mappedData.rg_emission_date;
-      if (mappedData.rg_issuing_agency) updates.rg_issuing_agency = mappedData.rg_issuing_agency;
-      if (mappedData.ctps_number) updates.ctps_number = mappedData.ctps_number;
-      if (mappedData.ctps_serial_number) updates.ctps_serial_number = mappedData.ctps_serial_number;
-      if (mappedData.ctps_emission_date) updates.ctps_emission_date = mappedData.ctps_emission_date;
-      if (mappedData.driver_license_number) updates.driver_license_number = mappedData.driver_license_number;
-      if (mappedData.driver_license_category) updates.driver_license_category = mappedData.driver_license_category;
+      for (const { dbField, mappedField } of fieldsToRepair) {
+        if (!record[dbField] && (mappedData as any)[mappedField]) {
+          updates[dbField] = (mappedData as any)[mappedField];
+        }
+      }
       
       if (Object.keys(updates).length > 0) {
         updates.synced_at = new Date().toISOString();
@@ -680,8 +785,11 @@ Deno.serve(async (req) => {
           synced: colaboradoresConveniaUpdated,
           errors: colaboradoresConveniaErrors.length,
           marcados_desligados: marcadosDesligados,
+          orfaos_detectados: orphanCount,
           demitidos_inseridos: demitidosInseridos,
           demitidos_ausentes: missingDemitidosIds.length,
+          enriquecidos: enriched,
+          enriquecimento_candidatos: incompleteActiveRecords?.length || 0,
           reparados: reparados,
           reparos_total: incompleteRecords?.length || 0,
         },
@@ -692,8 +800,8 @@ Deno.serve(async (req) => {
           errors: errors.length,
         },
       },
-      errors: errors.length > 0 || colaboradoresConveniaErrors.length > 0 || costCentersErrors.length > 0 || demitidosInsertErrors.length > 0 || repairErrors.length > 0
-        ? { colaboradores: errors, colaboradores_convenia: colaboradoresConveniaErrors, cost_centers: costCentersErrors, demitidos_insert: demitidosInsertErrors, reparos: repairErrors } 
+      errors: errors.length > 0 || colaboradoresConveniaErrors.length > 0 || costCentersErrors.length > 0 || demitidosInsertErrors.length > 0 || repairErrors.length > 0 || enrichErrors.length > 0
+        ? { colaboradores: errors, colaboradores_convenia: colaboradoresConveniaErrors, cost_centers: costCentersErrors, demitidos_insert: demitidosInsertErrors, enriquecimento: enrichErrors, reparos: repairErrors } 
         : undefined,
     };
 
