@@ -529,75 +529,57 @@ Deno.serve(async (req) => {
       }
     }
 
-    // PASSO 4: Marcar colaboradores desligados em colaboradores_convenia
-    // Usando cálculo em memória para evitar problemas com .not("convenia_id", "in", ...)
-    console.log("Marcando colaboradores desligados em colaboradores_convenia...");
+    // PASSO 4: Reconciliar status de desligados em colaboradores_convenia
+    // Critério: se dismissal.date existe no raw_data ou na tabela de demitidos → Desligado
+    // Caso contrário, preserva o status da API (Ativo, Em férias, Afastado, Em licença)
+    console.log("Reconciliando status de desligados em colaboradores_convenia...");
     
-    const activeConveniaIds = new Set(allEmployees.map(e => e.id));
-    
-    // Buscar IDs de demitidos conhecidos
+    // 4a: Buscar datas de desligamento da tabela de demitidos
     const { data: demitidosConvenia } = await supabaseAdmin
       .from("colaboradores_demitidos_convenia")
-      .select("convenia_employee_id");
+      .select("convenia_employee_id, dismissal_date");
     
-    const demitidosIds = (demitidosConvenia || []).map((d: { convenia_employee_id: string }) => d.convenia_employee_id);
-    const demitidosIdsSet = new Set(demitidosIds);
+    const demitidosMap = new Map<string, string | null>();
+    for (const d of (demitidosConvenia || [])) {
+      demitidosMap.set(d.convenia_employee_id, d.dismissal_date);
+    }
     
     let marcadosDesligados = 0;
     
-    // Marcar demitidos conhecidos
-    if (demitidosIds.length > 0) {
-      // Processar em lotes de 100 para evitar limites do .in()
-      for (let i = 0; i < demitidosIds.length; i += 100) {
-        const batch = demitidosIds.slice(i, i + 100);
-        const { data: updatedRows, error: updateDismissedError } = await supabaseAdmin
+    // 4b: Verificar todos os registros em colaboradores_convenia
+    // Buscar registros que NÃO estão com status "Desligado" mas deveriam estar
+    const { data: allConveniaRecords } = await supabaseAdmin
+      .from("colaboradores_convenia")
+      .select("id, convenia_id, status, raw_data")
+      .neq("status", "Desligado");
+    
+    const toMarkDismissed: string[] = [];
+    for (const record of (allConveniaRecords || [])) {
+      const rawDismissalDate = (record.raw_data as any)?.dismissal?.date;
+      const demitidoDate = demitidosMap.get(record.convenia_id);
+      
+      if (rawDismissalDate || demitidoDate) {
+        toMarkDismissed.push(record.id);
+      }
+    }
+    
+    if (toMarkDismissed.length > 0) {
+      for (let i = 0; i < toMarkDismissed.length; i += 100) {
+        const batch = toMarkDismissed.slice(i, i + 100);
+        const { data: updatedRows, error: updateErr } = await supabaseAdmin
           .from("colaboradores_convenia")
           .update({ status: "Desligado", synced_at: new Date().toISOString() })
-          .in("convenia_id", batch)
+          .in("id", batch)
           .select("id");
         
-        if (updateDismissedError) {
-          console.error("Erro ao marcar desligados:", updateDismissedError.message);
+        if (updateErr) {
+          console.error("Erro ao marcar desligados:", updateErr.message);
         } else {
           marcadosDesligados += updatedRows?.length || 0;
         }
       }
-      console.log(`Marcados como desligados (demitidos conhecidos): ${marcadosDesligados}`);
     }
-
-    // Detectar órfãos em memória: buscar todos os convenia_id da tabela e calcular diferença
-    console.log("Detectando registros órfãos...");
-    const { data: allConveniaRecords } = await supabaseAdmin
-      .from("colaboradores_convenia")
-      .select("convenia_id")
-      .neq("status", "Desligado");
-    
-    const orphanIds: string[] = [];
-    for (const record of (allConveniaRecords || [])) {
-      if (!activeConveniaIds.has(record.convenia_id) && !demitidosIdsSet.has(record.convenia_id)) {
-        orphanIds.push(record.convenia_id);
-      }
-    }
-    
-    let orphanCount = 0;
-    if (orphanIds.length > 0) {
-      for (let i = 0; i < orphanIds.length; i += 100) {
-        const batch = orphanIds.slice(i, i + 100);
-        const { data: orphanRows, error: orphanError } = await supabaseAdmin
-          .from("colaboradores_convenia")
-          .update({ status: "Desligado", synced_at: new Date().toISOString() })
-          .in("convenia_id", batch)
-          .select("id");
-        
-        if (!orphanError && orphanRows) {
-          orphanCount += orphanRows.length;
-        }
-      }
-      marcadosDesligados += orphanCount;
-      console.log(`Registros órfãos marcados como desligados: ${orphanCount}`);
-    } else {
-      console.log("Nenhum registro órfão encontrado.");
-    }
+    console.log(`Marcados como desligados (por dismissal.date): ${marcadosDesligados}`);
 
     // PASSO 5: Buscar e inserir demitidos ausentes em colaboradores_convenia
     console.log("Verificando demitidos ausentes em colaboradores_convenia...");
@@ -607,6 +589,7 @@ Deno.serve(async (req) => {
       .select("convenia_id");
     
     const existingIdsSet = new Set((existingConveniaIds || []).map((r: { convenia_id: string }) => r.convenia_id));
+    const demitidosIds = Array.from(demitidosMap.keys());
     const missingDemitidosIds = demitidosIds.filter((id: string) => !existingIdsSet.has(id));
     
     console.log(`Demitidos ausentes em colaboradores_convenia: ${missingDemitidosIds.length}`);
@@ -620,6 +603,7 @@ Deno.serve(async (req) => {
         
         if (details) {
           const mappedData = mapToColaboradoresConvenia(details, costCenterMap);
+          // Forçar Desligado pois veio da tabela de demitidos
           mappedData.status = "Desligado";
           
           const { error: insertErr } = await supabaseAdmin
@@ -632,7 +616,7 @@ Deno.serve(async (req) => {
             demitidosInseridos++;
           }
         } else {
-          // API não retornou dados - inserir registro mínimo a partir dos dados de demissão
+          // API não retornou dados - inserir registro mínimo
           const { data: demitidoData } = await supabaseAdmin
             .from("colaboradores_demitidos_convenia")
             .select("convenia_employee_id, corporate_email, raw_data")
@@ -640,7 +624,6 @@ Deno.serve(async (req) => {
             .single();
           
           if (demitidoData) {
-            // Tentar extrair name/cpf do raw_data de demissão se disponível
             const rawDemitido = demitidoData.raw_data as Record<string, any> | null;
             const minimalData: Record<string, any> = {
               convenia_id: employeeId,
@@ -649,7 +632,6 @@ Deno.serve(async (req) => {
               synced_at: new Date().toISOString(),
               raw_data: demitidoData.raw_data,
             };
-            // Extrair o que for possível do raw_data de demissão
             if (rawDemitido) {
               if (rawDemitido.name) minimalData.name = rawDemitido.name;
               if (rawDemitido.last_name) minimalData.last_name = rawDemitido.last_name;
@@ -668,7 +650,7 @@ Deno.serve(async (req) => {
           }
         }
         
-      await delay(500);
+        await delay(500);
       }
       console.log(`Demitidos inseridos em colaboradores_convenia: ${demitidosInseridos}`);
     }
