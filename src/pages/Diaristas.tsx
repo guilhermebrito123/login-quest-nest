@@ -4,7 +4,8 @@ import { supabase } from "@/integrations/supabase/client";
 import { DashboardLayout } from "@/components/DashboardLayout";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Plus, Search, Edit, Trash2 } from "lucide-react";
+import { Plus, Search, Edit, Trash2, Download } from "lucide-react";
+import * as XLSX from "xlsx";
 import { toast } from "sonner";
 import {
   Table,
@@ -33,6 +34,54 @@ export default function Diaristas() {
   const [editingDiarista, setEditingDiarista] = useState<any>(null);
   const [deletingId, setDeletingId] = useState<string | null>(null);
   const queryClient = useQueryClient();
+
+  const exportDuplicados = async () => {
+    const { data, error } = await supabase
+      .from("diaristas")
+      .select("id, nome_completo, cpf, cpf_normalizado, email, telefone, cidade, status, created_at")
+      .order("cpf");
+
+    if (error) {
+      toast.error("Erro ao buscar diaristas: " + error.message);
+      return;
+    }
+
+    // Group by normalized CPF to find duplicates
+    const cpfMap = new Map<string, typeof data>();
+    for (const d of data || []) {
+      const key = d.cpf_normalizado || d.cpf?.replace(/\D/g, "") || "";
+      if (!key) continue;
+      if (!cpfMap.has(key)) cpfMap.set(key, []);
+      cpfMap.get(key)!.push(d);
+    }
+
+    const duplicados = Array.from(cpfMap.values())
+      .filter((group) => group.length > 1)
+      .flat();
+
+    if (duplicados.length === 0) {
+      toast.info("Nenhum CPF duplicado encontrado.");
+      return;
+    }
+
+    const ws = XLSX.utils.json_to_sheet(
+      duplicados.map((d) => ({
+        ID: d.id,
+        Nome: d.nome_completo,
+        CPF: d.cpf,
+        CPF_Normalizado: d.cpf_normalizado,
+        Email: d.email,
+        Telefone: d.telefone,
+        Cidade: d.cidade,
+        Status: d.status,
+        Criado_em: d.created_at,
+      }))
+    );
+    const wb = XLSX.utils.book_new();
+    XLSX.utils.book_append_sheet(wb, ws, "Duplicados");
+    XLSX.writeFile(wb, "diaristas_cpf_duplicados.xlsx");
+    toast.success(`${duplicados.length} registros duplicados exportados.`);
+  };
 
   const { data: diaristas, isLoading } = useQuery({
     queryKey: ["diaristas"],
@@ -78,15 +127,21 @@ export default function Diaristas() {
       <div className="space-y-6">
         <div className="flex justify-between items-center">
           <h1 className="text-3xl font-bold">Diaristas</h1>
-          <Button
-            onClick={() => {
-              setEditingDiarista(null);
-              setShowForm(true);
-            }}
-          >
-            <Plus className="mr-2 h-4 w-4" />
-            Novo Diarista
-          </Button>
+          <div className="flex gap-2">
+            <Button variant="outline" onClick={exportDuplicados}>
+              <Download className="mr-2 h-4 w-4" />
+              Exportar Duplicados
+            </Button>
+            <Button
+              onClick={() => {
+                setEditingDiarista(null);
+                setShowForm(true);
+              }}
+            >
+              <Plus className="mr-2 h-4 w-4" />
+              Novo Diarista
+            </Button>
+          </div>
         </div>
 
         <div className="flex items-center gap-4">
