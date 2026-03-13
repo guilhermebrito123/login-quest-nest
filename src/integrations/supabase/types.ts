@@ -1562,7 +1562,7 @@ export type Database = {
           banco: string | null
           cep: string | null
           cidade: string | null
-          cpf: string
+          cpf: string | null
           cpf_normalizado: string | null
           created_at: string
           email: string | null
@@ -1591,7 +1591,7 @@ export type Database = {
           banco?: string | null
           cep?: string | null
           cidade?: string | null
-          cpf?: string
+          cpf?: string | null
           cpf_normalizado?: string | null
           created_at?: string
           email?: string | null
@@ -1620,7 +1620,7 @@ export type Database = {
           banco?: string | null
           cep?: string | null
           cidade?: string | null
-          cpf?: string
+          cpf?: string | null
           cpf_normalizado?: string | null
           created_at?: string
           email?: string | null
