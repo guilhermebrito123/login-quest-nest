@@ -2024,6 +2024,162 @@ export type Database = {
           },
         ]
       }
+      horas_extras: {
+        Row: {
+          aprovado_em: string | null
+          aprovado_por: string | null
+          cancelado_em: string | null
+          cancelado_por: string | null
+          colaborador_cobrindo_id: string
+          confirmado_em: string | null
+          confirmado_por: string | null
+          cost_center_id: string
+          criado_em: string
+          criado_por: string
+          detalhe_cancelamento: string | null
+          detalhe_reprovacao: string | null
+          falta_id: number
+          fim_em: string
+          id: string
+          inicio_em: string
+          intervalo_fim_em: string | null
+          intervalo_inicio_em: string | null
+          motivo_cancelamento:
+            | Database["public"]["Enums"]["motivo_cancelamento_hora_extra"]
+            | null
+          motivo_reprovacao:
+            | Database["public"]["Enums"]["motivo_reprovacao_hora_extra"]
+            | null
+          observacao: string | null
+          operacao: string
+          reprovado_em: string | null
+          reprovado_por: string | null
+          status: Database["public"]["Enums"]["status_hora_extra"]
+          updated_at: string
+        }
+        Insert: {
+          aprovado_em?: string | null
+          aprovado_por?: string | null
+          cancelado_em?: string | null
+          cancelado_por?: string | null
+          colaborador_cobrindo_id: string
+          confirmado_em?: string | null
+          confirmado_por?: string | null
+          cost_center_id: string
+          criado_em?: string
+          criado_por: string
+          detalhe_cancelamento?: string | null
+          detalhe_reprovacao?: string | null
+          falta_id: number
+          fim_em: string
+          id?: string
+          inicio_em: string
+          intervalo_fim_em?: string | null
+          intervalo_inicio_em?: string | null
+          motivo_cancelamento?:
+            | Database["public"]["Enums"]["motivo_cancelamento_hora_extra"]
+            | null
+          motivo_reprovacao?:
+            | Database["public"]["Enums"]["motivo_reprovacao_hora_extra"]
+            | null
+          observacao?: string | null
+          operacao: string
+          reprovado_em?: string | null
+          reprovado_por?: string | null
+          status?: Database["public"]["Enums"]["status_hora_extra"]
+          updated_at?: string
+        }
+        Update: {
+          aprovado_em?: string | null
+          aprovado_por?: string | null
+          cancelado_em?: string | null
+          cancelado_por?: string | null
+          colaborador_cobrindo_id?: string
+          confirmado_em?: string | null
+          confirmado_por?: string | null
+          cost_center_id?: string
+          criado_em?: string
+          criado_por?: string
+          detalhe_cancelamento?: string | null
+          detalhe_reprovacao?: string | null
+          falta_id?: number
+          fim_em?: string
+          id?: string
+          inicio_em?: string
+          intervalo_fim_em?: string | null
+          intervalo_inicio_em?: string | null
+          motivo_cancelamento?:
+            | Database["public"]["Enums"]["motivo_cancelamento_hora_extra"]
+            | null
+          motivo_reprovacao?:
+            | Database["public"]["Enums"]["motivo_reprovacao_hora_extra"]
+            | null
+          observacao?: string | null
+          operacao?: string
+          reprovado_em?: string | null
+          reprovado_por?: string | null
+          status?: Database["public"]["Enums"]["status_hora_extra"]
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "horas_extras_aprovado_por_fkey"
+            columns: ["aprovado_por"]
+            isOneToOne: false
+            referencedRelation: "usuarios"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "horas_extras_cancelado_por_fkey"
+            columns: ["cancelado_por"]
+            isOneToOne: false
+            referencedRelation: "usuarios"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "horas_extras_colaborador_cobrindo_id_fkey"
+            columns: ["colaborador_cobrindo_id"]
+            isOneToOne: false
+            referencedRelation: "colaboradores_convenia"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "horas_extras_confirmado_por_fkey"
+            columns: ["confirmado_por"]
+            isOneToOne: false
+            referencedRelation: "usuarios"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "horas_extras_cost_center_id_fkey"
+            columns: ["cost_center_id"]
+            isOneToOne: false
+            referencedRelation: "cost_center"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "horas_extras_criado_por_fkey"
+            columns: ["criado_por"]
+            isOneToOne: false
+            referencedRelation: "usuarios"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "horas_extras_falta_id_fkey"
+            columns: ["falta_id"]
+            isOneToOne: false
+            referencedRelation: "faltas_colaboradores_convenia"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "horas_extras_reprovado_por_fkey"
+            columns: ["reprovado_por"]
+            isOneToOne: false
+            referencedRelation: "usuarios"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       incidentes: {
         Row: {
           acao_tomada: string | null
@@ -3425,6 +3581,10 @@ export type Database = {
         }
         Returns: undefined
       }
+      aprovar_hora_extra: {
+        Args: { p_hora_extra_id: string }
+        Returns: undefined
+      }
       arquivar_dias_trabalho_em_presencas: { Args: never; Returns: undefined }
       calcular_dias_escala: {
         Args: {
@@ -3444,6 +3604,14 @@ export type Database = {
       }
       cancelar_execucao_checklist_item: {
         Args: { execucao_item_id: string }
+        Returns: undefined
+      }
+      cancelar_hora_extra: {
+        Args: {
+          p_detalhe_cancelamento?: string
+          p_hora_extra_id: string
+          p_motivo_cancelamento: Database["public"]["Enums"]["motivo_cancelamento_hora_extra"]
+        }
         Returns: undefined
       }
       cancelar_ocupacao_posto: {
@@ -3467,6 +3635,10 @@ export type Database = {
           isOneToOne: true
           isSetofReturn: false
         }
+      }
+      confirmar_hora_extra: {
+        Args: { p_hora_extra_id: string }
+        Returns: undefined
       }
       confirmar_presenca: {
         Args: {
@@ -3520,6 +3692,19 @@ export type Database = {
             }
             Returns: number
           }
+      criar_hora_extra: {
+        Args: {
+          p_colaborador_cobrindo_id: string
+          p_falta_id: number
+          p_fim_em: string
+          p_inicio_em: string
+          p_intervalo_fim_em?: string
+          p_intervalo_inicio_em?: string
+          p_observacao?: string
+          p_operacao: string
+        }
+        Returns: string
+      }
       current_internal_access_level: {
         Args: never
         Returns: Database["public"]["Enums"]["internal_access_level"]
@@ -3563,6 +3748,14 @@ export type Database = {
       limpar_tokens_expirados: { Args: never; Returns: undefined }
       normalizar_cpf: { Args: { input: string }; Returns: string }
       processar_movimentacoes_agendadas: { Args: never; Returns: undefined }
+      reprovar_hora_extra: {
+        Args: {
+          p_detalhe_reprovacao?: string
+          p_hora_extra_id: string
+          p_motivo_reprovacao: Database["public"]["Enums"]["motivo_reprovacao_hora_extra"]
+        }
+        Returns: undefined
+      }
       reverter_justificativa_falta_convenia:
         | {
             Args: {
@@ -3592,12 +3785,25 @@ export type Database = {
         | "assistente_operacoes"
         | "assistente_financeiro"
         | "gestor_financeiro"
+      motivo_cancelamento_hora_extra:
+        | "cobertura_nao_necessaria"
+        | "lancamento_indevido"
+        | "substituicao_reorganizada"
+        | "erro_operacional"
+        | "outros"
       motivo_contratacao:
         | "Substituição efetivo"
         | "Substituição férias licença"
         | "Implantação/Abertura de novo contrato"
         | "Solicitação do cliente"
       motivo_reprovacao: "Diarista ausente" | "Dados incorretos"
+      motivo_reprovacao_hora_extra:
+        | "horario_invalido"
+        | "dados_inconsistentes"
+        | "colaborador_indisponivel"
+        | "falta_sem_validacao"
+        | "duplicidade"
+        | "outros"
       motivo_vago_type:
         | "DIÁRIA - FALTA ATESTADO"
         | "DIÁRIA - FALTA"
@@ -3635,6 +3841,12 @@ export type Database = {
         | "Reprovada"
       status_diarista: "ativo" | "inativo" | "desligado" | "restrito"
       status_execucao: "ativo" | "concluido" | "atrasado" | "cancelado"
+      status_hora_extra:
+        | "pendente"
+        | "confirmada"
+        | "aprovada"
+        | "reprovada"
+        | "cancelada"
       status_posto:
         | "vago"
         | "ocupado"
@@ -3812,6 +4024,13 @@ export const Constants = {
         "assistente_financeiro",
         "gestor_financeiro",
       ],
+      motivo_cancelamento_hora_extra: [
+        "cobertura_nao_necessaria",
+        "lancamento_indevido",
+        "substituicao_reorganizada",
+        "erro_operacional",
+        "outros",
+      ],
       motivo_contratacao: [
         "Substituição efetivo",
         "Substituição férias licença",
@@ -3819,6 +4038,14 @@ export const Constants = {
         "Solicitação do cliente",
       ],
       motivo_reprovacao: ["Diarista ausente", "Dados incorretos"],
+      motivo_reprovacao_hora_extra: [
+        "horario_invalido",
+        "dados_inconsistentes",
+        "colaborador_indisponivel",
+        "falta_sem_validacao",
+        "duplicidade",
+        "outros",
+      ],
       motivo_vago_type: [
         "DIÁRIA - FALTA ATESTADO",
         "DIÁRIA - FALTA",
@@ -3860,6 +4087,13 @@ export const Constants = {
       ],
       status_diarista: ["ativo", "inativo", "desligado", "restrito"],
       status_execucao: ["ativo", "concluido", "atrasado", "cancelado"],
+      status_hora_extra: [
+        "pendente",
+        "confirmada",
+        "aprovada",
+        "reprovada",
+        "cancelada",
+      ],
       status_posto: [
         "vago",
         "ocupado",
