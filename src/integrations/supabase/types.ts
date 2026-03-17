@@ -2038,7 +2038,7 @@ export type Database = {
           criado_por: string
           detalhe_cancelamento: string | null
           detalhe_reprovacao: string | null
-          falta_id: number
+          falta_id: number | null
           fim_em: string
           id: string
           inicio_em: string
@@ -2070,7 +2070,7 @@ export type Database = {
           criado_por: string
           detalhe_cancelamento?: string | null
           detalhe_reprovacao?: string | null
-          falta_id: number
+          falta_id?: number | null
           fim_em: string
           id?: string
           inicio_em: string
@@ -2102,7 +2102,7 @@ export type Database = {
           criado_por?: string
           detalhe_cancelamento?: string | null
           detalhe_reprovacao?: string | null
-          falta_id?: number
+          falta_id?: number | null
           fim_em?: string
           id?: string
           inicio_em?: string
