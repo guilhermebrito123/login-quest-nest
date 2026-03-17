@@ -1973,6 +1973,7 @@ export type Database = {
           id: number
           justificada_em: string | null
           justificada_por: string | null
+          local_falta: string | null
           motivo: string
           updated_at: string
         }
@@ -1985,6 +1986,7 @@ export type Database = {
           id?: number
           justificada_em?: string | null
           justificada_por?: string | null
+          local_falta?: string | null
           motivo: string
           updated_at?: string
         }
@@ -1997,6 +1999,7 @@ export type Database = {
           id?: number
           justificada_em?: string | null
           justificada_por?: string | null
+          local_falta?: string | null
           motivo?: string
           updated_at?: string
         }
@@ -2020,6 +2023,13 @@ export type Database = {
             columns: ["justificada_por"]
             isOneToOne: false
             referencedRelation: "usuarios"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "faltas_colaboradores_convenia_local_falta_fkey"
+            columns: ["local_falta"]
+            isOneToOne: false
+            referencedRelation: "cost_center"
             referencedColumns: ["id"]
           },
         ]
