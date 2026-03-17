@@ -2045,6 +2045,7 @@ export type Database = {
           confirmado_por: string | null
           criado_em: string
           criado_por: string
+          data_hora_extra: string
           detalhe_cancelamento: string | null
           detalhe_reprovacao: string | null
           falta_id: number | null
@@ -2077,6 +2078,7 @@ export type Database = {
           confirmado_por?: string | null
           criado_em?: string
           criado_por: string
+          data_hora_extra: string
           detalhe_cancelamento?: string | null
           detalhe_reprovacao?: string | null
           falta_id?: number | null
@@ -2109,6 +2111,7 @@ export type Database = {
           confirmado_por?: string | null
           criado_em?: string
           criado_por?: string
+          data_hora_extra?: string
           detalhe_cancelamento?: string | null
           detalhe_reprovacao?: string | null
           falta_id?: number | null
