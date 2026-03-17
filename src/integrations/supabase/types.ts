@@ -2043,7 +2043,6 @@ export type Database = {
           colaborador_cobrindo_id: string
           confirmado_em: string | null
           confirmado_por: string | null
-          cost_center_id: string
           criado_em: string
           criado_por: string
           detalhe_cancelamento: string | null
@@ -2054,6 +2053,7 @@ export type Database = {
           inicio_em: string
           intervalo_fim_em: string | null
           intervalo_inicio_em: string | null
+          local_hora_extra: string
           motivo_cancelamento:
             | Database["public"]["Enums"]["motivo_cancelamento_hora_extra"]
             | null
@@ -2075,7 +2075,6 @@ export type Database = {
           colaborador_cobrindo_id: string
           confirmado_em?: string | null
           confirmado_por?: string | null
-          cost_center_id: string
           criado_em?: string
           criado_por: string
           detalhe_cancelamento?: string | null
@@ -2086,6 +2085,7 @@ export type Database = {
           inicio_em: string
           intervalo_fim_em?: string | null
           intervalo_inicio_em?: string | null
+          local_hora_extra: string
           motivo_cancelamento?:
             | Database["public"]["Enums"]["motivo_cancelamento_hora_extra"]
             | null
@@ -2107,7 +2107,6 @@ export type Database = {
           colaborador_cobrindo_id?: string
           confirmado_em?: string | null
           confirmado_por?: string | null
-          cost_center_id?: string
           criado_em?: string
           criado_por?: string
           detalhe_cancelamento?: string | null
@@ -2118,6 +2117,7 @@ export type Database = {
           inicio_em?: string
           intervalo_fim_em?: string | null
           intervalo_inicio_em?: string | null
+          local_hora_extra?: string
           motivo_cancelamento?:
             | Database["public"]["Enums"]["motivo_cancelamento_hora_extra"]
             | null
@@ -2162,7 +2162,7 @@ export type Database = {
           },
           {
             foreignKeyName: "horas_extras_cost_center_id_fkey"
-            columns: ["cost_center_id"]
+            columns: ["local_hora_extra"]
             isOneToOne: false
             referencedRelation: "cost_center"
             referencedColumns: ["id"]
