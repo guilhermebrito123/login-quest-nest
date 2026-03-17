@@ -1,36 +1,31 @@
 
 
-## Plano: Remover preenchimento automático de `cost_center_id` em `horas_extras`
+## Configurar Redirect URLs para Vercel
 
-### Problema
+### Situação
 
-O trigger `set_cost_center_from_colaborador_cobrindo` preenche automaticamente o `cost_center_id` para operações `demanda_extra`, `bonus`, `dobra_turno`, `extensao_jornada` usando o cost_center do `colaborador_cobrindo_id`. Isso está errado — o `cost_center_id` deve **sempre** ser inserido manualmente, independente do tipo de operação.
+O domínio do seu deploy Vercel é: `https://login-quest-nest-main-definitivo-h8.vercel.app`
 
-### Solução
+O arquivo `supabase/config.toml` é gerenciado automaticamente pela Lovable e não deve ser editado manualmente. No entanto, as configurações de `additional_redirect_urls` nele só se aplicam ao ambiente local.
 
-Recriar a função `set_cost_center_from_colaborador_cobrindo` removendo toda a lógica de preenchimento automático no INSERT. Manter apenas a regra de imutabilidade no UPDATE (bloquear alteração após criação).
+### O que precisa ser feito
 
-Nova lógica da função:
+Para que a autenticação funcione no seu deploy Vercel, é necessário adicionar o domínio aos redirect URLs permitidos nas configurações de autenticação do backend.
 
-```sql
-CREATE OR REPLACE FUNCTION public.set_cost_center_from_colaborador_cobrindo()
-RETURNS trigger
-LANGUAGE plpgsql
-AS $$
-BEGIN
-  -- On UPDATE: block changes to cost_center_id once set
-  IF TG_OP = 'UPDATE' AND OLD.cost_center_id IS DISTINCT FROM NEW.cost_center_id THEN
-    RAISE EXCEPTION 'O centro de custo não pode ser alterado após a criação da hora extra';
-  END IF;
+**Ação**: Vou atualizar o `config.toml` para incluir seu domínio Vercel na lista de `additional_redirect_urls` e no `site_url`:
 
-  RETURN NEW;
-END;
-$$;
+```
+site_url = "https://login-quest-nest-main-definitivo-h8.vercel.app"
+additional_redirect_urls = [
+  "https://127.0.0.1:3000",
+  "https://login-quest-nest-main-definitivo-h8.vercel.app",
+  "https://login-quest-nest-main-definitivo-h8.vercel.app/**"
+]
 ```
 
-### Impacto
+**Nota importante**: Como o `config.toml` é gerenciado automaticamente, pode ser necessário aplicar essa configuração diretamente no painel do Lovable Cloud. Vou verificar se essa alteração pode ser feita via as ferramentas disponíveis.
 
-- Nenhuma alteração de schema — apenas a lógica do trigger muda
-- O `cost_center_id` passa a ser responsabilidade do usuário em **todos** os casos
-- A imutabilidade após criação permanece
+### Ação adicional no código
+
+Verificar se o `emailRedirectTo` no `Auth.tsx` está usando `window.location.origin`, o que já funcionará automaticamente com qualquer domínio.
 
