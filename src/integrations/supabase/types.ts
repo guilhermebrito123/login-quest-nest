@@ -2051,7 +2051,7 @@ export type Database = {
             | Database["public"]["Enums"]["motivo_reprovacao_hora_extra"]
             | null
           observacao: string | null
-          operacao: string
+          operacao: Database["public"]["Enums"]["operacao_hora_extra"]
           reprovado_em: string | null
           reprovado_por: string | null
           status: Database["public"]["Enums"]["status_hora_extra"]
@@ -2083,7 +2083,7 @@ export type Database = {
             | Database["public"]["Enums"]["motivo_reprovacao_hora_extra"]
             | null
           observacao?: string | null
-          operacao: string
+          operacao: Database["public"]["Enums"]["operacao_hora_extra"]
           reprovado_em?: string | null
           reprovado_por?: string | null
           status?: Database["public"]["Enums"]["status_hora_extra"]
@@ -2115,7 +2115,7 @@ export type Database = {
             | Database["public"]["Enums"]["motivo_reprovacao_hora_extra"]
             | null
           observacao?: string | null
-          operacao?: string
+          operacao?: Database["public"]["Enums"]["operacao_hora_extra"]
           reprovado_em?: string | null
           reprovado_por?: string | null
           status?: Database["public"]["Enums"]["status_hora_extra"]
@@ -3692,19 +3692,33 @@ export type Database = {
             }
             Returns: number
           }
-      criar_hora_extra: {
-        Args: {
-          p_colaborador_cobrindo_id: string
-          p_falta_id: number
-          p_fim_em: string
-          p_inicio_em: string
-          p_intervalo_fim_em?: string
-          p_intervalo_inicio_em?: string
-          p_observacao?: string
-          p_operacao: string
-        }
-        Returns: string
-      }
+      criar_hora_extra:
+        | {
+            Args: {
+              p_colaborador_cobrindo_id: string
+              p_falta_id: number
+              p_fim_em: string
+              p_inicio_em: string
+              p_intervalo_fim_em?: string
+              p_intervalo_inicio_em?: string
+              p_observacao?: string
+              p_operacao: Database["public"]["Enums"]["operacao_hora_extra"]
+            }
+            Returns: string
+          }
+        | {
+            Args: {
+              p_colaborador_cobrindo_id: string
+              p_falta_id: number
+              p_fim_em: string
+              p_inicio_em: string
+              p_intervalo_fim_em?: string
+              p_intervalo_inicio_em?: string
+              p_observacao?: string
+              p_operacao: string
+            }
+            Returns: string
+          }
       current_internal_access_level: {
         Args: never
         Returns: Database["public"]["Enums"]["internal_access_level"]
@@ -3821,6 +3835,17 @@ export type Database = {
         | "Valores divergentes"
         | "Beneficiário do pix não identificado"
         | "Outros"
+      operacao_hora_extra:
+        | "cobertura_falta"
+        | "cobertura_falta_atestado"
+        | "cobertura_ferias"
+        | "cobertura_afastamento_inss"
+        | "cobertura_licenca"
+        | "demanda_extra"
+        | "bonus"
+        | "dobra_turno"
+        | "extensao_jornada"
+        | "outros"
       periodicidade_type:
         | "diaria"
         | "semanal"
@@ -4064,6 +4089,18 @@ export const Constants = {
         "Valores divergentes",
         "Beneficiário do pix não identificado",
         "Outros",
+      ],
+      operacao_hora_extra: [
+        "cobertura_falta",
+        "cobertura_falta_atestado",
+        "cobertura_ferias",
+        "cobertura_afastamento_inss",
+        "cobertura_licenca",
+        "demanda_extra",
+        "bonus",
+        "dobra_turno",
+        "extensao_jornada",
+        "outros",
       ],
       periodicidade_type: [
         "diaria",
