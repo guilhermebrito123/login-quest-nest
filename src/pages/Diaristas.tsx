@@ -49,7 +49,7 @@ export default function Diaristas() {
     // Group by normalized CPF to find duplicates
     const cpfMap = new Map<string, typeof data>();
     for (const d of data || []) {
-      const key = d.cpf_normalizado || d.cpf?.replace(/\D/g, "") || "";
+      const key = d.cpf?.replace(/\D/g, "") || "";
       if (!key) continue;
       if (!cpfMap.has(key)) cpfMap.set(key, []);
       cpfMap.get(key)!.push(d);
