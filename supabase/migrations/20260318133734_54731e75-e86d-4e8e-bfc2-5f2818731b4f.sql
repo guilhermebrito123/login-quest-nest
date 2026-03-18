@@ -1,0 +1,1 @@
+CREATE UNIQUE INDEX diaristas_cpf_unique ON public.diaristas (cpf) WHERE cpf IS NOT NULL AND cpf != '';
