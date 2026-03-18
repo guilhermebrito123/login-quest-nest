@@ -38,7 +38,7 @@ export default function Diaristas() {
   const exportDuplicados = async () => {
     const { data, error } = await supabase
       .from("diaristas")
-      .select("id, nome_completo, cpf, cpf_normalizado, email, telefone, cidade, status, created_at")
+      .select("id, nome_completo, cpf, email, telefone, cidade, status, created_at")
       .order("cpf");
 
     if (error) {
