@@ -1563,7 +1563,6 @@ export type Database = {
           cep: string | null
           cidade: string | null
           cpf: string | null
-          cpf_normalizado: string | null
           created_at: string
           email: string | null
           endereco: string | null
@@ -1592,7 +1591,6 @@ export type Database = {
           cep?: string | null
           cidade?: string | null
           cpf?: string | null
-          cpf_normalizado?: string | null
           created_at?: string
           email?: string | null
           endereco?: string | null
@@ -1621,7 +1619,6 @@ export type Database = {
           cep?: string | null
           cidade?: string | null
           cpf?: string | null
-          cpf_normalizado?: string | null
           created_at?: string
           email?: string | null
           endereco?: string | null
