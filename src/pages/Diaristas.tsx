@@ -38,7 +38,7 @@ export default function Diaristas() {
   const exportDuplicados = async () => {
     const { data, error } = await supabase
       .from("diaristas")
-      .select("id, nome_completo, cpf, cpf_normalizado, email, telefone, cidade, status, created_at")
+      .select("id, nome_completo, cpf, email, telefone, cidade, status, created_at")
       .order("cpf");
 
     if (error) {
@@ -49,7 +49,7 @@ export default function Diaristas() {
     // Group by normalized CPF to find duplicates
     const cpfMap = new Map<string, typeof data>();
     for (const d of data || []) {
-      const key = d.cpf_normalizado || d.cpf?.replace(/\D/g, "") || "";
+      const key = d.cpf?.replace(/\D/g, "") || "";
       if (!key) continue;
       if (!cpfMap.has(key)) cpfMap.set(key, []);
       cpfMap.get(key)!.push(d);
@@ -69,7 +69,7 @@ export default function Diaristas() {
         ID: d.id,
         Nome: d.nome_completo,
         CPF: d.cpf,
-        CPF_Normalizado: d.cpf_normalizado,
+        
         Email: d.email,
         Telefone: d.telefone,
         Cidade: d.cidade,
