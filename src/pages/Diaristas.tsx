@@ -69,7 +69,7 @@ export default function Diaristas() {
         ID: d.id,
         Nome: d.nome_completo,
         CPF: d.cpf,
-        CPF_Normalizado: d.cpf_normalizado,
+        
         Email: d.email,
         Telefone: d.telefone,
         Cidade: d.cidade,
