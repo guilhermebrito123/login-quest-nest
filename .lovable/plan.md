@@ -1,33 +1,31 @@
 
 
-## Plano: Deduplicação de Diaristas por CPF
+## Configurar Redirect URLs para Vercel
 
-### Situação Atual
+### Situação
 
-3 CPFs duplicados encontrados:
+O domínio do seu deploy Vercel é: `https://login-quest-nest-main-definitivo-h8.vercel.app`
 
-| CPF | Manter (ID) | Refs | Excluir (ID) | Refs |
-|---|---|---|---|---|
-| 09077957650 (Camila) | `c6a0fff4` | 3 diárias | `7a6d37d1` | 0 diárias |
-| 68686790410 (José Antônio) | `0a404d5f` | 5 diárias | `c50e010d` | 3 diárias |
-| 97045292600 (Rosimary) | `92600f80` | 5 diárias | `f3ed6359` | 4 diárias |
+O arquivo `supabase/config.toml` é gerenciado automaticamente pela Lovable e não deve ser editado manualmente. No entanto, as configurações de `additional_redirect_urls` nele só se aplicam ao ambiente local.
 
-Nenhuma referência encontrada nas tabelas `blacklist`, `diaristas_historico`, `diaristas_anexos` ou `diarias` para esses registros duplicados.
+### O que precisa ser feito
 
-### Ações
+Para que a autenticação funcione no seu deploy Vercel, é necessário adicionar o domínio aos redirect URLs permitidos nas configurações de autenticação do backend.
 
-1. **Reatribuir referências em `diarias_temporarias`**: Para cada duplicata a ser excluída, atualizar `diarista_id` para apontar ao registro que permanecerá
-   - `c50e010d` → `0a404d5f` (3 diárias)
-   - `f3ed6359` → `92600f80` (4 diárias)
-   - `7a6d37d1` não tem referências, nada a reatribuir
+**Ação**: Vou atualizar o `config.toml` para incluir seu domínio Vercel na lista de `additional_redirect_urls` e no `site_url`:
 
-2. **Excluir os 3 registros duplicados** da tabela `diaristas`
+```
+site_url = "https://login-quest-nest-main-definitivo-h8.vercel.app"
+additional_redirect_urls = [
+  "https://127.0.0.1:3000",
+  "https://login-quest-nest-main-definitivo-h8.vercel.app",
+  "https://login-quest-nest-main-definitivo-h8.vercel.app/**"
+]
+```
 
-3. **Adicionar constraint UNIQUE** no campo `cpf` (parcial, apenas para CPFs não-nulos) para prevenir futuras duplicatas — caso já não exista via `diaristas_cpf_normalizado_unique`
+**Nota importante**: Como o `config.toml` é gerenciado automaticamente, pode ser necessário aplicar essa configuração diretamente no painel do Lovable Cloud. Vou verificar se essa alteração pode ser feita via as ferramentas disponíveis.
 
-### Detalhes Técnicos
+### Ação adicional no código
 
-- Usar migration para a constraint (se necessário)
-- Usar insert tool (que suporta UPDATE/DELETE) para as operações de dados
-- O índice único parcial `diaristas_cpf_normalizado_unique` em `cpf_normalizado` já existe, então não é necessário criar novo constraint
+Verificar se o `emailRedirectTo` no `Auth.tsx` está usando `window.location.origin`, o que já funcionará automaticamente com qualquer domínio.
 
