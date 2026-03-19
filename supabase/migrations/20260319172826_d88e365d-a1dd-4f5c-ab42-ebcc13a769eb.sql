@@ -1,0 +1,7 @@
+ALTER TABLE diarias_temporarias DISABLE TRIGGER trg_autorizar_transicoes_diaria_temporaria;
+ALTER TABLE diarias_temporarias DISABLE TRIGGER trg_bloquear_edicao_diaria_temporaria;
+ALTER TABLE diarias_temporarias DISABLE TRIGGER bloquear_edicao_diaria_temporaria_trigger;
+UPDATE diarias_temporarias SET valor_diaria = 180 WHERE id = 947;
+ALTER TABLE diarias_temporarias ENABLE TRIGGER trg_autorizar_transicoes_diaria_temporaria;
+ALTER TABLE diarias_temporarias ENABLE TRIGGER trg_bloquear_edicao_diaria_temporaria;
+ALTER TABLE diarias_temporarias ENABLE TRIGGER bloquear_edicao_diaria_temporaria_trigger;
