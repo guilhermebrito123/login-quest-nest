@@ -1,0 +1,2 @@
+ALTER TABLE public.diaristas ALTER COLUMN cpf SET DEFAULT '';
+ALTER TABLE public.diaristas ALTER COLUMN cpf SET NOT NULL;
