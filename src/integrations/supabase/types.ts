@@ -1221,6 +1221,7 @@ export type Database = {
           motivo_vago: Database["public"]["Enums"]["motivo_vago_type"]
           novo_posto: boolean | null
           observacao: string | null
+          observacao_lancamento: string | null
           observacao_pagamento:
             | Database["public"]["Enums"]["observacao_pagamento_type"][]
             | null
@@ -1276,6 +1277,7 @@ export type Database = {
           motivo_vago?: Database["public"]["Enums"]["motivo_vago_type"]
           novo_posto?: boolean | null
           observacao?: string | null
+          observacao_lancamento?: string | null
           observacao_pagamento?:
             | Database["public"]["Enums"]["observacao_pagamento_type"][]
             | null
@@ -1331,6 +1333,7 @@ export type Database = {
           motivo_vago?: Database["public"]["Enums"]["motivo_vago_type"]
           novo_posto?: boolean | null
           observacao?: string | null
+          observacao_lancamento?: string | null
           observacao_pagamento?:
             | Database["public"]["Enums"]["observacao_pagamento_type"][]
             | null

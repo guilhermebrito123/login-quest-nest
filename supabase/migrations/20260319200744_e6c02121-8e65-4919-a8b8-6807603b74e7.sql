@@ -1,0 +1,1 @@
+ALTER TABLE public.diarias_temporarias ADD COLUMN observacao_lancamento text NULL;
