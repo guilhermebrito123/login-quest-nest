@@ -115,10 +115,6 @@ export function DiaristaForm({ open, onClose, onSuccess, diarista }: DiaristaFor
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     
-    if (!formData.cpf.replace(/\D/g, "").trim()) {
-      toast.error("Campo CPF é obrigatório");
-      return;
-    }
 
     if (formData.possui_antecedente) {
       toast.error("Não é permitido cadastrar diaristas com antecedentes criminais");
