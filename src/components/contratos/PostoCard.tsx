@@ -165,25 +165,10 @@ const PostoCard = ({ posto, unidade, onEdit, onDelete }: PostoCardProps) => {
         .eq("posto_servico_id", posto.id)
         .limit(1);
 
-      const { data: chamados } = await supabase
-        .from("chamados")
-        .select("id")
-        .eq("posto_servico_id", posto.id)
-        .limit(1);
-
       if (colaboradores && colaboradores.length > 0) {
         toast({
           title: "Não é possível excluir",
           description: "Este posto possui colaboradores relacionados. Remova a vinculação dos colaboradores primeiro.",
-          variant: "destructive",
-        });
-        return;
-      }
-
-      if (chamados && chamados.length > 0) {
-        toast({
-          title: "Não é possível excluir",
-          description: "Este posto possui chamados relacionados. Exclua os chamados primeiro.",
           variant: "destructive",
         });
         return;

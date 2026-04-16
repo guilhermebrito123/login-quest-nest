@@ -49,12 +49,6 @@ const UnidadeCard = ({ unidade, contrato, onSelect, onEdit, onDelete }: UnidadeC
         .eq("unidade_id", unidade.id)
         .limit(1);
 
-      const { data: chamados } = await supabase
-        .from("chamados")
-        .select("id")
-        .eq("unidade_id", unidade.id)
-        .limit(1);
-
       const { data: ordens } = await supabase
         .from("ordens_servico")
         .select("id")
@@ -74,15 +68,6 @@ const UnidadeCard = ({ unidade, contrato, onSelect, onEdit, onDelete }: UnidadeC
         toast({
           title: "Não é possível excluir",
           description: "Esta unidade possui colaboradores relacionados. Remova a vinculação dos colaboradores primeiro.",
-          variant: "destructive",
-        });
-        return;
-      }
-
-      if (chamados && chamados.length > 0) {
-        toast({
-          title: "Não é possível excluir",
-          description: "Esta unidade possui chamados relacionados. Exclua os chamados primeiro.",
           variant: "destructive",
         });
         return;
