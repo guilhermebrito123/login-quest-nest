@@ -7,7 +7,7 @@ import {
   UserCheck,
   LogOut,
   Calendar,
-  MessageSquare,
+  
   Package,
   UserCircle
 } from "lucide-react";
