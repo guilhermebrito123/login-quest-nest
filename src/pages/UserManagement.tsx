@@ -13,7 +13,16 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { Building2, ArrowLeft, Search, Shield, UserCog } from "lucide-react";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
+import { Label } from "@/components/ui/label";
+import { Building2, Search, Shield, UserCog } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 
 interface UserWithRole {
@@ -24,12 +33,24 @@ interface UserWithRole {
   role: string;
 }
 
+interface CostCenter {
+  id: string;
+  name: string;
+}
+
 const UserManagement = () => {
   const [users, setUsers] = useState<UserWithRole[]>([]);
   const [filteredUsers, setFilteredUsers] = useState<UserWithRole[]>([]);
   const [searchTerm, setSearchTerm] = useState("");
   const [loading, setLoading] = useState(true);
   const [isAdmin, setIsAdmin] = useState(false);
+  const [costCenters, setCostCenters] = useState<CostCenter[]>([]);
+  const [colabDialog, setColabDialog] = useState<{ open: boolean; userId: string | null }>({
+    open: false,
+    userId: null,
+  });
+  const [selectedCostCenter, setSelectedCostCenter] = useState<string>("");
+  const [submitting, setSubmitting] = useState(false);
   const navigate = useNavigate();
   const { toast } = useToast();
 
@@ -44,13 +65,11 @@ const UserManagement = () => {
   const checkAdminAndLoadUsers = async () => {
     try {
       const { data: { user } } = await supabase.auth.getUser();
-      
       if (!user) {
         navigate("/auth");
         return;
       }
 
-      // Check if user is admin
       const { data: roleData } = await supabase
         .from("user_roles")
         .select("role")
@@ -68,7 +87,7 @@ const UserManagement = () => {
       }
 
       setIsAdmin(true);
-      await loadUsers();
+      await Promise.all([loadUsers(), loadCostCenters()]);
     } catch (error) {
       console.error("Error:", error);
     } finally {
@@ -76,17 +95,23 @@ const UserManagement = () => {
     }
   };
 
+  const loadCostCenters = async () => {
+    const { data, error } = await supabase
+      .from("cost_center")
+      .select("id, name")
+      .order("name");
+    if (error) {
+      console.error(error);
+      return;
+    }
+    setCostCenters(data || []);
+  };
+
   const loadUsers = async () => {
     try {
       const { data, error } = await supabase
         .from("usuarios")
-        .select(`
-          id,
-          email,
-          full_name,
-          phone,
-          user_roles (role)
-        `);
+        .select(`id, email, full_name, phone, user_roles (role)`);
 
       if (error) throw error;
 
@@ -114,24 +139,28 @@ const UserManagement = () => {
       setFilteredUsers(users);
       return;
     }
-
     const term = searchTerm.toLowerCase();
-    const filtered = users.filter(
-      (user) =>
-        user.email?.toLowerCase().includes(term) ||
-        user.full_name?.toLowerCase().includes(term)
+    setFilteredUsers(
+      users.filter(
+        (u) =>
+          u.email?.toLowerCase().includes(term) ||
+          u.full_name?.toLowerCase().includes(term)
+      )
     );
-    setFilteredUsers(filtered);
   };
 
-  const handleRoleChange = async (
-    userId: string,
-    newRole: "admin" | "gestor_operacoes" | "supervisor" | "analista_centro_controle" | "tecnico" | "cliente_view"
-  ) => {
+  const handleRoleChange = async (userId: string, newRole: string) => {
+    // Caso especial: promover a colaborador exige escolher cost_center
+    if (newRole === "colaborador") {
+      setSelectedCostCenter("");
+      setColabDialog({ open: true, userId });
+      return;
+    }
+
     try {
       const { error } = await supabase
         .from("user_roles")
-        .update({ role: newRole })
+        .update({ role: newRole as any })
         .eq("user_id", userId);
 
       if (error) throw error;
@@ -151,6 +180,42 @@ const UserManagement = () => {
     }
   };
 
+  const handleConfirmColaborador = async () => {
+    if (!colabDialog.userId || !selectedCostCenter) {
+      toast({
+        title: "Selecione um centro de custo",
+        description: "É obrigatório vincular o colaborador a um centro de custo.",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    setSubmitting(true);
+    try {
+      const { error } = await supabase.rpc("definir_usuario_como_colaborador", {
+        p_user_id: colabDialog.userId,
+        p_cost_center_id: selectedCostCenter,
+      });
+      if (error) throw error;
+
+      toast({
+        title: "Colaborador vinculado",
+        description: "Usuário promovido a colaborador e vinculado ao centro de custo.",
+      });
+      setColabDialog({ open: false, userId: null });
+      setSelectedCostCenter("");
+      await loadUsers();
+    } catch (error: any) {
+      toast({
+        title: "Erro ao definir colaborador",
+        description: error.message,
+        variant: "destructive",
+      });
+    } finally {
+      setSubmitting(false);
+    }
+  };
+
   const roleLabels: Record<string, string> = {
     admin: "Administrador",
     gestor_operacoes: "Gestor de Operações",
@@ -158,6 +223,7 @@ const UserManagement = () => {
     analista_centro_controle: "Analista Centro Controle",
     tecnico: "Técnico",
     cliente_view: "Cliente (Visualização)",
+    colaborador: "Colaborador",
   };
 
   const getRoleBadgeColor = (role: string) => {
@@ -168,6 +234,7 @@ const UserManagement = () => {
       analista_centro_controle: "bg-cyan-500",
       tecnico: "bg-green-500",
       cliente_view: "bg-gray-500",
+      colaborador: "bg-amber-500",
     };
     return colors[role] || "bg-gray-500";
   };
@@ -185,116 +252,153 @@ const UserManagement = () => {
   return (
     <DashboardLayout>
       <div className="min-h-screen bg-background">
-      {/* Header */}
-      <header className="border-b bg-card shadow-sm">
-        <div className="container mx-auto px-4 py-4">
-          <div className="flex items-center gap-3">
-            <div className="p-2 bg-gradient-to-br from-primary to-accent rounded-lg">
-              <Building2 className="h-6 w-6 text-primary-foreground" />
+        <header className="border-b bg-card shadow-sm">
+          <div className="container mx-auto px-4 py-4">
+            <div className="flex items-center gap-3">
+              <div className="p-2 bg-gradient-to-br from-primary to-accent rounded-lg">
+                <Building2 className="h-6 w-6 text-primary-foreground" />
+              </div>
+              <div>
+                <h1 className="text-xl font-bold">Facilities Center</h1>
+                <p className="text-sm text-muted-foreground">Gestão de Usuários</p>
+              </div>
             </div>
-            <div>
-              <h1 className="text-xl font-bold">Facilities Center</h1>
-              <p className="text-sm text-muted-foreground">Gestão de Usuários</p>
+          </div>
+        </header>
+
+        <main className="container mx-auto px-4 py-8">
+          <div className="mb-6">
+            <div className="flex items-center gap-2 mb-4">
+              <Shield className="h-6 w-6 text-primary" />
+              <h2 className="text-2xl font-bold">Gestão de Perfis de Usuários</h2>
+            </div>
+            <p className="text-muted-foreground mb-6">
+              Gerencie os perfis de acesso de todos os usuários do sistema
+            </p>
+
+            <div className="relative max-w-md">
+              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+              <Input
+                placeholder="Buscar por nome ou email..."
+                value={searchTerm}
+                onChange={(e) => setSearchTerm(e.target.value)}
+                className="pl-10"
+              />
             </div>
           </div>
-        </div>
-      </header>
 
-      {/* Main Content */}
-      <main className="container mx-auto px-4 py-8">
-        <div className="mb-6">
-          <div className="flex items-center gap-2 mb-4">
-            <Shield className="h-6 w-6 text-primary" />
-            <h2 className="text-2xl font-bold">Gestão de Perfis de Usuários</h2>
-          </div>
-          <p className="text-muted-foreground mb-6">
-            Gerencie os perfis de acesso de todos os usuários do sistema
-          </p>
-
-          {/* Search */}
-          <div className="relative max-w-md">
-            <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-            <Input
-              placeholder="Buscar por nome ou email..."
-              value={searchTerm}
-              onChange={(e) => setSearchTerm(e.target.value)}
-              className="pl-10"
-            />
-          </div>
-        </div>
-
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-          {filteredUsers.map((user) => (
-            <Card key={user.id} className="hover:shadow-md transition-shadow">
-              <CardHeader>
-                <div className="flex items-start justify-between">
-                  <div className="flex items-center gap-3">
-                    <div className="p-2 bg-primary/10 rounded-lg">
-                      <UserCog className="h-5 w-5 text-primary" />
-                    </div>
-                    <div>
-                      <CardTitle className="text-base">
-                        {user.full_name || "Sem nome"}
-                      </CardTitle>
-                      <CardDescription className="text-xs">
-                        {user.email}
-                      </CardDescription>
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+            {filteredUsers.map((user) => (
+              <Card key={user.id} className="hover:shadow-md transition-shadow">
+                <CardHeader>
+                  <div className="flex items-start justify-between">
+                    <div className="flex items-center gap-3">
+                      <div className="p-2 bg-primary/10 rounded-lg">
+                        <UserCog className="h-5 w-5 text-primary" />
+                      </div>
+                      <div>
+                        <CardTitle className="text-base">
+                          {user.full_name || "Sem nome"}
+                        </CardTitle>
+                        <CardDescription className="text-xs">
+                          {user.email}
+                        </CardDescription>
+                      </div>
                     </div>
                   </div>
-                </div>
-              </CardHeader>
-              <CardContent>
-                <div className="space-y-3">
-                  {user.phone && (
-                    <p className="text-sm text-muted-foreground">
-                      Tel: {user.phone}
-                    </p>
-                  )}
-                  <div className="space-y-2">
-                    <label className="text-sm font-medium">Perfil de Acesso</label>
-                    <Select
-                      value={user.role}
-                      onValueChange={(value) => handleRoleChange(user.id, value as any)}
-                    >
-                      <SelectTrigger>
-                        <SelectValue />
-                      </SelectTrigger>
-                      <SelectContent>
-                        {Object.entries(roleLabels).map(([value, label]) => (
-                          <SelectItem key={value} value={value}>
-                            <div className="flex items-center gap-2">
-                              <div
-                                className={`w-2 h-2 rounded-full ${getRoleBadgeColor(value)}`}
-                              />
-                              {label}
-                            </div>
-                          </SelectItem>
-                        ))}
-                      </SelectContent>
-                    </Select>
+                </CardHeader>
+                <CardContent>
+                  <div className="space-y-3">
+                    {user.phone && (
+                      <p className="text-sm text-muted-foreground">Tel: {user.phone}</p>
+                    )}
+                    <div className="space-y-2">
+                      <label className="text-sm font-medium">Perfil de Acesso</label>
+                      <Select
+                        value={user.role}
+                        onValueChange={(value) => handleRoleChange(user.id, value)}
+                      >
+                        <SelectTrigger>
+                          <SelectValue />
+                        </SelectTrigger>
+                        <SelectContent>
+                          {Object.entries(roleLabels).map(([value, label]) => (
+                            <SelectItem key={value} value={value}>
+                              <div className="flex items-center gap-2">
+                                <div
+                                  className={`w-2 h-2 rounded-full ${getRoleBadgeColor(value)}`}
+                                />
+                                {label}
+                              </div>
+                            </SelectItem>
+                          ))}
+                        </SelectContent>
+                      </Select>
+                    </div>
+                    <Badge className={`${getRoleBadgeColor(user.role)} text-white`}>
+                      {roleLabels[user.role] || user.role}
+                    </Badge>
                   </div>
-                  <Badge
-                    className={`${getRoleBadgeColor(user.role)} text-white`}
-                  >
-                    {roleLabels[user.role]}
-                  </Badge>
-                </div>
+                </CardContent>
+              </Card>
+            ))}
+          </div>
+
+          {filteredUsers.length === 0 && (
+            <Card className="mt-8">
+              <CardContent className="py-12 text-center">
+                <p className="text-muted-foreground">
+                  Nenhum usuário encontrado com os filtros aplicados.
+                </p>
               </CardContent>
             </Card>
-          ))}
-        </div>
+          )}
+        </main>
 
-        {filteredUsers.length === 0 && (
-          <Card className="mt-8">
-            <CardContent className="py-12 text-center">
-              <p className="text-muted-foreground">
-                Nenhum usuário encontrado com os filtros aplicados.
-              </p>
-            </CardContent>
-          </Card>
-        )}
-      </main>
-    </div>
+        <Dialog
+          open={colabDialog.open}
+          onOpenChange={(open) =>
+            !submitting && setColabDialog({ open, userId: open ? colabDialog.userId : null })
+          }
+        >
+          <DialogContent>
+            <DialogHeader>
+              <DialogTitle>Promover a Colaborador</DialogTitle>
+              <DialogDescription>
+                Selecione o centro de custo ao qual este colaborador estará vinculado. Ele só
+                poderá abrir chamados em locais deste centro de custo.
+              </DialogDescription>
+            </DialogHeader>
+            <div className="space-y-2 py-4">
+              <Label>Centro de Custo</Label>
+              <Select value={selectedCostCenter} onValueChange={setSelectedCostCenter}>
+                <SelectTrigger>
+                  <SelectValue placeholder="Selecione um centro de custo" />
+                </SelectTrigger>
+                <SelectContent>
+                  {costCenters.map((cc) => (
+                    <SelectItem key={cc.id} value={cc.id}>
+                      {cc.name}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
+            <DialogFooter>
+              <Button
+                variant="outline"
+                onClick={() => setColabDialog({ open: false, userId: null })}
+                disabled={submitting}
+              >
+                Cancelar
+              </Button>
+              <Button onClick={handleConfirmColaborador} disabled={submitting || !selectedCostCenter}>
+                {submitting ? "Vinculando..." : "Confirmar"}
+              </Button>
+            </DialogFooter>
+          </DialogContent>
+        </Dialog>
+      </div>
     </DashboardLayout>
   );
 };

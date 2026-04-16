@@ -644,6 +644,68 @@ export type Database = {
           },
         ]
       }
+      colaborador_profiles: {
+        Row: {
+          ativo: boolean
+          cost_center_id: string
+          created_at: string
+          created_by: string
+          observacoes: string | null
+          updated_at: string
+          updated_by: string | null
+          user_id: string
+        }
+        Insert: {
+          ativo?: boolean
+          cost_center_id: string
+          created_at?: string
+          created_by: string
+          observacoes?: string | null
+          updated_at?: string
+          updated_by?: string | null
+          user_id: string
+        }
+        Update: {
+          ativo?: boolean
+          cost_center_id?: string
+          created_at?: string
+          created_by?: string
+          observacoes?: string | null
+          updated_at?: string
+          updated_by?: string | null
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "colaborador_profiles_cost_center_id_fkey"
+            columns: ["cost_center_id"]
+            isOneToOne: false
+            referencedRelation: "cost_center"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "colaborador_profiles_created_by_fkey"
+            columns: ["created_by"]
+            isOneToOne: false
+            referencedRelation: "usuarios"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "colaborador_profiles_updated_by_fkey"
+            columns: ["updated_by"]
+            isOneToOne: false
+            referencedRelation: "usuarios"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "colaborador_profiles_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: true
+            referencedRelation: "usuarios"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       colaboradores: {
         Row: {
           cargo: string | null
@@ -3540,6 +3602,10 @@ export type Database = {
       current_internal_access_level: {
         Args: never
         Returns: Database["public"]["Enums"]["internal_access_level"]
+      }
+      definir_usuario_como_colaborador: {
+        Args: { p_cost_center_id: string; p_user_id: string }
+        Returns: undefined
       }
       fn_diff_jsonb: { Args: { new_row: Json; old_row: Json }; Returns: Json }
       gerar_dias_trabalho_proximo_mes: { Args: never; Returns: undefined }
