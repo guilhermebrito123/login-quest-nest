@@ -1,31 +1,49 @@
 
 
-## Configurar Redirect URLs para Vercel
+# Plano: Corrigir erro de CPF duplicado e garantir acesso de perfil_interno aos Chamados
 
-### Situação
+## Diagnóstico
 
-O domínio do seu deploy Vercel é: `https://login-quest-nest-main-definitivo-h8.vercel.app`
+O erro "duplicate key value violates unique constraint colaboradores_cpf_key" ocorre porque o trigger `handle_usuario_role_transition` tenta inserir na tabela `colaboradores` com `cpf = ''` quando a role muda para `colaborador`. Se já existe outro registro com `cpf = ''`, o UNIQUE constraint bloqueia.
 
-O arquivo `supabase/config.toml` é gerenciado automaticamente pela Lovable e não deve ser editado manualmente. No entanto, as configurações de `additional_redirect_urls` nele só se aplicam ao ambiente local.
+**Boa notícia:** Usuários com role `perfil_interno` (como admins) **já podem** criar, acompanhar, comentar e anexar chamados. As políticas RLS da tabela `chamados` já permitem isso. Não é necessário mudar ninguém para `colaborador`.
 
-### O que precisa ser feito
+## O que será feito
 
-Para que a autenticação funcione no seu deploy Vercel, é necessário adicionar o domínio aos redirect URLs permitidos nas configurações de autenticação do backend.
+### 1. Corrigir a constraint de CPF duplicado na tabela colaboradores
+- Alterar a UNIQUE constraint de `cpf` para permitir valores vazios (`''`) duplicados usando um índice parcial:
+  - Remover `UNIQUE (cpf)` existente
+  - Criar `UNIQUE INDEX` apenas onde `cpf <> ''` (CPFs reais continuam únicos)
+- Isso resolve o erro caso alguém precise de fato transicionar para `colaborador`
 
-**Ação**: Vou atualizar o `config.toml` para incluir seu domínio Vercel na lista de `additional_redirect_urls` e no `site_url`:
+### 2. Nenhuma tabela nova necessária
+- A tabela `chamados` já referencia `solicitante_id -> usuarios(id)`, que funciona para qualquer tipo de usuário
+- As RLS policies já permitem que `perfil_interno` crie, visualize, atualize e comente chamados
+- O trigger `validar_responsavel_chamado` já valida corretamente os responsáveis
 
+### 3. Resumo de permissões existentes nos Chamados
+
+| Ação | perfil_interno (admin, supervisor, etc.) | colaborador |
+|------|------------------------------------------|-------------|
+| Criar chamado | Sim | Sim |
+| Visualizar | Sim | Não (apenas internos) |
+| Atualizar | Sim (exceto cliente_view) | Não |
+| Comentar | Sim | Não |
+| Anexar | Sim | Não |
+| Deletar | Apenas admin | Não |
+
+## Detalhes técnicos
+
+**Migration SQL:**
+```sql
+-- Remove a constraint UNIQUE simples do CPF
+ALTER TABLE public.colaboradores DROP CONSTRAINT IF EXISTS colaboradores_cpf_key;
+
+-- Cria índice único parcial que ignora CPFs vazios
+CREATE UNIQUE INDEX colaboradores_cpf_unique_nonempty 
+  ON public.colaboradores(cpf) 
+  WHERE cpf <> '';
 ```
-site_url = "https://login-quest-nest-main-definitivo-h8.vercel.app"
-additional_redirect_urls = [
-  "https://127.0.0.1:3000",
-  "https://login-quest-nest-main-definitivo-h8.vercel.app",
-  "https://login-quest-nest-main-definitivo-h8.vercel.app/**"
-]
-```
 
-**Nota importante**: Como o `config.toml` é gerenciado automaticamente, pode ser necessário aplicar essa configuração diretamente no painel do Lovable Cloud. Vou verificar se essa alteração pode ser feita via as ferramentas disponíveis.
-
-### Ação adicional no código
-
-Verificar se o `emailRedirectTo` no `Auth.tsx` está usando `window.location.origin`, o que já funcionará automaticamente com qualquer domínio.
+Apenas 1 migration será executada. Nenhum arquivo de código precisa ser alterado.
 
