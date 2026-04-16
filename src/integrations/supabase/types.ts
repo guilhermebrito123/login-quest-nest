@@ -195,6 +195,270 @@ export type Database = {
           },
         ]
       }
+      chamado_anexos: {
+        Row: {
+          caminho_storage: string
+          chamado_id: string
+          created_at: string
+          id: string
+          nome_arquivo: string
+          tamanho_bytes: number | null
+          tipo_arquivo: string | null
+          uploaded_by: string
+        }
+        Insert: {
+          caminho_storage: string
+          chamado_id: string
+          created_at?: string
+          id?: string
+          nome_arquivo: string
+          tamanho_bytes?: number | null
+          tipo_arquivo?: string | null
+          uploaded_by: string
+        }
+        Update: {
+          caminho_storage?: string
+          chamado_id?: string
+          created_at?: string
+          id?: string
+          nome_arquivo?: string
+          tamanho_bytes?: number | null
+          tipo_arquivo?: string | null
+          uploaded_by?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "chamado_anexos_chamado_id_fkey"
+            columns: ["chamado_id"]
+            isOneToOne: false
+            referencedRelation: "chamados"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "chamado_anexos_uploaded_by_fkey"
+            columns: ["uploaded_by"]
+            isOneToOne: false
+            referencedRelation: "usuarios"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      chamado_categorias: {
+        Row: {
+          ativo: boolean
+          created_at: string
+          descricao: string | null
+          id: string
+          nome: string
+          updated_at: string
+        }
+        Insert: {
+          ativo?: boolean
+          created_at?: string
+          descricao?: string | null
+          id?: string
+          nome: string
+          updated_at?: string
+        }
+        Update: {
+          ativo?: boolean
+          created_at?: string
+          descricao?: string | null
+          id?: string
+          nome?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      chamado_historico: {
+        Row: {
+          alteracoes: Json | null
+          campo_alterado: string | null
+          chamado_id: string
+          created_at: string
+          id: string
+          operacao: string
+          registro_completo: Json | null
+          usuario_id: string | null
+          valor_anterior: string | null
+          valor_novo: string | null
+        }
+        Insert: {
+          alteracoes?: Json | null
+          campo_alterado?: string | null
+          chamado_id: string
+          created_at?: string
+          id?: string
+          operacao: string
+          registro_completo?: Json | null
+          usuario_id?: string | null
+          valor_anterior?: string | null
+          valor_novo?: string | null
+        }
+        Update: {
+          alteracoes?: Json | null
+          campo_alterado?: string | null
+          chamado_id?: string
+          created_at?: string
+          id?: string
+          operacao?: string
+          registro_completo?: Json | null
+          usuario_id?: string | null
+          valor_anterior?: string | null
+          valor_novo?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "chamado_historico_chamado_id_fkey"
+            columns: ["chamado_id"]
+            isOneToOne: false
+            referencedRelation: "chamados"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "chamado_historico_usuario_id_fkey"
+            columns: ["usuario_id"]
+            isOneToOne: false
+            referencedRelation: "usuarios"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      chamado_interacoes: {
+        Row: {
+          autor_id: string
+          chamado_id: string
+          created_at: string
+          id: string
+          interno: boolean
+          mensagem: string
+          updated_at: string
+        }
+        Insert: {
+          autor_id: string
+          chamado_id: string
+          created_at?: string
+          id?: string
+          interno?: boolean
+          mensagem: string
+          updated_at?: string
+        }
+        Update: {
+          autor_id?: string
+          chamado_id?: string
+          created_at?: string
+          id?: string
+          interno?: boolean
+          mensagem?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "chamado_interacoes_autor_id_fkey"
+            columns: ["autor_id"]
+            isOneToOne: false
+            referencedRelation: "usuarios"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "chamado_interacoes_chamado_id_fkey"
+            columns: ["chamado_id"]
+            isOneToOne: false
+            referencedRelation: "chamados"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      chamados: {
+        Row: {
+          categoria_id: string | null
+          created_at: string
+          data_fechamento: string | null
+          descricao: string
+          id: string
+          local_id: string
+          numero: number
+          prioridade: Database["public"]["Enums"]["chamado_prioridade"]
+          resolvido_em: string | null
+          resolvido_por: string | null
+          responsavel_id: string | null
+          solicitante_id: string
+          status: Database["public"]["Enums"]["chamado_status"]
+          titulo: string
+          updated_at: string
+        }
+        Insert: {
+          categoria_id?: string | null
+          created_at?: string
+          data_fechamento?: string | null
+          descricao: string
+          id?: string
+          local_id: string
+          numero?: never
+          prioridade?: Database["public"]["Enums"]["chamado_prioridade"]
+          resolvido_em?: string | null
+          resolvido_por?: string | null
+          responsavel_id?: string | null
+          solicitante_id: string
+          status?: Database["public"]["Enums"]["chamado_status"]
+          titulo: string
+          updated_at?: string
+        }
+        Update: {
+          categoria_id?: string | null
+          created_at?: string
+          data_fechamento?: string | null
+          descricao?: string
+          id?: string
+          local_id?: string
+          numero?: never
+          prioridade?: Database["public"]["Enums"]["chamado_prioridade"]
+          resolvido_em?: string | null
+          resolvido_por?: string | null
+          responsavel_id?: string | null
+          solicitante_id?: string
+          status?: Database["public"]["Enums"]["chamado_status"]
+          titulo?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "chamados_categoria_id_fkey"
+            columns: ["categoria_id"]
+            isOneToOne: false
+            referencedRelation: "chamado_categorias"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "chamados_local_id_fkey"
+            columns: ["local_id"]
+            isOneToOne: false
+            referencedRelation: "cost_center_locais"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "chamados_resolvido_por_fkey"
+            columns: ["resolvido_por"]
+            isOneToOne: false
+            referencedRelation: "usuarios"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "chamados_responsavel_id_fkey"
+            columns: ["responsavel_id"]
+            isOneToOne: false
+            referencedRelation: "usuarios"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "chamados_solicitante_id_fkey"
+            columns: ["solicitante_id"]
+            isOneToOne: false
+            referencedRelation: "usuarios"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       clientes: {
         Row: {
           cnpj: string
@@ -826,6 +1090,44 @@ export type Database = {
           updated_at?: string
         }
         Relationships: []
+      }
+      cost_center_locais: {
+        Row: {
+          ativo: boolean
+          cost_center_id: string
+          created_at: string
+          descricao: string | null
+          id: string
+          nome: string
+          updated_at: string
+        }
+        Insert: {
+          ativo?: boolean
+          cost_center_id: string
+          created_at?: string
+          descricao?: string | null
+          id?: string
+          nome: string
+          updated_at?: string
+        }
+        Update: {
+          ativo?: boolean
+          cost_center_id?: string
+          created_at?: string
+          descricao?: string | null
+          id?: string
+          nome?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "cost_center_locais_cost_center_id_fkey"
+            columns: ["cost_center_id"]
+            isOneToOne: false
+            referencedRelation: "cost_center"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       cost_centers_convenia: {
         Row: {
@@ -3308,6 +3610,14 @@ export type Database = {
     }
     Enums: {
       acumulo_funcao_options: "Sim" | "Não" | "Especial"
+      chamado_prioridade: "baixa" | "media" | "alta" | "critica"
+      chamado_status:
+        | "aberto"
+        | "em_andamento"
+        | "pendente"
+        | "resolvido"
+        | "fechado"
+        | "cancelado"
       estado_civil:
         | "Solteiro"
         | "Casado"
@@ -3556,6 +3866,15 @@ export const Constants = {
   public: {
     Enums: {
       acumulo_funcao_options: ["Sim", "Não", "Especial"],
+      chamado_prioridade: ["baixa", "media", "alta", "critica"],
+      chamado_status: [
+        "aberto",
+        "em_andamento",
+        "pendente",
+        "resolvido",
+        "fechado",
+        "cancelado",
+      ],
       estado_civil: [
         "Solteiro",
         "Casado",
