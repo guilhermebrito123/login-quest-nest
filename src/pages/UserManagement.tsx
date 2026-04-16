@@ -109,19 +109,30 @@ const UserManagement = () => {
 
   const loadUsers = async () => {
     try {
-      const { data, error } = await supabase
+      const { data: usersData, error: usersError } = await supabase
         .from("usuarios")
-        .select(`id, email, full_name, phone, user_roles (role)`);
+        .select("id, email, full_name, phone");
 
-      if (error) throw error;
+      if (usersError) throw usersError;
 
-      const usersWithRoles = data?.map((user: any) => ({
+      const { data: rolesData, error: rolesError } = await supabase
+        .from("user_roles")
+        .select("user_id, role");
+
+      if (rolesError) throw rolesError;
+
+      const roleMap = new Map<string, string>();
+      (rolesData || []).forEach((r: any) => {
+        if (!roleMap.has(r.user_id)) roleMap.set(r.user_id, r.role);
+      });
+
+      const usersWithRoles = (usersData || []).map((user: any) => ({
         id: user.id,
         email: user.email,
         full_name: user.full_name,
         phone: user.phone,
-        role: user.user_roles?.[0]?.role || "tecnico",
-      })) || [];
+        role: roleMap.get(user.id) || "tecnico",
+      }));
 
       setUsers(usersWithRoles);
       setFilteredUsers(usersWithRoles);
