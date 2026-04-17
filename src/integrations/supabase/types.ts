@@ -101,13 +101,6 @@ export type Database = {
             referencedColumns: ["id"]
           },
           {
-            foreignKeyName: "blacklist_bloqueado_por_fkey"
-            columns: ["bloqueado_por"]
-            isOneToOne: false
-            referencedRelation: "usuarios_public"
-            referencedColumns: ["id"]
-          },
-          {
             foreignKeyName: "fk_blacklist_diarista"
             columns: ["diarista_id"]
             isOneToOne: false
@@ -248,13 +241,6 @@ export type Database = {
             referencedRelation: "usuarios"
             referencedColumns: ["id"]
           },
-          {
-            foreignKeyName: "chamado_anexos_uploaded_by_fkey"
-            columns: ["uploaded_by"]
-            isOneToOne: false
-            referencedRelation: "usuarios_public"
-            referencedColumns: ["id"]
-          },
         ]
       }
       chamado_categorias: {
@@ -336,13 +322,6 @@ export type Database = {
             referencedRelation: "usuarios"
             referencedColumns: ["id"]
           },
-          {
-            foreignKeyName: "chamado_historico_usuario_id_fkey"
-            columns: ["usuario_id"]
-            isOneToOne: false
-            referencedRelation: "usuarios_public"
-            referencedColumns: ["id"]
-          },
         ]
       }
       chamado_interacoes: {
@@ -379,13 +358,6 @@ export type Database = {
             columns: ["autor_id"]
             isOneToOne: false
             referencedRelation: "usuarios"
-            referencedColumns: ["id"]
-          },
-          {
-            foreignKeyName: "chamado_interacoes_autor_id_fkey"
-            columns: ["autor_id"]
-            isOneToOne: false
-            referencedRelation: "usuarios_public"
             referencedColumns: ["id"]
           },
           {
@@ -472,29 +444,8 @@ export type Database = {
             referencedColumns: ["id"]
           },
           {
-            foreignKeyName: "chamados_resolvido_por_fkey"
-            columns: ["resolvido_por"]
-            isOneToOne: false
-            referencedRelation: "usuarios_public"
-            referencedColumns: ["id"]
-          },
-          {
             foreignKeyName: "chamados_responsavel_id_fkey"
             columns: ["responsavel_id"]
-            isOneToOne: false
-            referencedRelation: "usuarios"
-            referencedColumns: ["id"]
-          },
-          {
-            foreignKeyName: "chamados_responsavel_id_fkey"
-            columns: ["responsavel_id"]
-            isOneToOne: false
-            referencedRelation: "usuarios_public"
-            referencedColumns: ["id"]
-          },
-          {
-            foreignKeyName: "chamados_solicitante_id_fkey"
-            columns: ["solicitante_id"]
             isOneToOne: false
             referencedRelation: "usuarios"
             referencedColumns: ["id"]
@@ -503,7 +454,7 @@ export type Database = {
             foreignKeyName: "chamados_solicitante_id_fkey"
             columns: ["solicitante_id"]
             isOneToOne: false
-            referencedRelation: "usuarios_public"
+            referencedRelation: "usuarios"
             referencedColumns: ["id"]
           },
         ]
@@ -604,13 +555,6 @@ export type Database = {
             columns: ["justificada_por"]
             isOneToOne: false
             referencedRelation: "usuarios"
-            referencedColumns: ["id"]
-          },
-          {
-            foreignKeyName: "colaborador_faltas_justificada_por_fkey"
-            columns: ["justificada_por"]
-            isOneToOne: false
-            referencedRelation: "usuarios_public"
             referencedColumns: ["id"]
           },
         ]
@@ -747,13 +691,6 @@ export type Database = {
             referencedColumns: ["id"]
           },
           {
-            foreignKeyName: "colaborador_profiles_created_by_fkey"
-            columns: ["created_by"]
-            isOneToOne: false
-            referencedRelation: "usuarios_public"
-            referencedColumns: ["id"]
-          },
-          {
             foreignKeyName: "colaborador_profiles_updated_by_fkey"
             columns: ["updated_by"]
             isOneToOne: false
@@ -761,24 +698,10 @@ export type Database = {
             referencedColumns: ["id"]
           },
           {
-            foreignKeyName: "colaborador_profiles_updated_by_fkey"
-            columns: ["updated_by"]
-            isOneToOne: false
-            referencedRelation: "usuarios_public"
-            referencedColumns: ["id"]
-          },
-          {
             foreignKeyName: "colaborador_profiles_user_id_fkey"
             columns: ["user_id"]
             isOneToOne: true
             referencedRelation: "usuarios"
-            referencedColumns: ["id"]
-          },
-          {
-            foreignKeyName: "colaborador_profiles_user_id_fkey"
-            columns: ["user_id"]
-            isOneToOne: true
-            referencedRelation: "usuarios_public"
             referencedColumns: ["id"]
           },
         ]
@@ -1412,13 +1335,6 @@ export type Database = {
             referencedRelation: "usuarios"
             referencedColumns: ["id"]
           },
-          {
-            foreignKeyName: "diarias_notificacoes_user_id_fkey"
-            columns: ["user_id"]
-            isOneToOne: false
-            referencedRelation: "usuarios_public"
-            referencedColumns: ["id"]
-          },
         ]
       }
       diarias_temporarias: {
@@ -1599,29 +1515,8 @@ export type Database = {
             referencedColumns: ["id"]
           },
           {
-            foreignKeyName: "diarias_temporarias_aprovada_por_fkey"
-            columns: ["aprovada_por"]
-            isOneToOne: false
-            referencedRelation: "usuarios_public"
-            referencedColumns: ["id"]
-          },
-          {
             foreignKeyName: "diarias_temporarias_aprovado_para_pgto_por_fkey"
             columns: ["aprovado_para_pgto_por"]
-            isOneToOne: false
-            referencedRelation: "usuarios"
-            referencedColumns: ["id"]
-          },
-          {
-            foreignKeyName: "diarias_temporarias_aprovado_para_pgto_por_fkey"
-            columns: ["aprovado_para_pgto_por"]
-            isOneToOne: false
-            referencedRelation: "usuarios_public"
-            referencedColumns: ["id"]
-          },
-          {
-            foreignKeyName: "diarias_temporarias_cancelada_por_fkey"
-            columns: ["cancelada_por"]
             isOneToOne: false
             referencedRelation: "usuarios"
             referencedColumns: ["id"]
@@ -1630,7 +1525,7 @@ export type Database = {
             foreignKeyName: "diarias_temporarias_cancelada_por_fkey"
             columns: ["cancelada_por"]
             isOneToOne: false
-            referencedRelation: "usuarios_public"
+            referencedRelation: "usuarios"
             referencedColumns: ["id"]
           },
           {
@@ -1662,24 +1557,10 @@ export type Database = {
             referencedColumns: ["id"]
           },
           {
-            foreignKeyName: "diarias_temporarias_confirmada_por_fkey"
-            columns: ["confirmada_por"]
-            isOneToOne: false
-            referencedRelation: "usuarios_public"
-            referencedColumns: ["id"]
-          },
-          {
             foreignKeyName: "diarias_temporarias_criado_por_fkey"
             columns: ["criado_por"]
             isOneToOne: false
             referencedRelation: "usuarios"
-            referencedColumns: ["id"]
-          },
-          {
-            foreignKeyName: "diarias_temporarias_criado_por_fkey"
-            columns: ["criado_por"]
-            isOneToOne: false
-            referencedRelation: "usuarios_public"
             referencedColumns: ["id"]
           },
           {
@@ -1697,29 +1578,8 @@ export type Database = {
             referencedColumns: ["id"]
           },
           {
-            foreignKeyName: "diarias_temporarias_lancada_por_fkey"
-            columns: ["lancada_por"]
-            isOneToOne: false
-            referencedRelation: "usuarios_public"
-            referencedColumns: ["id"]
-          },
-          {
             foreignKeyName: "diarias_temporarias_ok_pagamento_por_fkey"
             columns: ["ok_pagamento_por"]
-            isOneToOne: false
-            referencedRelation: "usuarios"
-            referencedColumns: ["id"]
-          },
-          {
-            foreignKeyName: "diarias_temporarias_ok_pagamento_por_fkey"
-            columns: ["ok_pagamento_por"]
-            isOneToOne: false
-            referencedRelation: "usuarios_public"
-            referencedColumns: ["id"]
-          },
-          {
-            foreignKeyName: "diarias_temporarias_paga_por_fkey"
-            columns: ["paga_por"]
             isOneToOne: false
             referencedRelation: "usuarios"
             referencedColumns: ["id"]
@@ -1728,7 +1588,7 @@ export type Database = {
             foreignKeyName: "diarias_temporarias_paga_por_fkey"
             columns: ["paga_por"]
             isOneToOne: false
-            referencedRelation: "usuarios_public"
+            referencedRelation: "usuarios"
             referencedColumns: ["id"]
           },
           {
@@ -1743,13 +1603,6 @@ export type Database = {
             columns: ["reprovada_por"]
             isOneToOne: false
             referencedRelation: "usuarios"
-            referencedColumns: ["id"]
-          },
-          {
-            foreignKeyName: "diarias_temporarias_reprovada_por_fkey"
-            columns: ["reprovada_por"]
-            isOneToOne: false
-            referencedRelation: "usuarios_public"
             referencedColumns: ["id"]
           },
           {
@@ -1822,13 +1675,6 @@ export type Database = {
             columns: ["usuario_responsavel"]
             isOneToOne: false
             referencedRelation: "usuarios"
-            referencedColumns: ["id"]
-          },
-          {
-            foreignKeyName: "diarias_temporarias_logs_usuario_responsavel_fkey"
-            columns: ["usuario_responsavel"]
-            isOneToOne: false
-            referencedRelation: "usuarios_public"
             referencedColumns: ["id"]
           },
         ]
@@ -2182,13 +2028,6 @@ export type Database = {
             referencedColumns: ["id"]
           },
           {
-            foreignKeyName: "faltas_colaboradores_convenia_justificada_por_fkey"
-            columns: ["justificada_por"]
-            isOneToOne: false
-            referencedRelation: "usuarios_public"
-            referencedColumns: ["id"]
-          },
-          {
             foreignKeyName: "faltas_colaboradores_convenia_local_falta_fkey"
             columns: ["local_falta"]
             isOneToOne: false
@@ -2306,24 +2145,10 @@ export type Database = {
             referencedColumns: ["id"]
           },
           {
-            foreignKeyName: "horas_extras_aprovado_por_fkey"
-            columns: ["aprovado_por"]
-            isOneToOne: false
-            referencedRelation: "usuarios_public"
-            referencedColumns: ["id"]
-          },
-          {
             foreignKeyName: "horas_extras_cancelado_por_fkey"
             columns: ["cancelado_por"]
             isOneToOne: false
             referencedRelation: "usuarios"
-            referencedColumns: ["id"]
-          },
-          {
-            foreignKeyName: "horas_extras_cancelado_por_fkey"
-            columns: ["cancelado_por"]
-            isOneToOne: false
-            referencedRelation: "usuarios_public"
             referencedColumns: ["id"]
           },
           {
@@ -2341,13 +2166,6 @@ export type Database = {
             referencedColumns: ["id"]
           },
           {
-            foreignKeyName: "horas_extras_confirmado_por_fkey"
-            columns: ["confirmado_por"]
-            isOneToOne: false
-            referencedRelation: "usuarios_public"
-            referencedColumns: ["id"]
-          },
-          {
             foreignKeyName: "horas_extras_cost_center_id_fkey"
             columns: ["local_hora_extra"]
             isOneToOne: false
@@ -2362,13 +2180,6 @@ export type Database = {
             referencedColumns: ["id"]
           },
           {
-            foreignKeyName: "horas_extras_criado_por_fkey"
-            columns: ["criado_por"]
-            isOneToOne: false
-            referencedRelation: "usuarios_public"
-            referencedColumns: ["id"]
-          },
-          {
             foreignKeyName: "horas_extras_falta_id_fkey"
             columns: ["falta_id"]
             isOneToOne: false
@@ -2380,13 +2191,6 @@ export type Database = {
             columns: ["reprovado_por"]
             isOneToOne: false
             referencedRelation: "usuarios"
-            referencedColumns: ["id"]
-          },
-          {
-            foreignKeyName: "horas_extras_reprovado_por_fkey"
-            columns: ["reprovado_por"]
-            isOneToOne: false
-            referencedRelation: "usuarios_public"
             referencedColumns: ["id"]
           },
         ]
@@ -2506,13 +2310,6 @@ export type Database = {
             columns: ["user_id"]
             isOneToOne: true
             referencedRelation: "usuarios"
-            referencedColumns: ["id"]
-          },
-          {
-            foreignKeyName: "internal_profiles_user_id_fkey"
-            columns: ["user_id"]
-            isOneToOne: true
-            referencedRelation: "usuarios_public"
             referencedColumns: ["id"]
           },
         ]
@@ -2674,24 +2471,10 @@ export type Database = {
             referencedColumns: ["id"]
           },
           {
-            foreignKeyName: "ordens_servico_responsavel_id_fkey"
-            columns: ["responsavel_id"]
-            isOneToOne: false
-            referencedRelation: "usuarios_public"
-            referencedColumns: ["id"]
-          },
-          {
             foreignKeyName: "ordens_servico_solicitante_id_fkey"
             columns: ["solicitante_id"]
             isOneToOne: false
             referencedRelation: "usuarios"
-            referencedColumns: ["id"]
-          },
-          {
-            foreignKeyName: "ordens_servico_solicitante_id_fkey"
-            columns: ["solicitante_id"]
-            isOneToOne: false
-            referencedRelation: "usuarios_public"
             referencedColumns: ["id"]
           },
           {
@@ -2819,13 +2602,6 @@ export type Database = {
             columns: ["profile_id"]
             isOneToOne: false
             referencedRelation: "usuarios"
-            referencedColumns: ["id"]
-          },
-          {
-            foreignKeyName: "password_reset_tokens_profile_id_fkey"
-            columns: ["profile_id"]
-            isOneToOne: false
-            referencedRelation: "usuarios_public"
             referencedColumns: ["id"]
           },
         ]
@@ -3409,13 +3185,6 @@ export type Database = {
             referencedRelation: "usuarios"
             referencedColumns: ["id"]
           },
-          {
-            foreignKeyName: "profiles_superior_fkey"
-            columns: ["superior"]
-            isOneToOne: false
-            referencedRelation: "usuarios_public"
-            referencedColumns: ["id"]
-          },
         ]
       }
       vagas_temp: {
@@ -3560,24 +3329,10 @@ export type Database = {
             referencedColumns: ["id"]
           },
           {
-            foreignKeyName: "vagas_temp_aberta_por_fkey"
-            columns: ["aberta_por"]
-            isOneToOne: false
-            referencedRelation: "usuarios_public"
-            referencedColumns: ["id"]
-          },
-          {
             foreignKeyName: "vagas_temp_aprovada_por_fkey"
             columns: ["aprovada_por"]
             isOneToOne: false
             referencedRelation: "usuarios"
-            referencedColumns: ["id"]
-          },
-          {
-            foreignKeyName: "vagas_temp_aprovada_por_fkey"
-            columns: ["aprovada_por"]
-            isOneToOne: false
-            referencedRelation: "usuarios_public"
             referencedColumns: ["id"]
           },
           {
@@ -3588,24 +3343,10 @@ export type Database = {
             referencedColumns: ["id"]
           },
           {
-            foreignKeyName: "vagas_temp_cancelada_por_fkey"
-            columns: ["cancelada_por"]
-            isOneToOne: false
-            referencedRelation: "usuarios_public"
-            referencedColumns: ["id"]
-          },
-          {
             foreignKeyName: "vagas_temp_criado_por_fkey"
             columns: ["criado_por"]
             isOneToOne: false
             referencedRelation: "usuarios"
-            referencedColumns: ["id"]
-          },
-          {
-            foreignKeyName: "vagas_temp_criado_por_fkey"
-            columns: ["criado_por"]
-            isOneToOne: false
-            referencedRelation: "usuarios_public"
             referencedColumns: ["id"]
           },
           {
@@ -3616,24 +3357,10 @@ export type Database = {
             referencedColumns: ["id"]
           },
           {
-            foreignKeyName: "vagas_temp_entrevistador_fkey"
-            columns: ["entrevistador"]
-            isOneToOne: false
-            referencedRelation: "usuarios_public"
-            referencedColumns: ["id"]
-          },
-          {
             foreignKeyName: "vagas_temp_fechada_por_fkey"
             columns: ["fechada_por"]
             isOneToOne: false
             referencedRelation: "usuarios"
-            referencedColumns: ["id"]
-          },
-          {
-            foreignKeyName: "vagas_temp_fechada_por_fkey"
-            columns: ["fechada_por"]
-            isOneToOne: false
-            referencedRelation: "usuarios_public"
             referencedColumns: ["id"]
           },
           {
@@ -3662,13 +3389,6 @@ export type Database = {
             columns: ["reprovada_por"]
             isOneToOne: false
             referencedRelation: "usuarios"
-            referencedColumns: ["id"]
-          },
-          {
-            foreignKeyName: "vagas_temp_reprovada_por_fkey"
-            columns: ["reprovada_por"]
-            isOneToOne: false
-            referencedRelation: "usuarios_public"
             referencedColumns: ["id"]
           },
         ]
@@ -3896,6 +3616,14 @@ export type Database = {
       }
       fn_diff_jsonb: { Args: { new_row: Json; old_row: Json }; Returns: Json }
       gerar_dias_trabalho_proximo_mes: { Args: never; Returns: undefined }
+      get_visible_internal_users_public: {
+        Args: never
+        Returns: {
+          cargo: string
+          full_name: string
+          id: string
+        }[]
+      }
       has_role: {
         Args: {
           _role: Database["public"]["Enums"]["internal_access_level"]
