@@ -2267,6 +2267,52 @@ export type Database = {
           },
         ]
       }
+      internal_profile_cost_centers: {
+        Row: {
+          cost_center_id: string
+          created_at: string
+          created_by: string
+          id: string
+          user_id: string
+        }
+        Insert: {
+          cost_center_id: string
+          created_at?: string
+          created_by: string
+          id?: string
+          user_id: string
+        }
+        Update: {
+          cost_center_id?: string
+          created_at?: string
+          created_by?: string
+          id?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "internal_profile_cost_centers_cost_center_id_fkey"
+            columns: ["cost_center_id"]
+            isOneToOne: false
+            referencedRelation: "cost_center"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "internal_profile_cost_centers_created_by_fkey"
+            columns: ["created_by"]
+            isOneToOne: false
+            referencedRelation: "usuarios"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "internal_profile_cost_centers_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "usuarios"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       internal_profiles: {
         Row: {
           cargo: string | null
@@ -3631,8 +3677,26 @@ export type Database = {
         }
         Returns: boolean
       }
+      internal_user_can_access_chamado: {
+        Args: { p_chamado_id: string; p_user_id: string }
+        Returns: boolean
+      }
+      internal_user_can_access_local: {
+        Args: { p_local_id: string; p_user_id: string }
+        Returns: boolean
+      }
+      internal_user_can_use_local_for_chamado: {
+        Args: { p_local_id: string; p_user_id: string }
+        Returns: boolean
+      }
+      internal_user_has_cost_center_access: {
+        Args: { p_cost_center_id: string; p_user_id: string }
+        Returns: boolean
+      }
+      internal_user_is_admin: { Args: { p_user_id: string }; Returns: boolean }
       is_admin: { Args: { _user_id: string }; Returns: boolean }
       is_admin_user: { Args: never; Returns: boolean }
+      is_colaborador_user: { Args: { p_user_id: string }; Returns: boolean }
       is_internal_user: { Args: never; Returns: boolean }
       justificar_falta_convenia: {
         Args: {
