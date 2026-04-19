@@ -84,3 +84,9 @@ verify_jwt = false
 
 [functions.sync-convenia-demitidos]
 verify_jwt = false
+
+[functions.request-manual-recovery]
+verify_jwt = false
+
+[functions.complete-manual-recovery]
+verify_jwt = false

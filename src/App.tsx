@@ -10,6 +10,8 @@ import Dashboard from "./pages/Dashboard";
 import Dashboard24h from "./pages/Dashboard24h";
 import UserManagement from "./pages/UserManagement";
 import ResetPassword from "./pages/ResetPassword";
+import RecuperarAcesso from "./pages/RecuperarAcesso";
+import RecuperacoesAdmin from "./pages/RecuperacoesAdmin";
 
 import Contratos from "./pages/Contratos";
 import MesaOperacoes from "./pages/MesaOperacoes";
@@ -33,6 +35,8 @@ const App = () => (
           <Route path="/" element={<Index />} />
           <Route path="/auth" element={<Auth />} />
           <Route path="/reset-password" element={<ResetPassword />} />
+          <Route path="/recuperar-acesso/:token" element={<RecuperarAcesso />} />
+          <Route path="/admin/recuperacoes" element={<ProtectedRoute><RecuperacoesAdmin /></ProtectedRoute>} />
           <Route path="/dashboard" element={<ProtectedRoute><Dashboard /></ProtectedRoute>} />
           <Route path="/dashboard-24h" element={<ProtectedRoute><Dashboard24h /></ProtectedRoute>} />
           <Route path="/users" element={<ProtectedRoute><UserManagement /></ProtectedRoute>} />
