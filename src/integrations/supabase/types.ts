@@ -4734,6 +4734,10 @@ export type Database = {
         Args: { _assigned_user_id: string; _cost_center_id: string }
         Returns: boolean
       }
+      can_change_checklist_task_kanban: {
+        Args: { _instancia_tarefa_id: string; _user_id: string }
+        Returns: boolean
+      }
       can_create_checklist_template: {
         Args: { _cost_center_id: string; _user_id: string }
         Returns: boolean
@@ -4783,6 +4787,12 @@ export type Database = {
           isOneToOne: true
           isSetofReturn: false
         }
+      }
+      checklist_instance_allows_kanban_edit: {
+        Args: {
+          _instance_status: Database["public"]["Enums"]["checklist_instance_status"]
+        }
+        Returns: boolean
       }
       confirmar_hora_extra: {
         Args: { p_hora_extra_id: string }
@@ -5085,6 +5095,7 @@ export type Database = {
         | "blocked"
         | "ignored"
         | "done"
+        | "closed"
       checklist_task_response_type:
         | "conformity_radio"
         | "text"
@@ -5443,6 +5454,7 @@ export const Constants = {
         "blocked",
         "ignored",
         "done",
+        "closed",
       ],
       checklist_task_response_type: [
         "conformity_radio",
