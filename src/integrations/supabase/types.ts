@@ -3376,6 +3376,68 @@ export type Database = {
           },
         ]
       }
+      module_equipe_membros: {
+        Row: {
+          added_by_user_id: string
+          ativo: boolean
+          cost_center_id: string
+          created_at: string
+          equipe_id: string
+          id: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          added_by_user_id: string
+          ativo?: boolean
+          cost_center_id: string
+          created_at?: string
+          equipe_id: string
+          id?: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          added_by_user_id?: string
+          ativo?: boolean
+          cost_center_id?: string
+          created_at?: string
+          equipe_id?: string
+          id?: string
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "module_equipe_membros_added_by_user_id_fkey"
+            columns: ["added_by_user_id"]
+            isOneToOne: false
+            referencedRelation: "usuarios"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "module_equipe_membros_cost_center_id_fkey"
+            columns: ["cost_center_id"]
+            isOneToOne: false
+            referencedRelation: "cost_center"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "module_equipe_membros_equipe_id_fkey"
+            columns: ["equipe_id"]
+            isOneToOne: false
+            referencedRelation: "module_equipes"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "module_equipe_membros_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "usuarios"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       module_equipes: {
         Row: {
           ativo: boolean
