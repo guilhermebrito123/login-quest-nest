@@ -625,6 +625,688 @@ export type Database = {
           },
         ]
       }
+      checklist_avaliacao_itens: {
+        Row: {
+          checklist_avaliacao_id: string
+          checklist_instancia_tarefa_id: string
+          created_at: string
+          feedback: string | null
+          id: string
+          nota: number | null
+          resultado_conformidade: string
+        }
+        Insert: {
+          checklist_avaliacao_id: string
+          checklist_instancia_tarefa_id: string
+          created_at?: string
+          feedback?: string | null
+          id?: string
+          nota?: number | null
+          resultado_conformidade: string
+        }
+        Update: {
+          checklist_avaliacao_id?: string
+          checklist_instancia_tarefa_id?: string
+          created_at?: string
+          feedback?: string | null
+          id?: string
+          nota?: number | null
+          resultado_conformidade?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "checklist_avaliacao_itens_checklist_avaliacao_id_fkey"
+            columns: ["checklist_avaliacao_id"]
+            isOneToOne: false
+            referencedRelation: "checklist_avaliacoes"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "checklist_avaliacao_itens_checklist_instancia_tarefa_id_fkey"
+            columns: ["checklist_instancia_tarefa_id"]
+            isOneToOne: false
+            referencedRelation: "checklist_instancia_tarefas"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      checklist_avaliacoes: {
+        Row: {
+          avaliado_em: string
+          avaliado_por_user_id: string
+          checklist_instancia_id: string
+          comentario_avaliacao: string | null
+          created_at: string
+          decisao: Database["public"]["Enums"]["checklist_review_decision"]
+          id: string
+          plano_acao_necessario: boolean
+        }
+        Insert: {
+          avaliado_em?: string
+          avaliado_por_user_id: string
+          checklist_instancia_id: string
+          comentario_avaliacao?: string | null
+          created_at?: string
+          decisao: Database["public"]["Enums"]["checklist_review_decision"]
+          id?: string
+          plano_acao_necessario?: boolean
+        }
+        Update: {
+          avaliado_em?: string
+          avaliado_por_user_id?: string
+          checklist_instancia_id?: string
+          comentario_avaliacao?: string | null
+          created_at?: string
+          decisao?: Database["public"]["Enums"]["checklist_review_decision"]
+          id?: string
+          plano_acao_necessario?: boolean
+        }
+        Relationships: [
+          {
+            foreignKeyName: "checklist_avaliacoes_avaliado_por_user_id_fkey"
+            columns: ["avaliado_por_user_id"]
+            isOneToOne: false
+            referencedRelation: "usuarios"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "checklist_avaliacoes_checklist_instancia_id_fkey"
+            columns: ["checklist_instancia_id"]
+            isOneToOne: true
+            referencedRelation: "checklist_instancias"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      checklist_feedbacks: {
+        Row: {
+          autor_user_id: string
+          checklist_avaliacao_item_id: string | null
+          checklist_instancia_tarefa_id: string
+          ciente: boolean
+          ciente_em: string | null
+          created_at: string
+          destinatario_user_id: string
+          id: string
+          mensagem: string
+        }
+        Insert: {
+          autor_user_id: string
+          checklist_avaliacao_item_id?: string | null
+          checklist_instancia_tarefa_id: string
+          ciente?: boolean
+          ciente_em?: string | null
+          created_at?: string
+          destinatario_user_id: string
+          id?: string
+          mensagem: string
+        }
+        Update: {
+          autor_user_id?: string
+          checklist_avaliacao_item_id?: string | null
+          checklist_instancia_tarefa_id?: string
+          ciente?: boolean
+          ciente_em?: string | null
+          created_at?: string
+          destinatario_user_id?: string
+          id?: string
+          mensagem?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "checklist_feedbacks_autor_user_id_fkey"
+            columns: ["autor_user_id"]
+            isOneToOne: false
+            referencedRelation: "usuarios"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "checklist_feedbacks_checklist_avaliacao_item_id_fkey"
+            columns: ["checklist_avaliacao_item_id"]
+            isOneToOne: false
+            referencedRelation: "checklist_avaliacao_itens"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "checklist_feedbacks_checklist_instancia_tarefa_id_fkey"
+            columns: ["checklist_instancia_tarefa_id"]
+            isOneToOne: false
+            referencedRelation: "checklist_instancia_tarefas"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "checklist_feedbacks_destinatario_user_id_fkey"
+            columns: ["destinatario_user_id"]
+            isOneToOne: false
+            referencedRelation: "usuarios"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      checklist_instancia_tarefas: {
+        Row: {
+          ajuda_snapshot: string | null
+          checklist_instancia_id: string
+          checklist_template_tarefa_id: string | null
+          config_json_snapshot: Json | null
+          created_at: string
+          descricao_snapshot: string | null
+          id: string
+          nota_max: number | null
+          nota_min: number | null
+          obrigatoria: boolean
+          ordem: number
+          permite_anexo: boolean
+          permite_comentario: boolean
+          tipo_resposta_snapshot: Database["public"]["Enums"]["checklist_task_response_type"]
+          titulo_snapshot: string
+        }
+        Insert: {
+          ajuda_snapshot?: string | null
+          checklist_instancia_id: string
+          checklist_template_tarefa_id?: string | null
+          config_json_snapshot?: Json | null
+          created_at?: string
+          descricao_snapshot?: string | null
+          id?: string
+          nota_max?: number | null
+          nota_min?: number | null
+          obrigatoria: boolean
+          ordem: number
+          permite_anexo: boolean
+          permite_comentario: boolean
+          tipo_resposta_snapshot: Database["public"]["Enums"]["checklist_task_response_type"]
+          titulo_snapshot: string
+        }
+        Update: {
+          ajuda_snapshot?: string | null
+          checklist_instancia_id?: string
+          checklist_template_tarefa_id?: string | null
+          config_json_snapshot?: Json | null
+          created_at?: string
+          descricao_snapshot?: string | null
+          id?: string
+          nota_max?: number | null
+          nota_min?: number | null
+          obrigatoria?: boolean
+          ordem?: number
+          permite_anexo?: boolean
+          permite_comentario?: boolean
+          tipo_resposta_snapshot?: Database["public"]["Enums"]["checklist_task_response_type"]
+          titulo_snapshot?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "checklist_instancia_tarefas_checklist_instancia_id_fkey"
+            columns: ["checklist_instancia_id"]
+            isOneToOne: false
+            referencedRelation: "checklist_instancias"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "checklist_instancia_tarefas_checklist_template_tarefa_id_fkey"
+            columns: ["checklist_template_tarefa_id"]
+            isOneToOne: false
+            referencedRelation: "checklist_template_tarefas"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      checklist_instancias: {
+        Row: {
+          agendado_para: string | null
+          checklist_template_id: string
+          cost_center_id: string
+          created_at: string
+          criado_por_user_id: string
+          descricao_snapshot: string | null
+          equipe_responsavel_id: string
+          exige_plano_acao: boolean
+          finalizado_em: string | null
+          finalizado_por_user_id: string | null
+          id: string
+          local_id: string
+          observacao_snapshot: string | null
+          prazo_em: string | null
+          status: Database["public"]["Enums"]["checklist_instance_status"]
+          template_versao: number
+          titulo_snapshot: string
+          updated_at: string
+        }
+        Insert: {
+          agendado_para?: string | null
+          checklist_template_id: string
+          cost_center_id: string
+          created_at?: string
+          criado_por_user_id: string
+          descricao_snapshot?: string | null
+          equipe_responsavel_id: string
+          exige_plano_acao?: boolean
+          finalizado_em?: string | null
+          finalizado_por_user_id?: string | null
+          id?: string
+          local_id: string
+          observacao_snapshot?: string | null
+          prazo_em?: string | null
+          status?: Database["public"]["Enums"]["checklist_instance_status"]
+          template_versao: number
+          titulo_snapshot: string
+          updated_at?: string
+        }
+        Update: {
+          agendado_para?: string | null
+          checklist_template_id?: string
+          cost_center_id?: string
+          created_at?: string
+          criado_por_user_id?: string
+          descricao_snapshot?: string | null
+          equipe_responsavel_id?: string
+          exige_plano_acao?: boolean
+          finalizado_em?: string | null
+          finalizado_por_user_id?: string | null
+          id?: string
+          local_id?: string
+          observacao_snapshot?: string | null
+          prazo_em?: string | null
+          status?: Database["public"]["Enums"]["checklist_instance_status"]
+          template_versao?: number
+          titulo_snapshot?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "checklist_instancias_checklist_template_id_fkey"
+            columns: ["checklist_template_id"]
+            isOneToOne: false
+            referencedRelation: "checklist_templates"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "checklist_instancias_cost_center_id_fkey"
+            columns: ["cost_center_id"]
+            isOneToOne: false
+            referencedRelation: "cost_center"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "checklist_instancias_criado_por_user_id_fkey"
+            columns: ["criado_por_user_id"]
+            isOneToOne: false
+            referencedRelation: "usuarios"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "checklist_instancias_equipe_responsavel_id_fkey"
+            columns: ["equipe_responsavel_id"]
+            isOneToOne: false
+            referencedRelation: "module_equipes"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "checklist_instancias_finalizado_por_user_id_fkey"
+            columns: ["finalizado_por_user_id"]
+            isOneToOne: false
+            referencedRelation: "usuarios"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "checklist_instancias_local_id_fkey"
+            columns: ["local_id"]
+            isOneToOne: false
+            referencedRelation: "cost_center_locais"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      checklist_tarefa_responsaveis: {
+        Row: {
+          assigned_by_user_id: string
+          assigned_user_id: string
+          ativo: boolean
+          atribuida_em: string
+          checklist_instancia_tarefa_id: string
+          concluida_em: string | null
+          id: string
+          pode_alterar_status: boolean
+          status_kanban: Database["public"]["Enums"]["checklist_task_kanban_status"]
+        }
+        Insert: {
+          assigned_by_user_id: string
+          assigned_user_id: string
+          ativo?: boolean
+          atribuida_em?: string
+          checklist_instancia_tarefa_id: string
+          concluida_em?: string | null
+          id?: string
+          pode_alterar_status?: boolean
+          status_kanban?: Database["public"]["Enums"]["checklist_task_kanban_status"]
+        }
+        Update: {
+          assigned_by_user_id?: string
+          assigned_user_id?: string
+          ativo?: boolean
+          atribuida_em?: string
+          checklist_instancia_tarefa_id?: string
+          concluida_em?: string | null
+          id?: string
+          pode_alterar_status?: boolean
+          status_kanban?: Database["public"]["Enums"]["checklist_task_kanban_status"]
+        }
+        Relationships: [
+          {
+            foreignKeyName: "checklist_tarefa_responsaveis_assigned_by_user_id_fkey"
+            columns: ["assigned_by_user_id"]
+            isOneToOne: false
+            referencedRelation: "usuarios"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "checklist_tarefa_responsaveis_assigned_user_id_fkey"
+            columns: ["assigned_user_id"]
+            isOneToOne: false
+            referencedRelation: "usuarios"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "checklist_tarefa_responsaveis_checklist_instancia_tarefa_i_fkey"
+            columns: ["checklist_instancia_tarefa_id"]
+            isOneToOne: false
+            referencedRelation: "checklist_instancia_tarefas"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      checklist_tarefa_respostas: {
+        Row: {
+          checklist_instancia_tarefa_id: string
+          comentario_resposta: string | null
+          created_at: string
+          id: string
+          respondido_por_user_id: string
+          resposta_boolean: boolean | null
+          resposta_data: string | null
+          resposta_datetime: string | null
+          resposta_json: Json | null
+          resposta_numero: number | null
+          resposta_texto: string | null
+          tarefa_responsavel_id: string
+          updated_at: string
+        }
+        Insert: {
+          checklist_instancia_tarefa_id: string
+          comentario_resposta?: string | null
+          created_at?: string
+          id?: string
+          respondido_por_user_id: string
+          resposta_boolean?: boolean | null
+          resposta_data?: string | null
+          resposta_datetime?: string | null
+          resposta_json?: Json | null
+          resposta_numero?: number | null
+          resposta_texto?: string | null
+          tarefa_responsavel_id: string
+          updated_at?: string
+        }
+        Update: {
+          checklist_instancia_tarefa_id?: string
+          comentario_resposta?: string | null
+          created_at?: string
+          id?: string
+          respondido_por_user_id?: string
+          resposta_boolean?: boolean | null
+          resposta_data?: string | null
+          resposta_datetime?: string | null
+          resposta_json?: Json | null
+          resposta_numero?: number | null
+          resposta_texto?: string | null
+          tarefa_responsavel_id?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "checklist_tarefa_respostas_checklist_instancia_tarefa_id_fkey"
+            columns: ["checklist_instancia_tarefa_id"]
+            isOneToOne: false
+            referencedRelation: "checklist_instancia_tarefas"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "checklist_tarefa_respostas_respondido_por_user_id_fkey"
+            columns: ["respondido_por_user_id"]
+            isOneToOne: false
+            referencedRelation: "usuarios"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "checklist_tarefa_respostas_tarefa_responsavel_id_fkey"
+            columns: ["tarefa_responsavel_id"]
+            isOneToOne: false
+            referencedRelation: "checklist_tarefa_responsaveis"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      checklist_tarefa_status_historico: {
+        Row: {
+          assigned_user_id: string
+          changed_by_user_id: string
+          checklist_instancia_tarefa_id: string
+          created_at: string
+          id: string
+          motivo: string | null
+          status_anterior:
+            | Database["public"]["Enums"]["checklist_task_kanban_status"]
+            | null
+          status_novo: Database["public"]["Enums"]["checklist_task_kanban_status"]
+        }
+        Insert: {
+          assigned_user_id: string
+          changed_by_user_id: string
+          checklist_instancia_tarefa_id: string
+          created_at?: string
+          id?: string
+          motivo?: string | null
+          status_anterior?:
+            | Database["public"]["Enums"]["checklist_task_kanban_status"]
+            | null
+          status_novo: Database["public"]["Enums"]["checklist_task_kanban_status"]
+        }
+        Update: {
+          assigned_user_id?: string
+          changed_by_user_id?: string
+          checklist_instancia_tarefa_id?: string
+          created_at?: string
+          id?: string
+          motivo?: string | null
+          status_anterior?:
+            | Database["public"]["Enums"]["checklist_task_kanban_status"]
+            | null
+          status_novo?: Database["public"]["Enums"]["checklist_task_kanban_status"]
+        }
+        Relationships: [
+          {
+            foreignKeyName: "checklist_tarefa_status_histo_checklist_instancia_tarefa_i_fkey"
+            columns: ["checklist_instancia_tarefa_id"]
+            isOneToOne: false
+            referencedRelation: "checklist_instancia_tarefas"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "checklist_tarefa_status_historico_assigned_user_id_fkey"
+            columns: ["assigned_user_id"]
+            isOneToOne: false
+            referencedRelation: "usuarios"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "checklist_tarefa_status_historico_changed_by_user_id_fkey"
+            columns: ["changed_by_user_id"]
+            isOneToOne: false
+            referencedRelation: "usuarios"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      checklist_template_tarefas: {
+        Row: {
+          ajuda: string | null
+          checklist_template_id: string
+          config_json: Json | null
+          created_at: string
+          descricao: string | null
+          id: string
+          nota_max: number | null
+          nota_min: number | null
+          obrigatoria: boolean
+          ordem: number
+          permite_anexo: boolean
+          permite_comentario: boolean
+          tipo_resposta: Database["public"]["Enums"]["checklist_task_response_type"]
+          titulo: string
+          updated_at: string
+        }
+        Insert: {
+          ajuda?: string | null
+          checklist_template_id: string
+          config_json?: Json | null
+          created_at?: string
+          descricao?: string | null
+          id?: string
+          nota_max?: number | null
+          nota_min?: number | null
+          obrigatoria?: boolean
+          ordem: number
+          permite_anexo?: boolean
+          permite_comentario?: boolean
+          tipo_resposta: Database["public"]["Enums"]["checklist_task_response_type"]
+          titulo: string
+          updated_at?: string
+        }
+        Update: {
+          ajuda?: string | null
+          checklist_template_id?: string
+          config_json?: Json | null
+          created_at?: string
+          descricao?: string | null
+          id?: string
+          nota_max?: number | null
+          nota_min?: number | null
+          obrigatoria?: boolean
+          ordem?: number
+          permite_anexo?: boolean
+          permite_comentario?: boolean
+          tipo_resposta?: Database["public"]["Enums"]["checklist_task_response_type"]
+          titulo?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "checklist_template_tarefas_checklist_template_id_fkey"
+            columns: ["checklist_template_id"]
+            isOneToOne: false
+            referencedRelation: "checklist_templates"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      checklist_templates: {
+        Row: {
+          ativo: boolean
+          cost_center_id: string
+          created_at: string
+          criado_por_user_id: string
+          descricao: string | null
+          encerra_em: string | null
+          equipe_responsavel_id: string
+          exige_plano_acao: boolean
+          id: string
+          inicia_em: string | null
+          local_id: string
+          observacao: string | null
+          prazo_padrao_horas: number | null
+          proxima_geracao_em: string | null
+          recorrencia: Database["public"]["Enums"]["module_recurrence_type"]
+          recorrencia_intervalo: number
+          status: Database["public"]["Enums"]["checklist_template_status"]
+          titulo: string
+          updated_at: string
+          versao: number
+        }
+        Insert: {
+          ativo?: boolean
+          cost_center_id: string
+          created_at?: string
+          criado_por_user_id: string
+          descricao?: string | null
+          encerra_em?: string | null
+          equipe_responsavel_id: string
+          exige_plano_acao?: boolean
+          id?: string
+          inicia_em?: string | null
+          local_id: string
+          observacao?: string | null
+          prazo_padrao_horas?: number | null
+          proxima_geracao_em?: string | null
+          recorrencia?: Database["public"]["Enums"]["module_recurrence_type"]
+          recorrencia_intervalo?: number
+          status?: Database["public"]["Enums"]["checklist_template_status"]
+          titulo: string
+          updated_at?: string
+          versao?: number
+        }
+        Update: {
+          ativo?: boolean
+          cost_center_id?: string
+          created_at?: string
+          criado_por_user_id?: string
+          descricao?: string | null
+          encerra_em?: string | null
+          equipe_responsavel_id?: string
+          exige_plano_acao?: boolean
+          id?: string
+          inicia_em?: string | null
+          local_id?: string
+          observacao?: string | null
+          prazo_padrao_horas?: number | null
+          proxima_geracao_em?: string | null
+          recorrencia?: Database["public"]["Enums"]["module_recurrence_type"]
+          recorrencia_intervalo?: number
+          status?: Database["public"]["Enums"]["checklist_template_status"]
+          titulo?: string
+          updated_at?: string
+          versao?: number
+        }
+        Relationships: [
+          {
+            foreignKeyName: "checklist_templates_cost_center_id_fkey"
+            columns: ["cost_center_id"]
+            isOneToOne: false
+            referencedRelation: "cost_center"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "checklist_templates_criado_por_user_id_fkey"
+            columns: ["criado_por_user_id"]
+            isOneToOne: false
+            referencedRelation: "usuarios"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "checklist_templates_equipe_responsavel_id_fkey"
+            columns: ["equipe_responsavel_id"]
+            isOneToOne: false
+            referencedRelation: "module_equipes"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "checklist_templates_local_id_fkey"
+            columns: ["local_id"]
+            isOneToOne: false
+            referencedRelation: "cost_center_locais"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       clientes: {
         Row: {
           cnpj: string
@@ -2573,6 +3255,168 @@ export type Database = {
           },
         ]
       }
+      module_audit_logs: {
+        Row: {
+          action_name: string
+          actor_user_id: string | null
+          created_at: string
+          entity_id: string
+          entity_name: string
+          id: string
+          metadata: Json | null
+          new_data: Json | null
+          old_data: Json | null
+        }
+        Insert: {
+          action_name: string
+          actor_user_id?: string | null
+          created_at?: string
+          entity_id: string
+          entity_name: string
+          id?: string
+          metadata?: Json | null
+          new_data?: Json | null
+          old_data?: Json | null
+        }
+        Update: {
+          action_name?: string
+          actor_user_id?: string | null
+          created_at?: string
+          entity_id?: string
+          entity_name?: string
+          id?: string
+          metadata?: Json | null
+          new_data?: Json | null
+          old_data?: Json | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "module_audit_logs_actor_user_id_fkey"
+            columns: ["actor_user_id"]
+            isOneToOne: false
+            referencedRelation: "usuarios"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      module_colaborador_cargos: {
+        Row: {
+          area_nome: string | null
+          ativo: boolean
+          cargo_nome: string
+          created_at: string
+          descricao: string | null
+          id: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          area_nome?: string | null
+          ativo?: boolean
+          cargo_nome: string
+          created_at?: string
+          descricao?: string | null
+          id?: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          area_nome?: string | null
+          ativo?: boolean
+          cargo_nome?: string
+          created_at?: string
+          descricao?: string | null
+          id?: string
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "module_colaborador_cargos_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: true
+            referencedRelation: "usuarios"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      module_equipe_cost_centers: {
+        Row: {
+          cost_center_id: string
+          created_at: string
+          equipe_id: string
+          id: string
+        }
+        Insert: {
+          cost_center_id: string
+          created_at?: string
+          equipe_id: string
+          id?: string
+        }
+        Update: {
+          cost_center_id?: string
+          created_at?: string
+          equipe_id?: string
+          id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "module_equipe_cost_centers_cost_center_id_fkey"
+            columns: ["cost_center_id"]
+            isOneToOne: false
+            referencedRelation: "cost_center"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "module_equipe_cost_centers_equipe_id_fkey"
+            columns: ["equipe_id"]
+            isOneToOne: false
+            referencedRelation: "module_equipes"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      module_equipes: {
+        Row: {
+          ativo: boolean
+          created_at: string
+          criada_por_user_id: string
+          descricao: string | null
+          escopo: string
+          id: string
+          nome: string
+          updated_at: string
+        }
+        Insert: {
+          ativo?: boolean
+          created_at?: string
+          criada_por_user_id: string
+          descricao?: string | null
+          escopo: string
+          id?: string
+          nome: string
+          updated_at?: string
+        }
+        Update: {
+          ativo?: boolean
+          created_at?: string
+          criada_por_user_id?: string
+          descricao?: string | null
+          escopo?: string
+          id?: string
+          nome?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "module_equipes_criada_por_user_id_fkey"
+            columns: ["criada_por_user_id"]
+            isOneToOne: false
+            referencedRelation: "usuarios"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       notificacoes: {
         Row: {
           created_at: string
@@ -2874,6 +3718,196 @@ export type Database = {
           updated_at?: string
         }
         Relationships: []
+      }
+      plano_acao_atualizacoes: {
+        Row: {
+          autor_user_id: string
+          comentario: string | null
+          created_at: string
+          id: string
+          plano_acao_id: string
+          progresso_percentual: number | null
+          status_anterior:
+            | Database["public"]["Enums"]["action_plan_status"]
+            | null
+          status_novo: Database["public"]["Enums"]["action_plan_status"] | null
+        }
+        Insert: {
+          autor_user_id: string
+          comentario?: string | null
+          created_at?: string
+          id?: string
+          plano_acao_id: string
+          progresso_percentual?: number | null
+          status_anterior?:
+            | Database["public"]["Enums"]["action_plan_status"]
+            | null
+          status_novo?: Database["public"]["Enums"]["action_plan_status"] | null
+        }
+        Update: {
+          autor_user_id?: string
+          comentario?: string | null
+          created_at?: string
+          id?: string
+          plano_acao_id?: string
+          progresso_percentual?: number | null
+          status_anterior?:
+            | Database["public"]["Enums"]["action_plan_status"]
+            | null
+          status_novo?: Database["public"]["Enums"]["action_plan_status"] | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "plano_acao_atualizacoes_autor_user_id_fkey"
+            columns: ["autor_user_id"]
+            isOneToOne: false
+            referencedRelation: "usuarios"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "plano_acao_atualizacoes_plano_acao_id_fkey"
+            columns: ["plano_acao_id"]
+            isOneToOne: false
+            referencedRelation: "planos_acao"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      plano_acao_responsaveis: {
+        Row: {
+          assigned_by_user_id: string
+          assigned_user_id: string
+          ativo: boolean
+          atribuido_em: string
+          id: string
+          plano_acao_id: string
+        }
+        Insert: {
+          assigned_by_user_id: string
+          assigned_user_id: string
+          ativo?: boolean
+          atribuido_em?: string
+          id?: string
+          plano_acao_id: string
+        }
+        Update: {
+          assigned_by_user_id?: string
+          assigned_user_id?: string
+          ativo?: boolean
+          atribuido_em?: string
+          id?: string
+          plano_acao_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "plano_acao_responsaveis_assigned_by_user_id_fkey"
+            columns: ["assigned_by_user_id"]
+            isOneToOne: false
+            referencedRelation: "usuarios"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "plano_acao_responsaveis_assigned_user_id_fkey"
+            columns: ["assigned_user_id"]
+            isOneToOne: false
+            referencedRelation: "usuarios"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "plano_acao_responsaveis_plano_acao_id_fkey"
+            columns: ["plano_acao_id"]
+            isOneToOne: false
+            referencedRelation: "planos_acao"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      planos_acao: {
+        Row: {
+          acao_proposta: string
+          checklist_avaliacao_id: string
+          checklist_instancia_id: string
+          classe_nao_conformidade: Database["public"]["Enums"]["action_plan_nonconformity_class"]
+          created_at: string
+          criado_por_user_id: string
+          equipe_responsavel_id: string
+          finalizado_em: string | null
+          finalizado_por_user_id: string | null
+          id: string
+          nao_conformidades_resumo: string
+          prazo_em: string
+          status: Database["public"]["Enums"]["action_plan_status"]
+          updated_at: string
+        }
+        Insert: {
+          acao_proposta: string
+          checklist_avaliacao_id: string
+          checklist_instancia_id: string
+          classe_nao_conformidade: Database["public"]["Enums"]["action_plan_nonconformity_class"]
+          created_at?: string
+          criado_por_user_id: string
+          equipe_responsavel_id: string
+          finalizado_em?: string | null
+          finalizado_por_user_id?: string | null
+          id?: string
+          nao_conformidades_resumo: string
+          prazo_em: string
+          status?: Database["public"]["Enums"]["action_plan_status"]
+          updated_at?: string
+        }
+        Update: {
+          acao_proposta?: string
+          checklist_avaliacao_id?: string
+          checklist_instancia_id?: string
+          classe_nao_conformidade?: Database["public"]["Enums"]["action_plan_nonconformity_class"]
+          created_at?: string
+          criado_por_user_id?: string
+          equipe_responsavel_id?: string
+          finalizado_em?: string | null
+          finalizado_por_user_id?: string | null
+          id?: string
+          nao_conformidades_resumo?: string
+          prazo_em?: string
+          status?: Database["public"]["Enums"]["action_plan_status"]
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "planos_acao_checklist_avaliacao_id_fkey"
+            columns: ["checklist_avaliacao_id"]
+            isOneToOne: false
+            referencedRelation: "checklist_avaliacoes"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "planos_acao_checklist_instancia_id_fkey"
+            columns: ["checklist_instancia_id"]
+            isOneToOne: true
+            referencedRelation: "checklist_instancias"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "planos_acao_criado_por_user_id_fkey"
+            columns: ["criado_por_user_id"]
+            isOneToOne: false
+            referencedRelation: "usuarios"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "planos_acao_equipe_responsavel_id_fkey"
+            columns: ["equipe_responsavel_id"]
+            isOneToOne: false
+            referencedRelation: "module_equipes"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "planos_acao_finalizado_por_user_id_fkey"
+            columns: ["finalizado_por_user_id"]
+            isOneToOne: false
+            referencedRelation: "usuarios"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       posto_dias_vagos: {
         Row: {
@@ -3672,6 +4706,14 @@ export type Database = {
         Returns: undefined
       }
       arquivar_dias_trabalho_em_presencas: { Args: never; Returns: undefined }
+      calc_next_recurrence: {
+        Args: {
+          _from: string
+          _intervalo: number
+          _recurrence: Database["public"]["Enums"]["module_recurrence_type"]
+        }
+        Returns: string
+      }
       calcular_dias_escala: {
         Args: {
           p_data_fim: string
@@ -3683,6 +4725,26 @@ export type Database = {
         Returns: {
           data_trabalho: string
         }[]
+      }
+      can_assign_action_plan_user: {
+        Args: { _assigned_user_id: string; _cost_center_id: string }
+        Returns: boolean
+      }
+      can_assign_checklist_task: {
+        Args: { _assigned_user_id: string; _cost_center_id: string }
+        Returns: boolean
+      }
+      can_create_checklist_template: {
+        Args: { _cost_center_id: string; _user_id: string }
+        Returns: boolean
+      }
+      can_review_checklist: {
+        Args: { _cost_center_id: string; _user_id: string }
+        Returns: boolean
+      }
+      can_update_action_plan_status: {
+        Args: { _cost_center_id: string; _user_id: string }
+        Returns: boolean
       }
       cancelar_execucao_checklist: {
         Args: { execucao_id: string }
@@ -3827,6 +4889,7 @@ export type Database = {
         Returns: undefined
       }
       fn_diff_jsonb: { Args: { new_row: Json; old_row: Json }; Returns: Json }
+      generate_due_checklist_instances: { Args: never; Returns: number }
       gerar_dias_trabalho_proximo_mes: { Args: never; Returns: undefined }
       get_visible_internal_users_public: {
         Args: never
@@ -3864,6 +4927,10 @@ export type Database = {
       is_admin_user: { Args: never; Returns: boolean }
       is_colaborador_user: { Args: { p_user_id: string }; Returns: boolean }
       is_internal_user: { Args: never; Returns: boolean }
+      is_task_responsible: {
+        Args: { _instancia_tarefa_id: string; _user_id: string }
+        Returns: boolean
+      }
       justificar_falta_convenia: {
         Args: {
           p_atestado_path: string
@@ -3889,6 +4956,20 @@ export type Database = {
       limpar_posto_dias_vagos_antigos: { Args: never; Returns: undefined }
       limpar_presencas_antigas: { Args: never; Returns: undefined }
       limpar_tokens_expirados: { Args: never; Returns: undefined }
+      module_internal_in_cc: {
+        Args: { _cost_center_id: string; _user_id: string }
+        Returns: boolean
+      }
+      module_is_admin: { Args: { _user_id: string }; Returns: boolean }
+      module_is_colaborador_in_cc: {
+        Args: { _cost_center_id: string; _user_id: string }
+        Returns: boolean
+      }
+      module_supervisor_has_cost_center: {
+        Args: { _cost_center_id: string; _user_id: string }
+        Returns: boolean
+      }
+      module_user_allowed: { Args: { _user_id: string }; Returns: boolean }
       normalizar_cpf: { Args: { input: string }; Returns: string }
       obter_usuarios_envolvidos_diaria: {
         Args: {
@@ -3920,6 +5001,60 @@ export type Database = {
         | { Args: { p_falta_id: string; p_user_id: string }; Returns: string }
     }
     Enums: {
+      action_plan_nonconformity_class:
+        | "organizacao"
+        | "limpeza"
+        | "conservacao"
+        | "manutencao_predial"
+        | "manutencao_equipamentos"
+        | "infraestrutura"
+        | "instalacoes_eletricas"
+        | "instalacoes_hidraulicas"
+        | "ti_sistemas"
+        | "ti_hardware"
+        | "ti_rede"
+        | "seguranca_trabalho"
+        | "seguranca_patrimonial"
+        | "epi"
+        | "epc"
+        | "sinalizacao"
+        | "acessibilidade"
+        | "ergonomia"
+        | "saude_ocupacional"
+        | "treinamentos"
+        | "competencia_tecnica"
+        | "documentacao"
+        | "procedimentos"
+        | "qualidade"
+        | "processos_operacionais"
+        | "produtividade"
+        | "comunicacao"
+        | "lideranca"
+        | "dimensionamento_equipe"
+        | "comportamento_conduta"
+        | "disciplina_operacional"
+        | "atendimento_cliente"
+        | "fornecedores"
+        | "materiais_insumos"
+        | "estoque_armazenamento"
+        | "transporte_logistica"
+        | "meio_ambiente"
+        | "residuos_descartes"
+        | "conformidade_legal"
+        | "compliance"
+        | "auditoria_controles"
+        | "financeiro_orcamento"
+        | "planejamento"
+        | "continuidade_operacional"
+        | "risco"
+        | "incidente_ocorrencia"
+        | "outros"
+      action_plan_status:
+        | "open"
+        | "in_progress"
+        | "waiting_validation"
+        | "done"
+        | "cancelled"
       acumulo_funcao_options: "Sim" | "Não" | "Especial"
       chamado_prioridade: "baixa" | "media" | "alta" | "critica"
       chamado_status:
@@ -3929,6 +5064,40 @@ export type Database = {
         | "resolvido"
         | "fechado"
         | "cancelado"
+      checklist_instance_status:
+        | "scheduled"
+        | "open"
+        | "in_progress"
+        | "submitted"
+        | "under_review"
+        | "reviewed"
+        | "awaiting_action_plan"
+        | "closed"
+        | "cancelled"
+      checklist_review_decision:
+        | "approved"
+        | "rejected"
+        | "needs_action_plan"
+        | "needs_adjustment"
+      checklist_task_kanban_status:
+        | "pending"
+        | "doing"
+        | "blocked"
+        | "ignored"
+        | "done"
+      checklist_task_response_type:
+        | "conformity_radio"
+        | "text"
+        | "textarea"
+        | "number"
+        | "score"
+        | "boolean"
+        | "single_select"
+        | "multi_select"
+        | "date"
+        | "datetime"
+        | "time"
+      checklist_template_status: "draft" | "published" | "archived"
       estado_civil:
         | "Solteiro"
         | "Casado"
@@ -3945,6 +5114,15 @@ export type Database = {
         | "assistente_operacoes"
         | "assistente_financeiro"
         | "gestor_financeiro"
+      module_recurrence_type:
+        | "one_time"
+        | "daily"
+        | "weekly"
+        | "biweekly"
+        | "monthly"
+        | "quarterly"
+        | "semiannual"
+        | "annual"
       motivo_cancelamento_hora_extra:
         | "cobertura_nao_necessaria"
         | "lancamento_indevido"
@@ -4176,6 +5354,62 @@ export type CompositeTypes<
 export const Constants = {
   public: {
     Enums: {
+      action_plan_nonconformity_class: [
+        "organizacao",
+        "limpeza",
+        "conservacao",
+        "manutencao_predial",
+        "manutencao_equipamentos",
+        "infraestrutura",
+        "instalacoes_eletricas",
+        "instalacoes_hidraulicas",
+        "ti_sistemas",
+        "ti_hardware",
+        "ti_rede",
+        "seguranca_trabalho",
+        "seguranca_patrimonial",
+        "epi",
+        "epc",
+        "sinalizacao",
+        "acessibilidade",
+        "ergonomia",
+        "saude_ocupacional",
+        "treinamentos",
+        "competencia_tecnica",
+        "documentacao",
+        "procedimentos",
+        "qualidade",
+        "processos_operacionais",
+        "produtividade",
+        "comunicacao",
+        "lideranca",
+        "dimensionamento_equipe",
+        "comportamento_conduta",
+        "disciplina_operacional",
+        "atendimento_cliente",
+        "fornecedores",
+        "materiais_insumos",
+        "estoque_armazenamento",
+        "transporte_logistica",
+        "meio_ambiente",
+        "residuos_descartes",
+        "conformidade_legal",
+        "compliance",
+        "auditoria_controles",
+        "financeiro_orcamento",
+        "planejamento",
+        "continuidade_operacional",
+        "risco",
+        "incidente_ocorrencia",
+        "outros",
+      ],
+      action_plan_status: [
+        "open",
+        "in_progress",
+        "waiting_validation",
+        "done",
+        "cancelled",
+      ],
       acumulo_funcao_options: ["Sim", "Não", "Especial"],
       chamado_prioridade: ["baixa", "media", "alta", "critica"],
       chamado_status: [
@@ -4186,6 +5420,44 @@ export const Constants = {
         "fechado",
         "cancelado",
       ],
+      checklist_instance_status: [
+        "scheduled",
+        "open",
+        "in_progress",
+        "submitted",
+        "under_review",
+        "reviewed",
+        "awaiting_action_plan",
+        "closed",
+        "cancelled",
+      ],
+      checklist_review_decision: [
+        "approved",
+        "rejected",
+        "needs_action_plan",
+        "needs_adjustment",
+      ],
+      checklist_task_kanban_status: [
+        "pending",
+        "doing",
+        "blocked",
+        "ignored",
+        "done",
+      ],
+      checklist_task_response_type: [
+        "conformity_radio",
+        "text",
+        "textarea",
+        "number",
+        "score",
+        "boolean",
+        "single_select",
+        "multi_select",
+        "date",
+        "datetime",
+        "time",
+      ],
+      checklist_template_status: ["draft", "published", "archived"],
       estado_civil: [
         "Solteiro",
         "Casado",
@@ -4203,6 +5475,16 @@ export const Constants = {
         "assistente_operacoes",
         "assistente_financeiro",
         "gestor_financeiro",
+      ],
+      module_recurrence_type: [
+        "one_time",
+        "daily",
+        "weekly",
+        "biweekly",
+        "monthly",
+        "quarterly",
+        "semiannual",
+        "annual",
       ],
       motivo_cancelamento_hora_extra: [
         "cobertura_nao_necessaria",
