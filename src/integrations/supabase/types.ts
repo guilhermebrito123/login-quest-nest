@@ -5085,6 +5085,7 @@ export type Database = {
         | "blocked"
         | "ignored"
         | "done"
+        | "closed"
       checklist_task_response_type:
         | "conformity_radio"
         | "text"
@@ -5443,6 +5444,7 @@ export const Constants = {
         "blocked",
         "ignored",
         "done",
+        "closed",
       ],
       checklist_task_response_type: [
         "conformity_radio",
