@@ -4995,6 +4995,10 @@ export type Database = {
         Returns: boolean
       }
       internal_user_is_admin: { Args: { p_user_id: string }; Returns: boolean }
+      is_action_plan_responsavel: {
+        Args: { _plano_id: string; _user_id: string }
+        Returns: boolean
+      }
       is_admin: { Args: { _user_id: string }; Returns: boolean }
       is_admin_user: { Args: never; Returns: boolean }
       is_colaborador_user: { Args: { p_user_id: string }; Returns: boolean }
