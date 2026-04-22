@@ -1,43 +1,42 @@
 
 
-# Criar funções de apoio para o módulo "Plano de ação"
+## Corrigir erros de criação de instância de checklist
 
-## Objetivo
-Disponibilizar duas funções no banco para que o frontend pare de listar "todos os perfis internos" como elegíveis e passe a respeitar as mesmas regras do RLS de `plano_acao_responsaveis`.
+Dois bugs estão impedindo a criação de instâncias. Ambos vivem nos triggers de banco que atualizei recentemente.
 
-## O que será criado
+### Bug 1 — Coluna inexistente `ci.template_id`
 
-### 1. `get_current_user_can_manage_plan(plano_id)` → boolean
-Retorna `true` se o usuário logado pode atribuir/remover responsáveis de um plano específico (admin OU supervisor com o CC do plano vinculado).
-**Uso no frontend:** esconder o botão "Atribuir" quando retorna `false`.
+Os triggers referenciam `ci.template_id`, mas o nome real da coluna em `checklist_instancias` é `checklist_template_id`. Toda inserção de instância dispara o snapshot e quebra com `column ci.template_id does not exist`.
 
-### 2. `get_action_plan_assignable_users(plano_id)` → tabela
-Retorna a lista de usuários elegíveis a serem atribuídos como responsáveis daquele plano. Internamente:
+**Funções a corrigir** (substituir `ci.template_id` → `ci.checklist_template_id`):
+- `snapshot_template_tarefas_on_instancia`
+- `auto_assign_checklist_tarefa_to_equipe`
+- `sync_template_equipe_to_checklist_assignments`
+- `sync_equipe_membros_to_checklist_assignments`
 
-- Resolve o CC via `planos_acao → checklist_instancias.cost_center_id`.
-- Une duas listas:
-  - **Colaboradores**: `usuarios.role='colaborador'` + `colaborador_profiles.ativo=true` + `cost_center_id` igual ao do plano → tipo `'colaborador'`.
-  - **Perfis internos**: `internal_profiles.nivel_acesso <> 'cliente_view'`, sendo admin (sempre) OU vinculado ao CC via `internal_profile_cost_centers` → tipo `'interno'`.
-- Devolve `(user_id, nome, email, tipo, nivel_acesso)` ordenado por tipo + nome.
-- Só retorna dados se o chamador puder gerenciar o plano (chama a helper acima).
+### Bug 2 — `assigned_by_user_id` NULL apesar da validação
 
-Ambas: `SECURITY DEFINER`, `search_path = public`, `GRANT EXECUTE` para `authenticated`.
+O erro `null value in column "assigned_by_user_id"` continua aparecendo mesmo com a checagem de `auth.uid()`. Causas possíveis:
 
-## Como o frontend vai consumir
+1. Outro trigger/função insere em `checklist_tarefa_responsaveis` sem preencher o campo.
+2. O `auth.uid()` está vazio em contexto de `SECURITY DEFINER` chamado em cascata, e o erro do `IF` não chega a disparar porque o `INSERT` falha antes (improvável, mas possível se `_actor` for atribuído de outra fonte).
 
-```ts
-// 1. Saber se mostra o botão "Atribuir"
-const { data: canManage } = await supabase
-  .rpc('get_current_user_can_manage_plan', { _plano_acao_id: planoId });
+**Investigação + correção:**
+- Auditar todas as funções/triggers que escrevem em `checklist_tarefa_responsaveis` e garantir que sempre preencham `assigned_by_user_id`.
+- Reforçar `auto_assign_checklist_tarefa_to_equipe` para também usar `criado_por_user_id` da instância como fallback derivado (não anônimo): se `auth.uid()` vier nulo em algum cenário válido, usar o `criado_por_user_id` da própria instância (que é NOT NULL e já representa o "ator humano" responsável pela criação).
 
-// 2. Carregar opções do dropdown
-const { data: assignables } = await supabase
-  .rpc('get_action_plan_assignable_users', { _plano_acao_id: planoId });
-// assignables: [{ user_id, nome, email, tipo: 'colaborador'|'interno', nivel_acesso }]
-```
+> Observação: na rodada anterior você optou por **bloquear** quando `auth.uid()` é nulo. Mantenho esse bloqueio, mas como o trigger roda em cascata logo após o INSERT da instância (mesma transação, mesmo usuário autenticado), na prática `auth.uid()` deve estar disponível. Se não estiver, o erro será claro (mensagem em PT) e não o genérico de NOT NULL.
 
-## Observações
-- Nenhuma alteração nas políticas RLS existentes — apenas funções novas.
-- Nenhum dado é alterado, apenas leitura.
-- Se algum dia uma nova regra de elegibilidade entrar (ex.: bloquear gestores), basta editar a função; o frontend não precisa mudar.
+### Arquivos / migrações
+
+Uma única migração SQL recriando as 4 funções com:
+- `ci.checklist_template_id` no lugar de `ci.template_id`.
+- Validação explícita de `auth.uid()` mantida com mensagem clara.
+- Garantia de que toda linha inserida em `checklist_tarefa_responsaveis` tenha `assigned_by_user_id` preenchido.
+
+### Como você vai validar
+
+1. Tentar criar uma instância pela tela → deve criar sem erro.
+2. As tarefas do template aparecem em `checklist_instancia_tarefas`.
+3. Cada tarefa tem responsáveis em `checklist_tarefa_responsaveis` (um por membro ativo da equipe do template), com `assigned_by_user_id` preenchido com o seu user id.
 
