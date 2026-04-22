@@ -1,60 +1,43 @@
 
 
-## Corrigir recursão infinita em `planos_acao` RLS
+# Criar funções de apoio para o módulo "Plano de ação"
 
-### Diagnóstico
-O erro `infinite recursion detected in policy for relation "planos_acao"` acontece porque:
+## Objetivo
+Disponibilizar duas funções no banco para que o frontend pare de listar "todos os perfis internos" como elegíveis e passe a respeitar as mesmas regras do RLS de `plano_acao_responsaveis`.
 
-- `planos_acao.SELECT` → subquery em `plano_acao_responsaveis`
-- `plano_acao_responsaveis.SELECT` → subquery em `planos_acao`
+## O que será criado
 
-Cada lado precisa avaliar a policy do outro, gerando loop. O INSERT do plano até é gravado, mas o Supabase tenta retornar a linha criada (`SELECT`), e aí a recursão estoura com 500. **É bug de backend (RLS), não de frontend.**
+### 1. `get_current_user_can_manage_plan(plano_id)` → boolean
+Retorna `true` se o usuário logado pode atribuir/remover responsáveis de um plano específico (admin OU supervisor com o CC do plano vinculado).
+**Uso no frontend:** esconder o botão "Atribuir" quando retorna `false`.
 
-### Solução
-Quebrar o ciclo movendo a lógica de "usuário é responsável pelo plano" para um **helper SECURITY DEFINER**, padrão já usado no projeto (igual `module_supervisor_has_cost_center`, `can_review_checklist` etc.).
+### 2. `get_action_plan_assignable_users(plano_id)` → tabela
+Retorna a lista de usuários elegíveis a serem atribuídos como responsáveis daquele plano. Internamente:
 
-### Migration
+- Resolve o CC via `planos_acao → checklist_instancias.cost_center_id`.
+- Une duas listas:
+  - **Colaboradores**: `usuarios.role='colaborador'` + `colaborador_profiles.ativo=true` + `cost_center_id` igual ao do plano → tipo `'colaborador'`.
+  - **Perfis internos**: `internal_profiles.nivel_acesso <> 'cliente_view'`, sendo admin (sempre) OU vinculado ao CC via `internal_profile_cost_centers` → tipo `'interno'`.
+- Devolve `(user_id, nome, email, tipo, nivel_acesso)` ordenado por tipo + nome.
+- Só retorna dados se o chamador puder gerenciar o plano (chama a helper acima).
 
-1. **Criar função helper**
-   ```sql
-   CREATE OR REPLACE FUNCTION public.is_action_plan_responsavel(_user_id uuid, _plano_id uuid)
-   RETURNS boolean
-   LANGUAGE sql
-   STABLE
-   SECURITY DEFINER
-   SET search_path = public
-   AS $$
-     SELECT EXISTS (
-       SELECT 1 FROM plano_acao_responsaveis
-       WHERE plano_acao_id = _plano_id AND assigned_user_id = _user_id
-     )
-   $$;
-   ```
+Ambas: `SECURITY DEFINER`, `search_path = public`, `GRANT EXECUTE` para `authenticated`.
 
-2. **Reescrever `plano_select`** removendo a subquery direta em `plano_acao_responsaveis`:
-   ```sql
-   DROP POLICY plano_select ON planos_acao;
-   CREATE POLICY plano_select ON planos_acao FOR SELECT
-   USING (
-     module_user_allowed(auth.uid()) AND EXISTS (
-       SELECT 1 FROM checklist_instancias i
-       WHERE i.id = planos_acao.checklist_instancia_id
-         AND (
-           module_is_admin(auth.uid())
-           OR module_supervisor_has_cost_center(auth.uid(), i.cost_center_id)
-           OR is_action_plan_responsavel(auth.uid(), planos_acao.id)
-         )
-     )
-   );
-   ```
+## Como o frontend vai consumir
 
-A função `SECURITY DEFINER` bypassa RLS na consulta interna a `plano_acao_responsaveis`, eliminando o ciclo. As policies de `plano_acao_responsaveis` permanecem inalteradas.
+```ts
+// 1. Saber se mostra o botão "Atribuir"
+const { data: canManage } = await supabase
+  .rpc('get_current_user_can_manage_plan', { _plano_acao_id: planoId });
 
-### Validação pós-deploy
-- Tentar criar plano de ação no fluxo da imagem → deve retornar 200/201.
-- `SELECT * FROM planos_acao` como supervisor → sem 500.
-- Supervisor responsável de plano fora do seu cost center continua enxergando o plano (cobertura mantida via helper).
+// 2. Carregar opções do dropdown
+const { data: assignables } = await supabase
+  .rpc('get_action_plan_assignable_users', { _plano_acao_id: planoId });
+// assignables: [{ user_id, nome, email, tipo: 'colaborador'|'interno', nivel_acesso }]
+```
 
-### Observação
-Não há mudança de frontend. Após a migration, o `console.error` em `CheckListActionPlansPage.tsx:189` deixa de ocorrer.
+## Observações
+- Nenhuma alteração nas políticas RLS existentes — apenas funções novas.
+- Nenhum dado é alterado, apenas leitura.
+- Se algum dia uma nova regra de elegibilidade entrar (ex.: bloquear gestores), basta editar a função; o frontend não precisa mudar.
 
