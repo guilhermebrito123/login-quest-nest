@@ -950,7 +950,7 @@ export type Database = {
       }
       checklist_tarefa_responsaveis: {
         Row: {
-          assigned_by_user_id: string | null
+          assigned_by_user_id: string
           assigned_user_id: string
           ativo: boolean
           atribuida_em: string
@@ -961,7 +961,7 @@ export type Database = {
           status_kanban: Database["public"]["Enums"]["checklist_task_kanban_status"]
         }
         Insert: {
-          assigned_by_user_id?: string | null
+          assigned_by_user_id: string
           assigned_user_id: string
           ativo?: boolean
           atribuida_em?: string
@@ -972,7 +972,7 @@ export type Database = {
           status_kanban?: Database["public"]["Enums"]["checklist_task_kanban_status"]
         }
         Update: {
-          assigned_by_user_id?: string | null
+          assigned_by_user_id?: string
           assigned_user_id?: string
           ativo?: boolean
           atribuida_em?: string
