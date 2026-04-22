@@ -4804,6 +4804,14 @@ export type Database = {
         Args: { _cost_center_id: string; _user_id: string }
         Returns: boolean
       }
+      can_manage_checklist_cc: {
+        Args: { _cost_center_id: string; _user_id: string }
+        Returns: boolean
+      }
+      can_manage_equipe: {
+        Args: { _equipe_id: string; _user_id: string }
+        Returns: boolean
+      }
       can_review_checklist: {
         Args: { _cost_center_id: string; _user_id: string }
         Returns: boolean
@@ -5075,6 +5083,10 @@ export type Database = {
             Returns: string
           }
         | { Args: { p_falta_id: string; p_user_id: string }; Returns: string }
+      template_has_instancias: {
+        Args: { _template_id: string }
+        Returns: boolean
+      }
     }
     Enums: {
       action_plan_nonconformity_class:
