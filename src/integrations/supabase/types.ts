@@ -860,7 +860,6 @@ export type Database = {
           created_at: string
           criado_por_user_id: string
           descricao_snapshot: string | null
-          equipe_responsavel_id: string
           exige_plano_acao: boolean
           finalizado_em: string | null
           finalizado_por_user_id: string | null
@@ -880,7 +879,6 @@ export type Database = {
           created_at?: string
           criado_por_user_id: string
           descricao_snapshot?: string | null
-          equipe_responsavel_id: string
           exige_plano_acao?: boolean
           finalizado_em?: string | null
           finalizado_por_user_id?: string | null
@@ -900,7 +898,6 @@ export type Database = {
           created_at?: string
           criado_por_user_id?: string
           descricao_snapshot?: string | null
-          equipe_responsavel_id?: string
           exige_plano_acao?: boolean
           finalizado_em?: string | null
           finalizado_por_user_id?: string | null
@@ -933,13 +930,6 @@ export type Database = {
             columns: ["criado_por_user_id"]
             isOneToOne: false
             referencedRelation: "usuarios"
-            referencedColumns: ["id"]
-          },
-          {
-            foreignKeyName: "checklist_instancias_equipe_responsavel_id_fkey"
-            columns: ["equipe_responsavel_id"]
-            isOneToOne: false
-            referencedRelation: "module_equipes"
             referencedColumns: ["id"]
           },
           {
@@ -4984,6 +4974,10 @@ export type Database = {
       get_current_user_can_manage_plan: {
         Args: { _plano_acao_id: string }
         Returns: boolean
+      }
+      get_equipe_id_for_instancia: {
+        Args: { _instancia_id: string }
+        Returns: string
       }
       get_visible_internal_users_public: {
         Args: never
