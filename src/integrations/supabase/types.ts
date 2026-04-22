@@ -4971,6 +4971,20 @@ export type Database = {
       fn_diff_jsonb: { Args: { new_row: Json; old_row: Json }; Returns: Json }
       generate_due_checklist_instances: { Args: never; Returns: number }
       gerar_dias_trabalho_proximo_mes: { Args: never; Returns: undefined }
+      get_action_plan_assignable_users: {
+        Args: { _plano_acao_id: string }
+        Returns: {
+          email: string
+          nivel_acesso: string
+          nome: string
+          tipo: string
+          user_id: string
+        }[]
+      }
+      get_current_user_can_manage_plan: {
+        Args: { _plano_acao_id: string }
+        Returns: boolean
+      }
       get_visible_internal_users_public: {
         Args: never
         Returns: {
