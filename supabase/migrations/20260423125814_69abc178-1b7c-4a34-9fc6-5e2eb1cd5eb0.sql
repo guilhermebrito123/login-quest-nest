@@ -1,0 +1,1 @@
+ALTER TABLE public.plano_acao_atualizacoes DROP COLUMN IF EXISTS progresso_percentual;

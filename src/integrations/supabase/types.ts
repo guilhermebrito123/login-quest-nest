@@ -3829,7 +3829,6 @@ export type Database = {
           created_at: string
           id: string
           plano_acao_id: string
-          progresso_percentual: number | null
           status_anterior:
             | Database["public"]["Enums"]["action_plan_status"]
             | null
@@ -3841,7 +3840,6 @@ export type Database = {
           created_at?: string
           id?: string
           plano_acao_id: string
-          progresso_percentual?: number | null
           status_anterior?:
             | Database["public"]["Enums"]["action_plan_status"]
             | null
@@ -3853,7 +3851,6 @@ export type Database = {
           created_at?: string
           id?: string
           plano_acao_id?: string
-          progresso_percentual?: number | null
           status_anterior?:
             | Database["public"]["Enums"]["action_plan_status"]
             | null
