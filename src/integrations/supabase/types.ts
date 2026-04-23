@@ -948,6 +948,57 @@ export type Database = {
           },
         ]
       }
+      checklist_resposta_anexos: {
+        Row: {
+          caminho_storage: string
+          checklist_instancia_tarefa_id: string
+          checklist_tarefa_resposta_id: string
+          created_at: string
+          id: string
+          nome_arquivo: string
+          tamanho_bytes: number | null
+          tipo_arquivo: string | null
+          uploaded_by: string
+        }
+        Insert: {
+          caminho_storage: string
+          checklist_instancia_tarefa_id: string
+          checklist_tarefa_resposta_id: string
+          created_at?: string
+          id?: string
+          nome_arquivo: string
+          tamanho_bytes?: number | null
+          tipo_arquivo?: string | null
+          uploaded_by: string
+        }
+        Update: {
+          caminho_storage?: string
+          checklist_instancia_tarefa_id?: string
+          checklist_tarefa_resposta_id?: string
+          created_at?: string
+          id?: string
+          nome_arquivo?: string
+          tamanho_bytes?: number | null
+          tipo_arquivo?: string | null
+          uploaded_by?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "checklist_resposta_anexos_checklist_instancia_tarefa_id_fkey"
+            columns: ["checklist_instancia_tarefa_id"]
+            isOneToOne: false
+            referencedRelation: "checklist_instancia_tarefas"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "checklist_resposta_anexos_checklist_tarefa_resposta_id_fkey"
+            columns: ["checklist_tarefa_resposta_id"]
+            isOneToOne: false
+            referencedRelation: "checklist_tarefa_respostas"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       checklist_tarefa_responsaveis: {
         Row: {
           assigned_by_user_id: string
@@ -4798,6 +4849,10 @@ export type Database = {
         Args: { _cost_center_id: string; _user_id: string }
         Returns: boolean
       }
+      can_manage_checklist_tarefa: {
+        Args: { _tarefa_id: string; _user_id: string }
+        Returns: boolean
+      }
       can_manage_equipe: {
         Args: { _equipe_id: string; _user_id: string }
         Returns: boolean
@@ -4808,6 +4863,14 @@ export type Database = {
       }
       can_update_action_plan_status: {
         Args: { _cost_center_id: string; _user_id: string }
+        Returns: boolean
+      }
+      can_upload_checklist_anexo: {
+        Args: { _tarefa_id: string; _user_id: string }
+        Returns: boolean
+      }
+      can_view_checklist_tarefa: {
+        Args: { _tarefa_id: string; _user_id: string }
         Returns: boolean
       }
       cancelar_execucao_checklist: {
