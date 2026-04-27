@@ -22,8 +22,10 @@ import {
   DialogTitle,
 } from "@/components/ui/dialog";
 import { Label } from "@/components/ui/label";
-import { Building2, Search, Shield, UserCog } from "lucide-react";
+import { Building2, Search, Shield, UserCog, UserX, UserCheck } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
+import { Textarea } from "@/components/ui/textarea";
+import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
 
 interface UserWithRole {
   id: string;
@@ -31,6 +33,9 @@ interface UserWithRole {
   full_name: string | null;
   phone: string | null;
   role: string;
+  ativo: boolean;
+  deactivated_at: string | null;
+  deactivation_reason: string | null;
 }
 
 interface CostCenter {
@@ -51,6 +56,13 @@ const UserManagement = () => {
   });
   const [selectedCostCenter, setSelectedCostCenter] = useState<string>("");
   const [submitting, setSubmitting] = useState(false);
+  const [statusFilter, setStatusFilter] = useState<"ativos" | "inativos" | "todos">("ativos");
+  const [deactivateDialog, setDeactivateDialog] = useState<{ open: boolean; user: UserWithRole | null }>({
+    open: false,
+    user: null,
+  });
+  const [deactivateReason, setDeactivateReason] = useState("");
+  const [currentUserId, setCurrentUserId] = useState<string | null>(null);
   const navigate = useNavigate();
   const { toast } = useToast();
 
@@ -60,7 +72,7 @@ const UserManagement = () => {
 
   useEffect(() => {
     filterUsers();
-  }, [searchTerm, users]);
+  }, [searchTerm, users, statusFilter]);
 
   const checkAdminAndLoadUsers = async () => {
     try {
@@ -69,6 +81,7 @@ const UserManagement = () => {
         navigate("/auth");
         return;
       }
+      setCurrentUserId(user.id);
 
       const { data: roleData } = await supabase
         .from("user_roles")
@@ -111,7 +124,7 @@ const UserManagement = () => {
     try {
       const { data: usersData, error: usersError } = await supabase
         .from("usuarios")
-        .select("id, email, full_name, phone");
+        .select("id, email, full_name, phone, ativo, deactivated_at, deactivation_reason");
 
       if (usersError) throw usersError;
 
@@ -126,16 +139,18 @@ const UserManagement = () => {
         if (!roleMap.has(r.user_id)) roleMap.set(r.user_id, r.role);
       });
 
-      const usersWithRoles = (usersData || []).map((user: any) => ({
+      const usersWithRoles: UserWithRole[] = (usersData || []).map((user: any) => ({
         id: user.id,
         email: user.email,
         full_name: user.full_name,
         phone: user.phone,
         role: roleMap.get(user.id) || "tecnico",
+        ativo: user.ativo ?? true,
+        deactivated_at: user.deactivated_at ?? null,
+        deactivation_reason: user.deactivation_reason ?? null,
       }));
 
       setUsers(usersWithRoles);
-      setFilteredUsers(usersWithRoles);
     } catch (error: any) {
       toast({
         title: "Erro ao carregar usuários",
@@ -146,18 +161,73 @@ const UserManagement = () => {
   };
 
   const filterUsers = () => {
-    if (!searchTerm.trim()) {
-      setFilteredUsers(users);
-      return;
-    }
-    const term = searchTerm.toLowerCase();
-    setFilteredUsers(
-      users.filter(
+    let result = users;
+
+    if (statusFilter === "ativos") result = result.filter((u) => u.ativo);
+    else if (statusFilter === "inativos") result = result.filter((u) => !u.ativo);
+
+    if (searchTerm.trim()) {
+      const term = searchTerm.toLowerCase();
+      result = result.filter(
         (u) =>
           u.email?.toLowerCase().includes(term) ||
           u.full_name?.toLowerCase().includes(term)
-      )
-    );
+      );
+    }
+    setFilteredUsers(result);
+  };
+
+  const handleDeactivate = async () => {
+    if (!deactivateDialog.user) return;
+    setSubmitting(true);
+    try {
+      const { data, error } = await supabase.functions.invoke("deactivate-user", {
+        body: { user_id: deactivateDialog.user.id, reason: deactivateReason || null },
+      });
+      if (error) throw error;
+      if ((data as any)?.error) throw new Error((data as any).error);
+
+      toast({
+        title: "Usuário desativado",
+        description: "O acesso foi bloqueado e o histórico preservado.",
+      });
+      setDeactivateDialog({ open: false, user: null });
+      setDeactivateReason("");
+      await loadUsers();
+    } catch (error: any) {
+      toast({
+        title: "Erro ao desativar",
+        description: error.message,
+        variant: "destructive",
+      });
+    } finally {
+      setSubmitting(false);
+    }
+  };
+
+  const handleReactivate = async (userId: string) => {
+    setSubmitting(true);
+    try {
+      const { data, error } = await supabase.functions.invoke("reactivate-user", {
+        body: { user_id: userId },
+      });
+      if (error) throw error;
+      if ((data as any)?.error) throw new Error((data as any).error);
+
+      toast({
+        title: "Usuário reativado",
+        description: "O acesso foi restaurado.",
+      });
+      await loadUsers();
+    } catch (error: any) {
+      toast({
+        title: "Erro ao reativar",
+        description: error.message,
+        variant: "destructive",
+      });
+    } finally {
+      setSubmitting(false);
+    }
   };
 
   const handleRoleChange = async (userId: string, newRole: string) => {
@@ -287,22 +357,34 @@ const UserManagement = () => {
               Gerencie os perfis de acesso de todos os usuários do sistema
             </p>
 
-            <div className="relative max-w-md">
-              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-              <Input
-                placeholder="Buscar por nome ou email..."
-                value={searchTerm}
-                onChange={(e) => setSearchTerm(e.target.value)}
-                className="pl-10"
-              />
+            <div className="flex flex-col sm:flex-row gap-3 sm:items-center">
+              <div className="relative max-w-md flex-1">
+                <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+                <Input
+                  placeholder="Buscar por nome ou email..."
+                  value={searchTerm}
+                  onChange={(e) => setSearchTerm(e.target.value)}
+                  className="pl-10"
+                />
+              </div>
+              <Tabs value={statusFilter} onValueChange={(v) => setStatusFilter(v as any)}>
+                <TabsList>
+                  <TabsTrigger value="ativos">Ativos</TabsTrigger>
+                  <TabsTrigger value="inativos">Inativos</TabsTrigger>
+                  <TabsTrigger value="todos">Todos</TabsTrigger>
+                </TabsList>
+              </Tabs>
             </div>
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
             {filteredUsers.map((user) => (
-              <Card key={user.id} className="hover:shadow-md transition-shadow">
+              <Card
+                key={user.id}
+                className={`hover:shadow-md transition-shadow ${!user.ativo ? "opacity-70 border-destructive/40" : ""}`}
+              >
                 <CardHeader>
-                  <div className="flex items-start justify-between">
+                  <div className="flex items-start justify-between gap-2">
                     <div className="flex items-center gap-3">
                       <div className="p-2 bg-primary/10 rounded-lg">
                         <UserCog className="h-5 w-5 text-primary" />
@@ -316,6 +398,9 @@ const UserManagement = () => {
                         </CardDescription>
                       </div>
                     </div>
+                    {!user.ativo && (
+                      <Badge variant="destructive" className="shrink-0">Inativo</Badge>
+                    )}
                   </div>
                 </CardHeader>
                 <CardContent>
@@ -323,11 +408,17 @@ const UserManagement = () => {
                     {user.phone && (
                       <p className="text-sm text-muted-foreground">Tel: {user.phone}</p>
                     )}
+                    {!user.ativo && user.deactivation_reason && (
+                      <p className="text-xs text-muted-foreground italic">
+                        Motivo: {user.deactivation_reason}
+                      </p>
+                    )}
                     <div className="space-y-2">
                       <label className="text-sm font-medium">Perfil de Acesso</label>
                       <Select
                         value={user.role}
                         onValueChange={(value) => handleRoleChange(user.id, value)}
+                        disabled={!user.ativo}
                       >
                         <SelectTrigger>
                           <SelectValue />
@@ -346,9 +437,37 @@ const UserManagement = () => {
                         </SelectContent>
                       </Select>
                     </div>
-                    <Badge className={`${getRoleBadgeColor(user.role)} text-white`}>
-                      {roleLabels[user.role] || user.role}
-                    </Badge>
+                    <div className="flex items-center justify-between gap-2">
+                      <Badge className={`${getRoleBadgeColor(user.role)} text-white`}>
+                        {roleLabels[user.role] || user.role}
+                      </Badge>
+                      {user.id !== currentUserId && (
+                        user.ativo ? (
+                          <Button
+                            size="sm"
+                            variant="outline"
+                            className="text-destructive hover:text-destructive"
+                            onClick={() => {
+                              setDeactivateReason("");
+                              setDeactivateDialog({ open: true, user });
+                            }}
+                          >
+                            <UserX className="h-4 w-4 mr-1" />
+                            Desativar
+                          </Button>
+                        ) : (
+                          <Button
+                            size="sm"
+                            variant="outline"
+                            onClick={() => handleReactivate(user.id)}
+                            disabled={submitting}
+                          >
+                            <UserCheck className="h-4 w-4 mr-1" />
+                            Reativar
+                          </Button>
+                        )
+                      )}
+                    </div>
                   </div>
                 </CardContent>
               </Card>
@@ -405,6 +524,46 @@ const UserManagement = () => {
               </Button>
               <Button onClick={handleConfirmColaborador} disabled={submitting || !selectedCostCenter}>
                 {submitting ? "Vinculando..." : "Confirmar"}
+              </Button>
+            </DialogFooter>
+          </DialogContent>
+        </Dialog>
+
+        <Dialog
+          open={deactivateDialog.open}
+          onOpenChange={(open) =>
+            !submitting && setDeactivateDialog({ open, user: open ? deactivateDialog.user : null })
+          }
+        >
+          <DialogContent>
+            <DialogHeader>
+              <DialogTitle>Desativar usuário</DialogTitle>
+              <DialogDescription>
+                O usuário <strong>{deactivateDialog.user?.full_name || deactivateDialog.user?.email}</strong> ficará
+                impedido de fazer login e de executar qualquer ação no sistema. Todo o histórico
+                (diárias aprovadas, chamados, checklists, etc.) será preservado intacto.
+                Você pode reativá-lo a qualquer momento.
+              </DialogDescription>
+            </DialogHeader>
+            <div className="space-y-2 py-4">
+              <Label>Motivo (opcional)</Label>
+              <Textarea
+                placeholder="Ex.: Desligamento, transferência, etc."
+                value={deactivateReason}
+                onChange={(e) => setDeactivateReason(e.target.value)}
+                rows={3}
+              />
+            </div>
+            <DialogFooter>
+              <Button
+                variant="outline"
+                onClick={() => setDeactivateDialog({ open: false, user: null })}
+                disabled={submitting}
+              >
+                Cancelar
+              </Button>
+              <Button variant="destructive" onClick={handleDeactivate} disabled={submitting}>
+                {submitting ? "Desativando..." : "Desativar usuário"}
               </Button>
             </DialogFooter>
           </DialogContent>

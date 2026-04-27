@@ -163,6 +163,12 @@ const Auth = () => {
           </CardDescription>
         </CardHeader>
         <CardContent>
+          {typeof window !== "undefined" &&
+            new URLSearchParams(window.location.search).get("deactivated") === "1" && (
+              <div className="mb-4 rounded-md border border-destructive/40 bg-destructive/10 p-3 text-sm text-destructive">
+                Sua conta foi desativada. Entre em contato com um administrador para reativá-la.
+              </div>
+            )}
           <form onSubmit={handleAuth} className="space-y-4">
             {!isLogin && (
               <>

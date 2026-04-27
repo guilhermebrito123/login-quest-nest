@@ -4494,7 +4494,11 @@ export type Database = {
       }
       usuarios: {
         Row: {
+          ativo: boolean
           created_at: string
+          deactivated_at: string | null
+          deactivated_by: string | null
+          deactivation_reason: string | null
           email: string
           full_name: string | null
           id: string
@@ -4504,7 +4508,11 @@ export type Database = {
           updated_at: string
         }
         Insert: {
+          ativo?: boolean
           created_at?: string
+          deactivated_at?: string | null
+          deactivated_by?: string | null
+          deactivation_reason?: string | null
           email: string
           full_name?: string | null
           id: string
@@ -4514,7 +4522,11 @@ export type Database = {
           updated_at?: string
         }
         Update: {
+          ativo?: boolean
           created_at?: string
+          deactivated_at?: string | null
+          deactivated_by?: string | null
+          deactivation_reason?: string | null
           email?: string
           full_name?: string | null
           id?: string
@@ -4527,6 +4539,13 @@ export type Database = {
           {
             foreignKeyName: "profiles_superior_fkey"
             columns: ["superior"]
+            isOneToOne: false
+            referencedRelation: "usuarios"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "usuarios_deactivated_by_fkey"
+            columns: ["deactivated_by"]
             isOneToOne: false
             referencedRelation: "usuarios"
             referencedColumns: ["id"]
@@ -5014,6 +5033,7 @@ export type Database = {
         Args: never
         Returns: Database["public"]["Enums"]["internal_access_level"]
       }
+      current_user_is_active: { Args: never; Returns: boolean }
       definir_usuario_como_colaborador: {
         Args: { p_cost_center_id: string; p_user_id: string }
         Returns: undefined
