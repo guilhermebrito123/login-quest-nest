@@ -72,7 +72,7 @@ const UserManagement = () => {
 
   useEffect(() => {
     filterUsers();
-  }, [searchTerm, users]);
+  }, [searchTerm, users, statusFilter]);
 
   const checkAdminAndLoadUsers = async () => {
     try {
@@ -81,6 +81,7 @@ const UserManagement = () => {
         navigate("/auth");
         return;
       }
+      setCurrentUserId(user.id);
 
       const { data: roleData } = await supabase
         .from("user_roles")
@@ -123,7 +124,7 @@ const UserManagement = () => {
     try {
       const { data: usersData, error: usersError } = await supabase
         .from("usuarios")
-        .select("id, email, full_name, phone");
+        .select("id, email, full_name, phone, ativo, deactivated_at, deactivation_reason");
 
       if (usersError) throw usersError;
 
@@ -138,16 +139,18 @@ const UserManagement = () => {
         if (!roleMap.has(r.user_id)) roleMap.set(r.user_id, r.role);
       });
 
-      const usersWithRoles = (usersData || []).map((user: any) => ({
+      const usersWithRoles: UserWithRole[] = (usersData || []).map((user: any) => ({
         id: user.id,
         email: user.email,
         full_name: user.full_name,
         phone: user.phone,
         role: roleMap.get(user.id) || "tecnico",
+        ativo: user.ativo ?? true,
+        deactivated_at: user.deactivated_at ?? null,
+        deactivation_reason: user.deactivation_reason ?? null,
       }));
 
       setUsers(usersWithRoles);
-      setFilteredUsers(usersWithRoles);
     } catch (error: any) {
       toast({
         title: "Erro ao carregar usuários",
@@ -158,18 +161,73 @@ const UserManagement = () => {
   };
 
   const filterUsers = () => {
-    if (!searchTerm.trim()) {
-      setFilteredUsers(users);
-      return;
-    }
-    const term = searchTerm.toLowerCase();
-    setFilteredUsers(
-      users.filter(
+    let result = users;
+
+    if (statusFilter === "ativos") result = result.filter((u) => u.ativo);
+    else if (statusFilter === "inativos") result = result.filter((u) => !u.ativo);
+
+    if (searchTerm.trim()) {
+      const term = searchTerm.toLowerCase();
+      result = result.filter(
         (u) =>
           u.email?.toLowerCase().includes(term) ||
           u.full_name?.toLowerCase().includes(term)
-      )
-    );
+      );
+    }
+    setFilteredUsers(result);
+  };
+
+  const handleDeactivate = async () => {
+    if (!deactivateDialog.user) return;
+    setSubmitting(true);
+    try {
+      const { data, error } = await supabase.functions.invoke("deactivate-user", {
+        body: { user_id: deactivateDialog.user.id, reason: deactivateReason || null },
+      });
+      if (error) throw error;
+      if ((data as any)?.error) throw new Error((data as any).error);
+
+      toast({
+        title: "Usuário desativado",
+        description: "O acesso foi bloqueado e o histórico preservado.",
+      });
+      setDeactivateDialog({ open: false, user: null });
+      setDeactivateReason("");
+      await loadUsers();
+    } catch (error: any) {
+      toast({
+        title: "Erro ao desativar",
+        description: error.message,
+        variant: "destructive",
+      });
+    } finally {
+      setSubmitting(false);
+    }
+  };
+
+  const handleReactivate = async (userId: string) => {
+    setSubmitting(true);
+    try {
+      const { data, error } = await supabase.functions.invoke("reactivate-user", {
+        body: { user_id: userId },
+      });
+      if (error) throw error;
+      if ((data as any)?.error) throw new Error((data as any).error);
+
+      toast({
+        title: "Usuário reativado",
+        description: "O acesso foi restaurado.",
+      });
+      await loadUsers();
+    } catch (error: any) {
+      toast({
+        title: "Erro ao reativar",
+        description: error.message,
+        variant: "destructive",
+      });
+    } finally {
+      setSubmitting(false);
+    }
   };
 
   const handleRoleChange = async (userId: string, newRole: string) => {
