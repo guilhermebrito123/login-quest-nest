@@ -528,6 +528,46 @@ const UserManagement = () => {
             </DialogFooter>
           </DialogContent>
         </Dialog>
+
+        <Dialog
+          open={deactivateDialog.open}
+          onOpenChange={(open) =>
+            !submitting && setDeactivateDialog({ open, user: open ? deactivateDialog.user : null })
+          }
+        >
+          <DialogContent>
+            <DialogHeader>
+              <DialogTitle>Desativar usuário</DialogTitle>
+              <DialogDescription>
+                O usuário <strong>{deactivateDialog.user?.full_name || deactivateDialog.user?.email}</strong> ficará
+                impedido de fazer login e de executar qualquer ação no sistema. Todo o histórico
+                (diárias aprovadas, chamados, checklists, etc.) será preservado intacto.
+                Você pode reativá-lo a qualquer momento.
+              </DialogDescription>
+            </DialogHeader>
+            <div className="space-y-2 py-4">
+              <Label>Motivo (opcional)</Label>
+              <Textarea
+                placeholder="Ex.: Desligamento, transferência, etc."
+                value={deactivateReason}
+                onChange={(e) => setDeactivateReason(e.target.value)}
+                rows={3}
+              />
+            </div>
+            <DialogFooter>
+              <Button
+                variant="outline"
+                onClick={() => setDeactivateDialog({ open: false, user: null })}
+                disabled={submitting}
+              >
+                Cancelar
+              </Button>
+              <Button variant="destructive" onClick={handleDeactivate} disabled={submitting}>
+                {submitting ? "Desativando..." : "Desativar usuário"}
+              </Button>
+            </DialogFooter>
+          </DialogContent>
+        </Dialog>
       </div>
     </DashboardLayout>
   );
