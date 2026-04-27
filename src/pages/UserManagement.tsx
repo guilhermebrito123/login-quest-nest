@@ -22,8 +22,10 @@ import {
   DialogTitle,
 } from "@/components/ui/dialog";
 import { Label } from "@/components/ui/label";
-import { Building2, Search, Shield, UserCog } from "lucide-react";
+import { Building2, Search, Shield, UserCog, UserX, UserCheck } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
+import { Textarea } from "@/components/ui/textarea";
+import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
 
 interface UserWithRole {
   id: string;
@@ -31,6 +33,9 @@ interface UserWithRole {
   full_name: string | null;
   phone: string | null;
   role: string;
+  ativo: boolean;
+  deactivated_at: string | null;
+  deactivation_reason: string | null;
 }
 
 interface CostCenter {
@@ -51,6 +56,13 @@ const UserManagement = () => {
   });
   const [selectedCostCenter, setSelectedCostCenter] = useState<string>("");
   const [submitting, setSubmitting] = useState(false);
+  const [statusFilter, setStatusFilter] = useState<"ativos" | "inativos" | "todos">("ativos");
+  const [deactivateDialog, setDeactivateDialog] = useState<{ open: boolean; user: UserWithRole | null }>({
+    open: false,
+    user: null,
+  });
+  const [deactivateReason, setDeactivateReason] = useState("");
+  const [currentUserId, setCurrentUserId] = useState<string | null>(null);
   const navigate = useNavigate();
   const { toast } = useToast();
 
