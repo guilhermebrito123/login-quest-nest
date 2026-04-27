@@ -357,22 +357,34 @@ const UserManagement = () => {
               Gerencie os perfis de acesso de todos os usuários do sistema
             </p>
 
-            <div className="relative max-w-md">
-              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-              <Input
-                placeholder="Buscar por nome ou email..."
-                value={searchTerm}
-                onChange={(e) => setSearchTerm(e.target.value)}
-                className="pl-10"
-              />
+            <div className="flex flex-col sm:flex-row gap-3 sm:items-center">
+              <div className="relative max-w-md flex-1">
+                <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+                <Input
+                  placeholder="Buscar por nome ou email..."
+                  value={searchTerm}
+                  onChange={(e) => setSearchTerm(e.target.value)}
+                  className="pl-10"
+                />
+              </div>
+              <Tabs value={statusFilter} onValueChange={(v) => setStatusFilter(v as any)}>
+                <TabsList>
+                  <TabsTrigger value="ativos">Ativos</TabsTrigger>
+                  <TabsTrigger value="inativos">Inativos</TabsTrigger>
+                  <TabsTrigger value="todos">Todos</TabsTrigger>
+                </TabsList>
+              </Tabs>
             </div>
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
             {filteredUsers.map((user) => (
-              <Card key={user.id} className="hover:shadow-md transition-shadow">
+              <Card
+                key={user.id}
+                className={`hover:shadow-md transition-shadow ${!user.ativo ? "opacity-70 border-destructive/40" : ""}`}
+              >
                 <CardHeader>
-                  <div className="flex items-start justify-between">
+                  <div className="flex items-start justify-between gap-2">
                     <div className="flex items-center gap-3">
                       <div className="p-2 bg-primary/10 rounded-lg">
                         <UserCog className="h-5 w-5 text-primary" />
@@ -386,6 +398,9 @@ const UserManagement = () => {
                         </CardDescription>
                       </div>
                     </div>
+                    {!user.ativo && (
+                      <Badge variant="destructive" className="shrink-0">Inativo</Badge>
+                    )}
                   </div>
                 </CardHeader>
                 <CardContent>
@@ -393,11 +408,17 @@ const UserManagement = () => {
                     {user.phone && (
                       <p className="text-sm text-muted-foreground">Tel: {user.phone}</p>
                     )}
+                    {!user.ativo && user.deactivation_reason && (
+                      <p className="text-xs text-muted-foreground italic">
+                        Motivo: {user.deactivation_reason}
+                      </p>
+                    )}
                     <div className="space-y-2">
                       <label className="text-sm font-medium">Perfil de Acesso</label>
                       <Select
                         value={user.role}
                         onValueChange={(value) => handleRoleChange(user.id, value)}
+                        disabled={!user.ativo}
                       >
                         <SelectTrigger>
                           <SelectValue />
@@ -416,9 +437,37 @@ const UserManagement = () => {
                         </SelectContent>
                       </Select>
                     </div>
-                    <Badge className={`${getRoleBadgeColor(user.role)} text-white`}>
-                      {roleLabels[user.role] || user.role}
-                    </Badge>
+                    <div className="flex items-center justify-between gap-2">
+                      <Badge className={`${getRoleBadgeColor(user.role)} text-white`}>
+                        {roleLabels[user.role] || user.role}
+                      </Badge>
+                      {user.id !== currentUserId && (
+                        user.ativo ? (
+                          <Button
+                            size="sm"
+                            variant="outline"
+                            className="text-destructive hover:text-destructive"
+                            onClick={() => {
+                              setDeactivateReason("");
+                              setDeactivateDialog({ open: true, user });
+                            }}
+                          >
+                            <UserX className="h-4 w-4 mr-1" />
+                            Desativar
+                          </Button>
+                        ) : (
+                          <Button
+                            size="sm"
+                            variant="outline"
+                            onClick={() => handleReactivate(user.id)}
+                            disabled={submitting}
+                          >
+                            <UserCheck className="h-4 w-4 mr-1" />
+                            Reativar
+                          </Button>
+                        )
+                      )}
+                    </div>
                   </div>
                 </CardContent>
               </Card>
