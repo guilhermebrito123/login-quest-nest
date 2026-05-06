@@ -5059,6 +5059,15 @@ export type Database = {
         Args: { _instancia_id: string }
         Returns: string
       }
+      get_profiles_names: {
+        Args: { p_ids: string[] }
+        Returns: {
+          display_name: string
+          email: string
+          full_name: string
+          id: string
+        }[]
+      }
       get_visible_internal_users_public: {
         Args: never
         Returns: {
