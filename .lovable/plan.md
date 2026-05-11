@@ -1,143 +1,76 @@
-# Soft-delete de usuários com bloqueio total de CRUD
+# Módulo: Alocação de colaboradores Convenia em postos de serviço
 
-## Objetivo
+Este plano consolida exatamente o desenho que você descreveu, em uma única migration coesa, sem duplicar histórico (RPCs/cron gravam o histórico explicitamente; o trigger só grava em UPDATEs diretos fora das RPCs, controlado por `app.skip_alocacao_trigger`).
 
-Permitir "desativar" um usuário sem apagar fisicamente o registro em `usuarios`. O usuário desativado:
+## Escopo
 
-- Não pode mais fazer login.
-- Se já estiver logado, **não consegue executar nenhuma operação** de SELECT/INSERT/UPDATE/DELETE em qualquer tabela do sistema.
-- Tem todo o histórico preservado em todas as tabelas que o referenciam (diárias, chamados, checklists, planos de ação, horas extras, vagas, logs etc.).
-- Pode ser reativado depois, restaurando o acesso integralmente.
+Criar todo o módulo de alocação de colaboradores Convenia em postos de serviço, isolado dos fluxos atuais de `colaboradores` (efetivos), `dias_trabalho` e `escalas`. A escala é lida de `postos_servico.escala`; horários ficam por alocação.
 
-Essa abordagem evita o caos de FKs com `RESTRICT`/`NO ACTION` que hoje bloqueiam o `DELETE` físico (vide análise anterior do `diarias_temporarias.criado_por`, `chamados`, `checklists`, `vagas_temp` etc.).
-
----
-
-## 1. Mudanças de schema (migration)
-
-Adicionar colunas de soft-delete em `public.usuarios`:
+## Estrutura proposta
 
 ```text
-ativo            boolean      NOT NULL DEFAULT true
-deactivated_at   timestamptz  NULL
-deactivated_by   uuid         NULL  -> FK usuarios.id ON DELETE SET NULL
-deactivation_reason text       NULL
+colaboradores_convenia ──┐
+                         │ 1:N (apenas 1 ativa via índice único parcial)
+                         ▼
+   colaboradores_convenia_alocacoes ──► postos_servico
+                         │
+                         │ histórico explícito (RPCs + cron) e
+                         │ trigger de proteção em UPDATE direto
+                         ▼
+   colaboradores_convenia_alocacoes_historico
 ```
 
-Índice parcial para acelerar lookups dos ativos:
-`CREATE INDEX idx_usuarios_ativo ON public.usuarios(id) WHERE ativo = true;`
+## O que será criado (em uma única migration)
 
-Nada é apagado, nenhuma FK existente muda. A regra "histórico preservado" sai de graça.
+1. **Tabelas**
+   - `colaboradores_convenia_alocacoes` (alocação atual/passada por colaborador, com `horario_entrada/saida`, `intervalo_minutos`, `paridade_12x36`, `data_inicio/fim`, `ativo`).
+   - `colaboradores_convenia_alocacoes_historico` (trilha de auditoria com `operacao`, `motivo`, `registro_anterior/novo` em `jsonb`).
 
----
+2. **Constraints**
+   - `chk_alocacao_horarios_diferentes`, `chk_alocacao_intervalo_valido`, `chk_alocacao_datas_validas`, `chk_alocacao_paridade_12x36`.
+   - Histórico: `chk_hist_operacao_alocacao`, `chk_hist_paridade_anterior/nova`.
+   - Índice único parcial `uq_colaborador_convenia_alocacao_ativa` garantindo uma única alocação ativa por colaborador.
 
-## 2. Função-guard central (SECURITY DEFINER)
+3. **Índices** em `colaborador_convenia_id`, `posto_servico_id`, `ativo`, `(colaborador, ativo)` e nos campos de busca do histórico.
 
-Criar uma função canônica usada por todas as policies:
+4. **Funções e triggers**
+   - `fn_posto_servico_is_12x36(uuid)` — detecta `12x36` em `postos_servico.escala` ignorando espaços/caixa.
+   - `trg_validar_alocacao_12x36` — exige `paridade_12x36` quando o posto for 12x36; zera quando não for. Antes de INSERT/UPDATE.
+   - `trg_set_updated_at_alocacao_convenia` — antes de UPDATE.
+   - `trg_log_alocacao_convenia` — após UPDATE; **só grava histórico** quando `app.skip_alocacao_trigger` não estiver `'true'` (isto é, em updates diretos fora das RPCs). Classifica a operação (`transferencia_posto`, `alteracao_paridade_12x36`, `alteracao_horario`, `update_direto`).
 
-```text
-public.current_user_is_active() RETURNS boolean
-  LANGUAGE sql STABLE SECURITY DEFINER SET search_path=public
-  AS $$
-    SELECT COALESCE(
-      (SELECT ativo FROM public.usuarios WHERE id = auth.uid()),
-      false  -- se não existe registro, considera inativo
-    );
-  $$;
-```
+5. **View**
+   - `v_colaboradores_convenia_alocacao_atual` juntando `colaboradores_convenia` + `postos_servico` para a alocação ativa.
 
-`SECURITY DEFINER` evita recursão de RLS ao consultar `usuarios` dentro das próprias policies de `usuarios`.
+6. **RPCs** (todas `security definer` e setam `app.skip_alocacao_trigger='true'` para evitar histórico duplicado; cada uma grava o histórico explicitamente)
+   - `rpc_alocar_colaborador_convenia(...)` — `alocacao_inicial`.
+   - `rpc_movimentar_colaborador_convenia(...)` — encerra a ativa (`data_fim = data_inicio - 1`), abre nova; `transferencia_posto`.
+   - `rpc_alterar_horario_alocacao_convenia(...)` — `alteracao_horario` ou `alteracao_paridade_12x36`.
+   - `rpc_desvincular_colaborador_convenia(...)` — `desvinculacao`.
+   - `rpc_get_historico_alocacao_colaborador_convenia(uuid)` — leitura com nomes dos postos.
 
-Também atualizar `current_internal_access_level()` para retornar NULL quando o usuário estiver inativo (defesa em profundidade).
+7. **Rotina mensal de paridade 12x36**
+   - `fn_alternar_paridade_12x36_mensal()`: se o mês anterior teve número ímpar de dias (28, 30 → não alterna; 29, 31 → alterna), inverte `'impar' ↔ 'par'` para todas as alocações ativas em postos 12x36 e grava `atualizacao_automatica_12x36` no histórico.
+   - Agendada via `pg_cron` em `5 0 1 * *` com nome `alternar-paridade-12x36-mensal` (com `unschedule` defensivo se já existir).
 
----
+8. **Permissões** — `grant execute` das RPCs e `grant select` na view para `authenticated`. `select` defensivo nas duas tabelas para `authenticated` (todo write deve passar pelas RPCs).
 
-## 3. Bloqueio universal de CRUD via RLS
+## Por que esta forma evita duplicação de histórico
 
-Estratégia: **adicionar uma policy RESTRICTIVE** em cada tabela do schema `public` que exige `current_user_is_active() = true`.
+- Em fluxos normais (RPCs e cron) o histórico é inserido **manualmente** pela própria função, e a flag `app.skip_alocacao_trigger='true'` desliga o trigger durante a transação.
+- O trigger `trg_log_alocacao_convenia` continua ativo apenas como rede de segurança para `UPDATE` direto na tabela (fora das RPCs), classificando como `update_direto` quando não for transferência/horário/paridade.
 
-Postgres combina policies PERMISSIVE com OR e policies RESTRICTIVE com AND. Isso significa que adicionar uma única policy RESTRICTIVE por tabela **não quebra** as policies existentes — ela apenas agrega a condição "usuário precisa estar ativo" a todas as operações já permitidas.
+## Pontos que confirmei contra o schema atual
 
-Para cada tabela em `public` (são ~254 policies hoje em várias tabelas) a migration roda dinamicamente:
+- `colaboradores_convenia.id` é `uuid` ✅
+- `postos_servico` possui `escala text`, `cliente_id`, `unidade_id`, `cost_center_id`, `dias_semana`, `turno` (já presentes na view).
+- O módulo **não toca** em `colaboradores`, `dias_trabalho`, `escalas`, `faltas_*` nem nas RPCs do fluxo de diárias/faltas discutidas anteriormente.
 
-```text
-DO $$
-DECLARE r record;
-BEGIN
-  FOR r IN
-    SELECT c.relname
-    FROM pg_class c
-    JOIN pg_namespace n ON n.oid = c.relnamespace
-    WHERE n.nspname='public' AND c.relkind='r'
-      AND c.relname NOT IN ('usuarios')  -- tratada à parte
-  LOOP
-    EXECUTE format($f$
-      DROP POLICY IF EXISTS "require_active_user" ON public.%I;
-      CREATE POLICY "require_active_user" ON public.%I
-        AS RESTRICTIVE
-        FOR ALL
-        TO authenticated
-        USING (public.current_user_is_active())
-        WITH CHECK (public.current_user_is_active());
-    $f$, r.relname, r.relname);
-  END LOOP;
-END $$;
-```
+## Observações para sua decisão antes de implementar
 
-Tabelas que **devem ser excluídas** desse loop (acesso público/anônimo legítimo):
-- `candidatos` e `candidatos_anexos` (registro anônimo de candidatos — ver memória `candidatos-anonymous-registration`).
-- Qualquer tabela cujas policies hoje usem `TO anon` para um caso de negócio público. Vou auditar antes da execução.
+1. **Regra mensal de paridade**: como descrito, ela **só alterna** quando o mês anterior tem número ímpar de dias (29 em fevereiro bissexto, 31 em jan/mar/mai/jul/ago/out/dez). Em meses de 28/30 dias a paridade é mantida. Confirmar se é exatamente isto.
+2. **`pg_cron`**: a migration tenta `create extension if not exists pg_cron` e agenda o job. Se preferir, posso entregar o agendamento como passo separado.
+3. **Permissões**: por padrão concedo execução das RPCs e leitura da view a `authenticated`. Se quiser restringir a um role/policy específico (ex.: `perfil_interno`), me diga e eu adiciono `revoke ... from public` + checagem de role nas RPCs (`current_internal_access_level()`).
+4. **RLS**: as duas tabelas novas podem ficar com RLS habilitada e leitura permitida via `has_role`/helper interno; por ora segui sua especificação (apenas grants). Posso adicionar políticas RLS se quiser.
 
-Para a própria `public.usuarios` a policy RESTRICTIVE é mais cuidadosa: aplica em INSERT/UPDATE/DELETE, mas mantém SELECT permitido para o próprio usuário ler `ativo=false` (assim o frontend pode mostrar a tela "Conta desativada").
-
----
-
-## 4. Bloqueio no plano de Auth
-
-RLS impede DML, mas o usuário ainda conseguiria abrir sessão. Reforçar com:
-
-1. **Trigger BEFORE UPDATE em `usuarios`**: quando `ativo` passa de `true → false`, chamar uma rotina que invalida sessões.
-2. **Edge Function `deactivate-user`** (chamada pelo frontend admin) que faz, em sequência:
-   - `UPDATE usuarios SET ativo=false, deactivated_at=now(), deactivated_by=auth.uid(), deactivation_reason=$1 WHERE id=$2`
-   - `supabaseAdmin.auth.admin.updateUserById(id, { ban_duration: '876000h' })` (banimento ~100 anos = login bloqueado).
-   - `supabaseAdmin.auth.admin.signOut(id)` para revogar tokens ativos.
-3. **Edge Function `reactivate-user`**: faz o inverso (ativo=true, `ban_duration: 'none'`).
-
-Ambas as functions exigem `current_internal_access_level() IN ('admin','gestor_operacional')` (ou o nível que você definir) — verifico no código atual qual é o padrão.
-
----
-
-## 5. UI / Frontend
-
-Mudanças mínimas em `src/pages/UserManagement.tsx`:
-
-- Substituir o botão "Excluir usuário" por **"Desativar usuário"** (com modal pedindo motivo).
-- Adicionar botão **"Reativar"** em usuários inativos.
-- Filtros: tabs `Ativos | Inativos | Todos`.
-- Badge visual "Inativo" no card.
-- As listas que mostram pessoas (responsáveis, aprovadores, etc.) continuam mostrando o nome do usuário inativo no histórico (porque o registro existe), mas os selects de **atribuição nova** filtram por `ativo=true`.
-
-Adicionar tela/aviso global: se o usuário logado tiver `ativo=false`, exibir página "Sua conta foi desativada" e forçar logout.
-
----
-
-## 6. Detalhes técnicos importantes
-
-- **Não há recursão de RLS** porque `current_user_is_active()` é `SECURITY DEFINER` com `search_path=public`.
-- **Performance**: a função é `STABLE`, o Postgres cacheia o resultado dentro da mesma query. Custo ≈ 1 lookup por statement.
-- **Bypass para serviços**: edge functions que usam `service_role` continuam ignorando RLS normalmente — sincronizações Convenia/Tiquetaque/cron jobs não são afetadas.
-- **Bypass `app.rpc_call`**: RPCs internas que já usam o padrão `app.rpc_call` (ver memória `database-trigger-bypass-pattern`) seguem funcionando porque rodam como `SECURITY DEFINER`.
-- **Candidatos anônimos**: tabelas `candidatos*` ficam fora do loop para preservar o registro público.
-- **Banimento Auth**: `ban_duration` no Supabase Auth é o mecanismo oficial recomendado para bloquear login sem apagar o `auth.users`.
-- **Reversibilidade**: reativar restaura tudo automaticamente — nenhum registro foi destruído.
-
----
-
-## 7. Resumo das entregas
-
-1. Migration: colunas + índice + função `current_user_is_active()` + atualização `current_internal_access_level()` + policies RESTRICTIVE em todas as tabelas `public` (exceto whitelist).
-2. Edge Functions: `deactivate-user` e `reactivate-user`.
-3. Frontend: ajustes em `UserManagement.tsx` (botões, modal de motivo, filtros, badge) + guard global de "conta desativada".
-4. Memória: registrar `mem://features/user-soft-delete` documentando o padrão.
-
-Após sua aprovação, executo na ordem: migration → edge functions → frontend → registro de memória.
+Se confirmar, eu emito uma única `supabase--migration` com todo o bloco (tabelas, constraints, índices, funções, triggers, view, RPCs, função mensal, agendamento e grants) exatamente como descrito.

@@ -1504,11 +1504,25 @@ export type Database = {
             referencedColumns: ["id"]
           },
           {
+            foreignKeyName: "colaborador_movimentacoes_posto_posto_servico_id_destino_fkey"
+            columns: ["posto_servico_id_destino"]
+            isOneToOne: false
+            referencedRelation: "v_colaboradores_convenia_alocacao_atual"
+            referencedColumns: ["posto_servico_id"]
+          },
+          {
             foreignKeyName: "colaborador_movimentacoes_posto_posto_servico_id_origem_fkey"
             columns: ["posto_servico_id_origem"]
             isOneToOne: false
             referencedRelation: "postos_servico"
             referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "colaborador_movimentacoes_posto_posto_servico_id_origem_fkey"
+            columns: ["posto_servico_id_origem"]
+            isOneToOne: false
+            referencedRelation: "v_colaboradores_convenia_alocacao_atual"
+            referencedColumns: ["posto_servico_id"]
           },
           {
             foreignKeyName: "fk_movimentacoes_colaborador"
@@ -1525,11 +1539,25 @@ export type Database = {
             referencedColumns: ["id"]
           },
           {
+            foreignKeyName: "fk_movimentacoes_posto_destino"
+            columns: ["posto_servico_id_destino"]
+            isOneToOne: false
+            referencedRelation: "v_colaboradores_convenia_alocacao_atual"
+            referencedColumns: ["posto_servico_id"]
+          },
+          {
             foreignKeyName: "fk_movimentacoes_posto_origem"
             columns: ["posto_servico_id_origem"]
             isOneToOne: false
             referencedRelation: "postos_servico"
             referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "fk_movimentacoes_posto_origem"
+            columns: ["posto_servico_id_origem"]
+            isOneToOne: false
+            referencedRelation: "v_colaboradores_convenia_alocacao_atual"
+            referencedColumns: ["posto_servico_id"]
           },
         ]
       }
@@ -1674,6 +1702,13 @@ export type Database = {
             isOneToOne: false
             referencedRelation: "postos_servico"
             referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "colaboradores_posto_servico_id_fkey"
+            columns: ["posto_servico_id"]
+            isOneToOne: false
+            referencedRelation: "v_colaboradores_convenia_alocacao_atual"
+            referencedColumns: ["posto_servico_id"]
           },
           {
             foreignKeyName: "colaboradores_unidade_id_fkey"
@@ -1884,6 +1919,233 @@ export type Database = {
             isOneToOne: false
             referencedRelation: "cost_center"
             referencedColumns: ["id"]
+          },
+        ]
+      }
+      colaboradores_convenia_alocacoes: {
+        Row: {
+          ativo: boolean
+          colaborador_convenia_id: string
+          created_at: string
+          created_by: string | null
+          data_fim: string | null
+          data_inicio: string
+          horario_entrada: string
+          horario_saida: string
+          id: string
+          intervalo_minutos: number | null
+          observacao: string | null
+          paridade_12x36: string | null
+          posto_servico_id: string
+          updated_at: string
+          updated_by: string | null
+        }
+        Insert: {
+          ativo?: boolean
+          colaborador_convenia_id: string
+          created_at?: string
+          created_by?: string | null
+          data_fim?: string | null
+          data_inicio?: string
+          horario_entrada: string
+          horario_saida: string
+          id?: string
+          intervalo_minutos?: number | null
+          observacao?: string | null
+          paridade_12x36?: string | null
+          posto_servico_id: string
+          updated_at?: string
+          updated_by?: string | null
+        }
+        Update: {
+          ativo?: boolean
+          colaborador_convenia_id?: string
+          created_at?: string
+          created_by?: string | null
+          data_fim?: string | null
+          data_inicio?: string
+          horario_entrada?: string
+          horario_saida?: string
+          id?: string
+          intervalo_minutos?: number | null
+          observacao?: string | null
+          paridade_12x36?: string | null
+          posto_servico_id?: string
+          updated_at?: string
+          updated_by?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "colaboradores_convenia_alocacoes_colaborador_convenia_id_fkey"
+            columns: ["colaborador_convenia_id"]
+            isOneToOne: false
+            referencedRelation: "colaboradores_convenia"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "colaboradores_convenia_alocacoes_colaborador_convenia_id_fkey"
+            columns: ["colaborador_convenia_id"]
+            isOneToOne: false
+            referencedRelation: "v_colaboradores_convenia_alocacao_atual"
+            referencedColumns: ["colaborador_convenia_id"]
+          },
+          {
+            foreignKeyName: "colaboradores_convenia_alocacoes_created_by_fkey"
+            columns: ["created_by"]
+            isOneToOne: false
+            referencedRelation: "usuarios"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "colaboradores_convenia_alocacoes_posto_servico_id_fkey"
+            columns: ["posto_servico_id"]
+            isOneToOne: false
+            referencedRelation: "postos_servico"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "colaboradores_convenia_alocacoes_posto_servico_id_fkey"
+            columns: ["posto_servico_id"]
+            isOneToOne: false
+            referencedRelation: "v_colaboradores_convenia_alocacao_atual"
+            referencedColumns: ["posto_servico_id"]
+          },
+          {
+            foreignKeyName: "colaboradores_convenia_alocacoes_updated_by_fkey"
+            columns: ["updated_by"]
+            isOneToOne: false
+            referencedRelation: "usuarios"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      colaboradores_convenia_alocacoes_historico: {
+        Row: {
+          alocacao_id: string | null
+          colaborador_convenia_id: string
+          created_at: string
+          created_by: string | null
+          horario_entrada_anterior: string | null
+          horario_entrada_novo: string | null
+          horario_saida_anterior: string | null
+          horario_saida_novo: string | null
+          id: string
+          intervalo_minutos_anterior: number | null
+          intervalo_minutos_novo: number | null
+          motivo: string | null
+          operacao: string
+          paridade_12x36_anterior: string | null
+          paridade_12x36_nova: string | null
+          posto_servico_id_anterior: string | null
+          posto_servico_id_novo: string | null
+          registro_anterior: Json | null
+          registro_novo: Json | null
+        }
+        Insert: {
+          alocacao_id?: string | null
+          colaborador_convenia_id: string
+          created_at?: string
+          created_by?: string | null
+          horario_entrada_anterior?: string | null
+          horario_entrada_novo?: string | null
+          horario_saida_anterior?: string | null
+          horario_saida_novo?: string | null
+          id?: string
+          intervalo_minutos_anterior?: number | null
+          intervalo_minutos_novo?: number | null
+          motivo?: string | null
+          operacao: string
+          paridade_12x36_anterior?: string | null
+          paridade_12x36_nova?: string | null
+          posto_servico_id_anterior?: string | null
+          posto_servico_id_novo?: string | null
+          registro_anterior?: Json | null
+          registro_novo?: Json | null
+        }
+        Update: {
+          alocacao_id?: string | null
+          colaborador_convenia_id?: string
+          created_at?: string
+          created_by?: string | null
+          horario_entrada_anterior?: string | null
+          horario_entrada_novo?: string | null
+          horario_saida_anterior?: string | null
+          horario_saida_novo?: string | null
+          id?: string
+          intervalo_minutos_anterior?: number | null
+          intervalo_minutos_novo?: number | null
+          motivo?: string | null
+          operacao?: string
+          paridade_12x36_anterior?: string | null
+          paridade_12x36_nova?: string | null
+          posto_servico_id_anterior?: string | null
+          posto_servico_id_novo?: string | null
+          registro_anterior?: Json | null
+          registro_novo?: Json | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "colaboradores_convenia_alocacoes_h_colaborador_convenia_id_fkey"
+            columns: ["colaborador_convenia_id"]
+            isOneToOne: false
+            referencedRelation: "colaboradores_convenia"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "colaboradores_convenia_alocacoes_h_colaborador_convenia_id_fkey"
+            columns: ["colaborador_convenia_id"]
+            isOneToOne: false
+            referencedRelation: "v_colaboradores_convenia_alocacao_atual"
+            referencedColumns: ["colaborador_convenia_id"]
+          },
+          {
+            foreignKeyName: "colaboradores_convenia_alocacoes_his_posto_servico_id_novo_fkey"
+            columns: ["posto_servico_id_novo"]
+            isOneToOne: false
+            referencedRelation: "postos_servico"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "colaboradores_convenia_alocacoes_his_posto_servico_id_novo_fkey"
+            columns: ["posto_servico_id_novo"]
+            isOneToOne: false
+            referencedRelation: "v_colaboradores_convenia_alocacao_atual"
+            referencedColumns: ["posto_servico_id"]
+          },
+          {
+            foreignKeyName: "colaboradores_convenia_alocacoes_historico_alocacao_id_fkey"
+            columns: ["alocacao_id"]
+            isOneToOne: false
+            referencedRelation: "colaboradores_convenia_alocacoes"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "colaboradores_convenia_alocacoes_historico_alocacao_id_fkey"
+            columns: ["alocacao_id"]
+            isOneToOne: false
+            referencedRelation: "v_colaboradores_convenia_alocacao_atual"
+            referencedColumns: ["alocacao_id"]
+          },
+          {
+            foreignKeyName: "colaboradores_convenia_alocacoes_historico_created_by_fkey"
+            columns: ["created_by"]
+            isOneToOne: false
+            referencedRelation: "usuarios"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "colaboradores_convenia_alocacoes_posto_servico_id_anterior_fkey"
+            columns: ["posto_servico_id_anterior"]
+            isOneToOne: false
+            referencedRelation: "postos_servico"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "colaboradores_convenia_alocacoes_posto_servico_id_anterior_fkey"
+            columns: ["posto_servico_id_anterior"]
+            isOneToOne: false
+            referencedRelation: "v_colaboradores_convenia_alocacao_atual"
+            referencedColumns: ["posto_servico_id"]
           },
         ]
       }
@@ -2488,6 +2750,13 @@ export type Database = {
             referencedColumns: ["id"]
           },
           {
+            foreignKeyName: "diarias_temporarias_posto_servico_id_fkey"
+            columns: ["posto_servico_id"]
+            isOneToOne: false
+            referencedRelation: "v_colaboradores_convenia_alocacao_atual"
+            referencedColumns: ["posto_servico_id"]
+          },
+          {
             foreignKeyName: "diarias_temporarias_reprovada_por_fkey"
             columns: ["reprovada_por"]
             isOneToOne: false
@@ -2509,11 +2778,25 @@ export type Database = {
             referencedColumns: ["id"]
           },
           {
+            foreignKeyName: "fk_colab_ausente_convenia"
+            columns: ["colaborador_ausente_convenia"]
+            isOneToOne: false
+            referencedRelation: "v_colaboradores_convenia_alocacao_atual"
+            referencedColumns: ["colaborador_convenia_id"]
+          },
+          {
             foreignKeyName: "fk_colab_demitido_convenia"
             columns: ["colaborador_demitido_convenia"]
             isOneToOne: false
             referencedRelation: "colaboradores_convenia"
             referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "fk_colab_demitido_convenia"
+            columns: ["colaborador_demitido_convenia"]
+            isOneToOne: false
+            referencedRelation: "v_colaboradores_convenia_alocacao_atual"
+            referencedColumns: ["colaborador_convenia_id"]
           },
         ]
       }
@@ -2819,6 +3102,13 @@ export type Database = {
             referencedRelation: "postos_servico"
             referencedColumns: ["id"]
           },
+          {
+            foreignKeyName: "dias_trabalho_posto_servico_id_fkey"
+            columns: ["posto_servico_id"]
+            isOneToOne: false
+            referencedRelation: "v_colaboradores_convenia_alocacao_atual"
+            referencedColumns: ["posto_servico_id"]
+          },
         ]
       }
       escalas: {
@@ -2901,6 +3191,13 @@ export type Database = {
             isOneToOne: false
             referencedRelation: "colaboradores_convenia"
             referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "faltas_colaboradores_convenia_colaborador_convenia_id_fkey"
+            columns: ["colaborador_convenia_id"]
+            isOneToOne: false
+            referencedRelation: "v_colaboradores_convenia_alocacao_atual"
+            referencedColumns: ["colaborador_convenia_id"]
           },
           {
             foreignKeyName: "faltas_colaboradores_convenia_diaria_temporaria_id_fkey"
@@ -3046,6 +3343,13 @@ export type Database = {
             isOneToOne: false
             referencedRelation: "colaboradores_convenia"
             referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "horas_extras_colaborador_cobrindo_id_fkey"
+            columns: ["colaborador_cobrindo_id"]
+            isOneToOne: false
+            referencedRelation: "v_colaboradores_convenia_alocacao_atual"
+            referencedColumns: ["colaborador_convenia_id"]
           },
           {
             foreignKeyName: "horas_extras_confirmado_por_fkey"
@@ -4052,6 +4356,13 @@ export type Database = {
             referencedRelation: "postos_servico"
             referencedColumns: ["id"]
           },
+          {
+            foreignKeyName: "posto_dias_vagos_posto_servico_id_fkey"
+            columns: ["posto_servico_id"]
+            isOneToOne: false
+            referencedRelation: "v_colaboradores_convenia_alocacao_atual"
+            referencedColumns: ["posto_servico_id"]
+          },
         ]
       }
       posto_jornadas: {
@@ -4089,6 +4400,13 @@ export type Database = {
             isOneToOne: false
             referencedRelation: "postos_servico"
             referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "posto_jornadas_posto_servico_id_fkey"
+            columns: ["posto_servico_id"]
+            isOneToOne: false
+            referencedRelation: "v_colaboradores_convenia_alocacao_atual"
+            referencedColumns: ["posto_servico_id"]
           },
         ]
       }
@@ -4294,6 +4612,13 @@ export type Database = {
             isOneToOne: false
             referencedRelation: "postos_servico"
             referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "presencas_posto_servico_id_fkey"
+            columns: ["posto_servico_id"]
+            isOneToOne: false
+            referencedRelation: "v_colaboradores_convenia_alocacao_atual"
+            referencedColumns: ["posto_servico_id"]
           },
         ]
       }
@@ -4750,6 +5075,13 @@ export type Database = {
             referencedColumns: ["id"]
           },
           {
+            foreignKeyName: "vagas_temp_posto_servico_id_fkey"
+            columns: ["posto_servico_id"]
+            isOneToOne: false
+            referencedRelation: "v_colaboradores_convenia_alocacao_atual"
+            referencedColumns: ["posto_servico_id"]
+          },
+          {
             foreignKeyName: "vagas_temp_reprovada_por_fkey"
             columns: ["reprovada_por"]
             isOneToOne: false
@@ -4800,6 +5132,85 @@ export type Database = {
           id: string | null
         }
         Relationships: []
+      }
+      v_colaboradores_convenia_alocacao_atual: {
+        Row: {
+          alocacao_id: string | null
+          ativo: boolean | null
+          cliente_id: number | null
+          colaborador_convenia_id: string | null
+          convenia_id: string | null
+          cost_center_id: string | null
+          cost_center_name: string | null
+          cpf: string | null
+          created_at: string | null
+          created_by: string | null
+          data_fim: string | null
+          data_inicio: string | null
+          dias_semana: number[] | null
+          email: string | null
+          escala: string | null
+          horario_entrada: string | null
+          horario_saida: string | null
+          intervalo_minutos: number | null
+          job_name: string | null
+          nome_colaborador: string | null
+          observacao: string | null
+          paridade_12x36: string | null
+          personal_email: string | null
+          posto_cost_center_id: string | null
+          posto_servico_id: string | null
+          posto_servico_nome: string | null
+          registration: string | null
+          status_convenia: string | null
+          unidade_id: string | null
+          updated_at: string | null
+          updated_by: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "colaboradores_convenia_alocacoes_created_by_fkey"
+            columns: ["created_by"]
+            isOneToOne: false
+            referencedRelation: "usuarios"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "colaboradores_convenia_alocacoes_updated_by_fkey"
+            columns: ["updated_by"]
+            isOneToOne: false
+            referencedRelation: "usuarios"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "colaboradores_convenia_cost_center_fk"
+            columns: ["cost_center_id"]
+            isOneToOne: false
+            referencedRelation: "cost_center"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "postos_servico_cliente_id_fkey"
+            columns: ["cliente_id"]
+            isOneToOne: false
+            referencedRelation: "clientes"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "postos_servico_cost_center_id_fkey"
+            columns: ["posto_cost_center_id"]
+            isOneToOne: false
+            referencedRelation: "cost_center"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "postos_servico_unidade_id_fkey"
+            columns: ["unidade_id"]
+            isOneToOne: false
+            referencedRelation: "unidades"
+            referencedColumns: ["id"]
+          },
+        ]
       }
     }
     Functions: {
@@ -5038,7 +5449,12 @@ export type Database = {
         Args: { p_cost_center_id: string; p_user_id: string }
         Returns: undefined
       }
+      fn_alternar_paridade_12x36_mensal: { Args: never; Returns: undefined }
       fn_diff_jsonb: { Args: { new_row: Json; old_row: Json }; Returns: Json }
+      fn_posto_servico_is_12x36: {
+        Args: { p_posto_servico_id: string }
+        Returns: boolean
+      }
       generate_due_checklist_instances: { Args: never; Returns: number }
       gerar_dias_trabalho_proximo_mes: { Args: never; Returns: undefined }
       get_action_plan_assignable_users: {
@@ -5180,6 +5596,81 @@ export type Database = {
             Returns: string
           }
         | { Args: { p_falta_id: string; p_user_id: string }; Returns: string }
+      rpc_alocar_colaborador_convenia: {
+        Args: {
+          p_colaborador_convenia_id: string
+          p_data_inicio: string
+          p_horario_entrada: string
+          p_horario_saida: string
+          p_intervalo_minutos: number
+          p_motivo: string
+          p_paridade_12x36: string
+          p_posto_servico_id: string
+          p_usuario_id: string
+        }
+        Returns: string
+      }
+      rpc_alterar_horario_alocacao_convenia: {
+        Args: {
+          p_colaborador_convenia_id: string
+          p_horario_entrada: string
+          p_horario_saida: string
+          p_intervalo_minutos: number
+          p_motivo: string
+          p_paridade_12x36: string
+          p_usuario_id: string
+        }
+        Returns: string
+      }
+      rpc_desvincular_colaborador_convenia: {
+        Args: {
+          p_colaborador_convenia_id: string
+          p_data_fim: string
+          p_motivo: string
+          p_usuario_id: string
+        }
+        Returns: string
+      }
+      rpc_get_historico_alocacao_colaborador_convenia: {
+        Args: { p_colaborador_convenia_id: string }
+        Returns: {
+          alocacao_id: string
+          colaborador_convenia_id: string
+          created_at: string
+          created_by: string
+          horario_entrada_anterior: string
+          horario_entrada_novo: string
+          horario_saida_anterior: string
+          horario_saida_novo: string
+          id: string
+          intervalo_minutos_anterior: number
+          intervalo_minutos_novo: number
+          motivo: string
+          operacao: string
+          paridade_12x36_anterior: string
+          paridade_12x36_nova: string
+          posto_servico_anterior_nome: string
+          posto_servico_id_anterior: string
+          posto_servico_id_novo: string
+          posto_servico_novo_nome: string
+          registro_anterior: Json
+          registro_novo: Json
+        }[]
+      }
+      rpc_movimentar_colaborador_convenia: {
+        Args: {
+          p_colaborador_convenia_id: string
+          p_data_inicio: string
+          p_horario_entrada: string
+          p_horario_saida: string
+          p_intervalo_minutos: number
+          p_motivo: string
+          p_novo_posto_servico_id: string
+          p_paridade_12x36: string
+          p_usuario_id: string
+        }
+        Returns: string
+      }
       template_has_instancias: {
         Args: { _template_id: string }
         Returns: boolean
