@@ -5139,9 +5139,9 @@ export type Database = {
           ativo: boolean | null
           cliente_id: number | null
           colaborador_convenia_id: string | null
+          colaborador_cost_center_id: string | null
+          colaborador_cost_center_name: string | null
           convenia_id: string | null
-          cost_center_id: string | null
-          cost_center_name: string | null
           cpf: string | null
           created_at: string | null
           created_by: string | null
@@ -5159,10 +5159,12 @@ export type Database = {
           paridade_12x36: string | null
           personal_email: string | null
           posto_cost_center_id: string | null
+          posto_cost_center_name: string | null
           posto_servico_id: string | null
           posto_servico_nome: string | null
           registration: string | null
           status_convenia: string | null
+          turno: Database["public"]["Enums"]["turno_opcoes"] | null
           unidade_id: string | null
           updated_at: string | null
           updated_by: string | null
@@ -5184,7 +5186,7 @@ export type Database = {
           },
           {
             foreignKeyName: "colaboradores_convenia_cost_center_fk"
-            columns: ["cost_center_id"]
+            columns: ["colaborador_cost_center_id"]
             isOneToOne: false
             referencedRelation: "cost_center"
             referencedColumns: ["id"]
