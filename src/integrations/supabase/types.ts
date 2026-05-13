@@ -1922,6 +1922,77 @@ export type Database = {
           },
         ]
       }
+      colaboradores_convenia_alocacao_horarios: {
+        Row: {
+          alocacao_id: string
+          created_at: string
+          created_by: string | null
+          dia_semana: number
+          horario_entrada: string
+          horario_saida: string
+          id: string
+          intervalo_fim: string | null
+          intervalo_inicio: string | null
+          updated_at: string
+          updated_by: string | null
+        }
+        Insert: {
+          alocacao_id: string
+          created_at?: string
+          created_by?: string | null
+          dia_semana: number
+          horario_entrada: string
+          horario_saida: string
+          id?: string
+          intervalo_fim?: string | null
+          intervalo_inicio?: string | null
+          updated_at?: string
+          updated_by?: string | null
+        }
+        Update: {
+          alocacao_id?: string
+          created_at?: string
+          created_by?: string | null
+          dia_semana?: number
+          horario_entrada?: string
+          horario_saida?: string
+          id?: string
+          intervalo_fim?: string | null
+          intervalo_inicio?: string | null
+          updated_at?: string
+          updated_by?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "colaboradores_convenia_alocacao_horarios_alocacao_id_fkey"
+            columns: ["alocacao_id"]
+            isOneToOne: false
+            referencedRelation: "colaboradores_convenia_alocacoes"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "colaboradores_convenia_alocacao_horarios_alocacao_id_fkey"
+            columns: ["alocacao_id"]
+            isOneToOne: false
+            referencedRelation: "v_colaboradores_convenia_alocacao_atual"
+            referencedColumns: ["alocacao_id"]
+          },
+          {
+            foreignKeyName: "colaboradores_convenia_alocacao_horarios_created_by_fkey"
+            columns: ["created_by"]
+            isOneToOne: false
+            referencedRelation: "usuarios"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "colaboradores_convenia_alocacao_horarios_updated_by_fkey"
+            columns: ["updated_by"]
+            isOneToOne: false
+            referencedRelation: "usuarios"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       colaboradores_convenia_alocacoes: {
         Row: {
           ativo: boolean
@@ -1933,6 +2004,8 @@ export type Database = {
           horario_entrada: string
           horario_saida: string
           id: string
+          intervalo_fim: string | null
+          intervalo_inicio: string | null
           intervalo_minutos: number | null
           observacao: string | null
           paridade_12x36: string | null
@@ -1950,6 +2023,8 @@ export type Database = {
           horario_entrada: string
           horario_saida: string
           id?: string
+          intervalo_fim?: string | null
+          intervalo_inicio?: string | null
           intervalo_minutos?: number | null
           observacao?: string | null
           paridade_12x36?: string | null
@@ -1967,6 +2042,8 @@ export type Database = {
           horario_entrada?: string
           horario_saida?: string
           id?: string
+          intervalo_fim?: string | null
+          intervalo_inicio?: string | null
           intervalo_minutos?: number | null
           observacao?: string | null
           paridade_12x36?: string | null
@@ -2029,7 +2106,13 @@ export type Database = {
           horario_entrada_novo: string | null
           horario_saida_anterior: string | null
           horario_saida_novo: string | null
+          horarios_semanais_anterior: Json | null
+          horarios_semanais_novo: Json | null
           id: string
+          intervalo_fim_anterior: string | null
+          intervalo_fim_novo: string | null
+          intervalo_inicio_anterior: string | null
+          intervalo_inicio_novo: string | null
           intervalo_minutos_anterior: number | null
           intervalo_minutos_novo: number | null
           motivo: string | null
@@ -2050,7 +2133,13 @@ export type Database = {
           horario_entrada_novo?: string | null
           horario_saida_anterior?: string | null
           horario_saida_novo?: string | null
+          horarios_semanais_anterior?: Json | null
+          horarios_semanais_novo?: Json | null
           id?: string
+          intervalo_fim_anterior?: string | null
+          intervalo_fim_novo?: string | null
+          intervalo_inicio_anterior?: string | null
+          intervalo_inicio_novo?: string | null
           intervalo_minutos_anterior?: number | null
           intervalo_minutos_novo?: number | null
           motivo?: string | null
@@ -2071,7 +2160,13 @@ export type Database = {
           horario_entrada_novo?: string | null
           horario_saida_anterior?: string | null
           horario_saida_novo?: string | null
+          horarios_semanais_anterior?: Json | null
+          horarios_semanais_novo?: Json | null
           id?: string
+          intervalo_fim_anterior?: string | null
+          intervalo_fim_novo?: string | null
+          intervalo_inicio_anterior?: string | null
+          intervalo_inicio_novo?: string | null
           intervalo_minutos_anterior?: number | null
           intervalo_minutos_novo?: number | null
           motivo?: string | null
@@ -5152,7 +5247,9 @@ export type Database = {
           escala: string | null
           horario_entrada: string | null
           horario_saida: string | null
-          intervalo_minutos: number | null
+          horarios_semanais: Json | null
+          intervalo_fim: string | null
+          intervalo_inicio: string | null
           job_name: string | null
           nome_colaborador: string | null
           observacao: string | null
@@ -5452,10 +5549,35 @@ export type Database = {
         Returns: undefined
       }
       fn_alternar_paridade_12x36_mensal: { Args: never; Returns: undefined }
+      fn_dias_obrigatorios_alocacao: {
+        Args: { p_posto_servico_id: string }
+        Returns: number[]
+      }
       fn_diff_jsonb: { Args: { new_row: Json; old_row: Json }; Returns: Json }
+      fn_normalizar_escala: { Args: { p_escala: string }; Returns: string }
+      fn_posto_servico_escala_normalizada: {
+        Args: { p_posto_servico_id: string }
+        Returns: string
+      }
       fn_posto_servico_is_12x36: {
         Args: { p_posto_servico_id: string }
         Returns: boolean
+      }
+      fn_posto_servico_is_5x2: {
+        Args: { p_posto_servico_id: string }
+        Returns: boolean
+      }
+      fn_posto_servico_is_6x1: {
+        Args: { p_posto_servico_id: string }
+        Returns: boolean
+      }
+      fn_upsert_horarios_semanais_alocacao: {
+        Args: { p_alocacao_id: string; p_horarios: Json; p_usuario_id: string }
+        Returns: undefined
+      }
+      fn_validar_horarios_semanais_alocacao: {
+        Args: { p_alocacao_id: string }
+        Returns: undefined
       }
       generate_due_checklist_instances: { Args: never; Returns: number }
       gerar_dias_trabalho_proximo_mes: { Args: never; Returns: undefined }
@@ -5604,7 +5726,9 @@ export type Database = {
           p_data_inicio: string
           p_horario_entrada: string
           p_horario_saida: string
-          p_intervalo_minutos: number
+          p_horarios_semanais: Json
+          p_intervalo_fim: string
+          p_intervalo_inicio: string
           p_motivo: string
           p_paridade_12x36: string
           p_posto_servico_id: string
@@ -5617,7 +5741,9 @@ export type Database = {
           p_colaborador_convenia_id: string
           p_horario_entrada: string
           p_horario_saida: string
-          p_intervalo_minutos: number
+          p_horarios_semanais: Json
+          p_intervalo_fim: string
+          p_intervalo_inicio: string
           p_motivo: string
           p_paridade_12x36: string
           p_usuario_id: string
@@ -5644,9 +5770,13 @@ export type Database = {
           horario_entrada_novo: string
           horario_saida_anterior: string
           horario_saida_novo: string
+          horarios_semanais_anterior: Json
+          horarios_semanais_novo: Json
           id: string
-          intervalo_minutos_anterior: number
-          intervalo_minutos_novo: number
+          intervalo_fim_anterior: string
+          intervalo_fim_novo: string
+          intervalo_inicio_anterior: string
+          intervalo_inicio_novo: string
           motivo: string
           operacao: string
           paridade_12x36_anterior: string
@@ -5665,7 +5795,9 @@ export type Database = {
           p_data_inicio: string
           p_horario_entrada: string
           p_horario_saida: string
-          p_intervalo_minutos: number
+          p_horarios_semanais: Json
+          p_intervalo_fim: string
+          p_intervalo_inicio: string
           p_motivo: string
           p_novo_posto_servico_id: string
           p_paridade_12x36: string
