@@ -1,0 +1,4 @@
+
+alter table public.colaboradores_convenia_alocacoes drop column if exists intervalo_minutos;
+alter table public.colaboradores_convenia_alocacoes_historico drop column if exists intervalo_minutos_anterior;
+alter table public.colaboradores_convenia_alocacoes_historico drop column if exists intervalo_minutos_novo;

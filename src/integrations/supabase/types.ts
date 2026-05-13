@@ -2006,7 +2006,6 @@ export type Database = {
           id: string
           intervalo_fim: string | null
           intervalo_inicio: string | null
-          intervalo_minutos: number | null
           observacao: string | null
           paridade_12x36: string | null
           posto_servico_id: string
@@ -2025,7 +2024,6 @@ export type Database = {
           id?: string
           intervalo_fim?: string | null
           intervalo_inicio?: string | null
-          intervalo_minutos?: number | null
           observacao?: string | null
           paridade_12x36?: string | null
           posto_servico_id: string
@@ -2044,7 +2042,6 @@ export type Database = {
           id?: string
           intervalo_fim?: string | null
           intervalo_inicio?: string | null
-          intervalo_minutos?: number | null
           observacao?: string | null
           paridade_12x36?: string | null
           posto_servico_id?: string
@@ -2113,8 +2110,6 @@ export type Database = {
           intervalo_fim_novo: string | null
           intervalo_inicio_anterior: string | null
           intervalo_inicio_novo: string | null
-          intervalo_minutos_anterior: number | null
-          intervalo_minutos_novo: number | null
           motivo: string | null
           operacao: string
           paridade_12x36_anterior: string | null
@@ -2140,8 +2135,6 @@ export type Database = {
           intervalo_fim_novo?: string | null
           intervalo_inicio_anterior?: string | null
           intervalo_inicio_novo?: string | null
-          intervalo_minutos_anterior?: number | null
-          intervalo_minutos_novo?: number | null
           motivo?: string | null
           operacao: string
           paridade_12x36_anterior?: string | null
@@ -2167,8 +2160,6 @@ export type Database = {
           intervalo_fim_novo?: string | null
           intervalo_inicio_anterior?: string | null
           intervalo_inicio_novo?: string | null
-          intervalo_minutos_anterior?: number | null
-          intervalo_minutos_novo?: number | null
           motivo?: string | null
           operacao?: string
           paridade_12x36_anterior?: string | null
