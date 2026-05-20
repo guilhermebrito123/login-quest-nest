@@ -5888,6 +5888,7 @@ export type Database = {
         }
         Returns: string
       }
+      rpc_sincronizar_alocacoes_convenia: { Args: never; Returns: undefined }
       template_has_instancias: {
         Args: { _template_id: string }
         Returns: boolean
