@@ -6109,7 +6109,7 @@ export type Database = {
         | "Fechada"
         | "Cancelada"
         | "Reprovada"
-      tipo_conta_bancaria: "conta corrente" | "conta poupança" | "conta salário"
+      tipo_conta_bancaria: "conta corrente" | "conta poupanca" | "conta salario"
       tipo_de_vaga: "Efetivo" | "Temporário" | "Seleção" | "Estágio"
       tipos_requisito:
         | "TQC (D.A. 06-01)"
@@ -6486,8 +6486,8 @@ export const Constants = {
       ],
       tipo_conta_bancaria: [
         "conta corrente",
-        "conta poupança",
-        "conta salário",
+        "conta poupanca",
+        "conta salario",
       ],
       tipo_de_vaga: ["Efetivo", "Temporário", "Seleção", "Estágio"],
       tipos_requisito: [
