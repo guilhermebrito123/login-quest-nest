@@ -40,7 +40,7 @@ export function DiaristaForm({ open, onClose, onSuccess, diarista }: DiaristaFor
     motivo_restricao: string;
     agencia: string;
     banco: string;
-    tipo_conta: "conta corrente" | "conta poupança" | "conta salário";
+    tipo_conta: "conta corrente" | "conta poupanca" | "conta salario";
     numero_conta: string;
     pix: string;
     reserva_tecnica: boolean;
@@ -85,7 +85,7 @@ export function DiaristaForm({ open, onClose, onSuccess, diarista }: DiaristaFor
         motivo_restricao: diarista.motivo_restricao || "",
         agencia: diarista.agencia || "",
         banco: diarista.banco || "",
-        tipo_conta: (diarista.tipo_conta || "conta corrente") as "conta corrente" | "conta poupança" | "conta salário",
+        tipo_conta: (diarista.tipo_conta || "conta corrente") as "conta corrente" | "conta poupanca" | "conta salario",
         numero_conta: diarista.numero_conta || "",
         pix: diarista.pix || "",
         reserva_tecnica: diarista.reserva_tecnica || false,
@@ -410,7 +410,7 @@ export function DiaristaForm({ open, onClose, onSuccess, diarista }: DiaristaFor
               <Select
                 value={formData.tipo_conta}
                 onValueChange={(value) =>
-                  setFormData({ ...formData, tipo_conta: value as "conta corrente" | "conta poupança" | "conta salário" })
+                  setFormData({ ...formData, tipo_conta: value as "conta corrente" | "conta poupanca" | "conta salario" })
                 }
               >
                 <SelectTrigger>
@@ -418,8 +418,8 @@ export function DiaristaForm({ open, onClose, onSuccess, diarista }: DiaristaFor
                 </SelectTrigger>
                 <SelectContent>
                   <SelectItem value="conta corrente">Conta Corrente</SelectItem>
-                  <SelectItem value="conta poupança">Conta Poupança</SelectItem>
-                  <SelectItem value="conta salário">Conta Salário</SelectItem>
+                  <SelectItem value="conta poupanca">Conta Poupança</SelectItem>
+                  <SelectItem value="conta salario">Conta Salário</SelectItem>
                 </SelectContent>
               </Select>
             </div>
