@@ -1,31 +1,57 @@
-## Resposta direta
+# Diagnóstico — logs de diárias temporárias
 
-Não há no sistema um fluxo de frontend/backend dedicado para converter uma diária originada de `AFASTAMENTO INSS` para `DIÁRIA - SALÁRIO`. As triggers existentes em `diarias_temporarias` validam transições de status e sincronizam com `faltas_colaboradores_convenia` / `dias_trabalho`, mas não oferecem uma ação de "reclassificação de motivo". Por isso, a alteração precisa ser feita via SQL direto, como no caso da diária 1781.
+## Números reais do banco
 
-## Alteração proposta (SQL puro, com bypass de trigger)
+- Linhas em `public.diarias_temporarias_logs`: **35.814**
+- Tamanho da tabela: **4,8 MB** / índices: **5,6 MB** (tabela pequena)
+- Índices já existentes cobrem quase tudo que você listou:
+  - PK em `id`
+  - `(operacao_em DESC, criado_em DESC)` — ordenação principal
+  - `(diaria_id, operacao_em DESC)`
+  - `(campo, operacao_em DESC)`
+  - `(operacao, operacao_em DESC)`
+  - `(usuario_responsavel, operacao_em DESC)`
+  - `(operacao_em)` simples + índice de retenção em `COALESCE(criado_em, operacao_em)`
 
-Atualizar 5 registros em `public.diarias_temporarias`:
+## EXPLAIN ANALYZE das consultas típicas
 
-- IDs: `1753, 1724, 1631, 1526, 1506`
-- `motivo_vago`: `AFASTAMENTO INSS` → `DIÁRIA - SALÁRIO`
-- `novo_posto`: `false`
-- Demais campos preservados (colaborador, posto, datas, valor, status, etc.)
+| Cenário | Tempo real | Plano |
+|---|---|---|
+| `ORDER BY operacao_em DESC LIMIT 50 OFFSET 0` | **2,4 ms** | Index Scan Backward (4 buffers) |
+| `count(*)` exact sem filtro | **7,2 ms** | Index Only Scan (216 buffers) |
+| Busca `ILIKE '%status%'` em 4 colunas + ORDER BY + LIMIT 50 | **1,0 ms** | Index Scan Backward, filtro em memória |
 
-Para evitar bloqueio das triggers de autorização (que exigem `auth.uid()`), será usado `SET LOCAL app.rpc_call = 'true'` no mesmo bloco, conforme padrão já adotado no projeto.
+Todos os cenários custam **menos de 10 ms no Postgres**, inclusive o `count exact` e o OR/ILIKE. Nenhum ILIKE está caindo em seq scan lento porque o `ORDER BY ... LIMIT` já resolve via índice de tempo, e o filtro é aplicado em batches pequenos.
 
-```sql
-SET LOCAL app.rpc_call = 'true';
+## Conclusão
 
-UPDATE public.diarias_temporarias
-SET motivo_vago = 'DIÁRIA - SALÁRIO',
-    novo_posto = false
-WHERE id IN (1753, 1724, 1631, 1526, 1506)
-  AND motivo_vago = 'AFASTAMENTO INSS';
-```
+**O banco não é o gargalo desta tela.** A demora percebida vem quase certamente do frontend, não da consulta:
 
-A cláusula adicional `AND motivo_vago = 'AFASTAMENTO INSS'` serve como salvaguarda: se algum registro já tiver sido alterado, ele não será sobrescrito.
+1. O `select` está fazendo **embed via FK para `usuarios(full_name, email)`** — isso, sim, obriga o PostgREST a fazer join extra em cada linha e é o que mais tende a pesar quando cresce.
+2. `count exact` roda em toda troca de página, mesmo quando os filtros não mudaram.
+3. React renderizando 50 linhas com colunas grandes de `valor_antigo`/`valor_novo` (podem ser JSON longos) sem virtualização.
+4. Latência de rede (ida/volta para o Supabase) domina os 2–10 ms de execução.
 
-## Observações
+## O que vale a pena implementar
 
-- Nenhum registro será criado/removido em `faltas_colaboradores_convenia` ou `dias_trabalho` — apenas os dois campos da diária mudam.
-- Caso `DIÁRIA - SALÁRIO` não exista no enum `motivo_vago_type`, o update falhará e precisaremos confirmar o label exato antes de prosseguir.
+### Não implementar agora (não traz ganho mensurável)
+- Nenhum índice novo. Os que você listou já existem ou seriam redundantes com os atuais para 35k linhas.
+- **pg_trgm/GIN em `campo`, `operacao`, `valor_antigo`, `valor_novo`**: não compensa. O ILIKE hoje roda em 1 ms porque o LIMIT 50 sobre índice temporal já é seletivo. GIN trigram só valeria a pena se você fosse permitir busca **sem** ordenação temporal ou em tabelas com milhões de linhas.
+- **Particionamento mensal**: fora de escala para 35k linhas / 5 MB. Só faria sentido acima de alguns milhões de linhas.
+- **RPC keyset/cursor**: OFFSET só dói em páginas altas (offset > 10k). Com 35k linhas e ordenação indexada, OFFSET simples ainda é aceitável. Pode virar necessário no futuro, não agora.
+- Coluna gerada consolidada para busca: prematuro.
+
+### Vale a pena (ganho perceptível, baixo risco)
+1. **Parar de embutir `usuarios(full_name, email)` na mesma query.** Buscar os logs primeiro, depois um `select ... in (usuario_ids)` em `usuarios` numa segunda chamada e mapear no cliente. É a mudança que mais deve reduzir latência percebida.
+2. **Só rodar `count exact` quando filtros/busca mudarem**, não a cada troca de página. Cachear o total até o filtro mudar. Se quiser zero custo, usar `count: 'estimated'` (a tabela é analisada regularmente) e cair para `exact` só quando `< N`.
+3. **`VACUUM ANALYZE public.diarias_temporarias_logs`** (barato, sem side effects) só para atualizar estatísticas — não vai transformar nada, mas é higiene.
+
+Nada disso mexe em RLS, schema de tabela nem quebra o frontend — são ajustes na forma de consultar.
+
+## Faz sentido?
+
+Sim, mas com a inversão do foco: o banco está saudável para esta tela. A otimização de maior impacto é reduzir o payload por linha (tirar o embed de usuários) e evitar `count exact` repetido. Só depois disso, se ainda estiver lento, faz sentido pensar em keyset/virtualização de lista no React.
+
+Se quiser, no build eu:
+- Rodo `VACUUM ANALYZE` na tabela.
+- Refatoro a tela para buscar usuários em query separada e cachear o count.
