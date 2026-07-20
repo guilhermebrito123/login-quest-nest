@@ -3107,6 +3107,7 @@ export type Database = {
       diaristas_historico: {
         Row: {
           alterado_em: string | null
+          alterado_por: string | null
           campo_alterado: string
           diarista_id: string
           id: string
@@ -3116,6 +3117,7 @@ export type Database = {
         }
         Insert: {
           alterado_em?: string | null
+          alterado_por?: string | null
           campo_alterado: string
           diarista_id: string
           id?: string
@@ -3125,6 +3127,7 @@ export type Database = {
         }
         Update: {
           alterado_em?: string | null
+          alterado_por?: string | null
           campo_alterado?: string
           diarista_id?: string
           id?: string
