@@ -3247,6 +3247,7 @@ export type Database = {
           atestado_path: string | null
           colaborador_convenia_id: string
           created_at: string
+          created_by: string | null
           data_falta: string
           diaria_temporaria_id: number | null
           id: number
@@ -3255,11 +3256,13 @@ export type Database = {
           local_falta: string | null
           motivo: string
           updated_at: string
+          updated_by: string | null
         }
         Insert: {
           atestado_path?: string | null
           colaborador_convenia_id: string
           created_at?: string
+          created_by?: string | null
           data_falta: string
           diaria_temporaria_id?: number | null
           id?: number
@@ -3268,11 +3271,13 @@ export type Database = {
           local_falta?: string | null
           motivo: string
           updated_at?: string
+          updated_by?: string | null
         }
         Update: {
           atestado_path?: string | null
           colaborador_convenia_id?: string
           created_at?: string
+          created_by?: string | null
           data_falta?: string
           diaria_temporaria_id?: number | null
           id?: number
@@ -3281,6 +3286,7 @@ export type Database = {
           local_falta?: string | null
           motivo?: string
           updated_at?: string
+          updated_by?: string | null
         }
         Relationships: [
           {
@@ -3296,6 +3302,13 @@ export type Database = {
             isOneToOne: false
             referencedRelation: "v_colaboradores_convenia_alocacao_atual"
             referencedColumns: ["colaborador_convenia_id"]
+          },
+          {
+            foreignKeyName: "faltas_colaboradores_convenia_created_by_fkey"
+            columns: ["created_by"]
+            isOneToOne: false
+            referencedRelation: "usuarios"
+            referencedColumns: ["id"]
           },
           {
             foreignKeyName: "faltas_colaboradores_convenia_diaria_temporaria_id_fkey"
@@ -3318,7 +3331,62 @@ export type Database = {
             referencedRelation: "cost_center"
             referencedColumns: ["id"]
           },
+          {
+            foreignKeyName: "faltas_colaboradores_convenia_updated_by_fkey"
+            columns: ["updated_by"]
+            isOneToOne: false
+            referencedRelation: "usuarios"
+            referencedColumns: ["id"]
+          },
         ]
+      }
+      faltas_colaboradores_convenia_auditoria: {
+        Row: {
+          alterado_em: string
+          alterado_por: string | null
+          alterado_por_email: string | null
+          alterado_por_nome: string | null
+          campos_alterados: Json | null
+          dados_antigos: Json | null
+          dados_novos: Json | null
+          evento: string
+          falta_id: number
+          id: number
+          ip_origem: string | null
+          operacao: string
+          user_agent: string | null
+        }
+        Insert: {
+          alterado_em?: string
+          alterado_por?: string | null
+          alterado_por_email?: string | null
+          alterado_por_nome?: string | null
+          campos_alterados?: Json | null
+          dados_antigos?: Json | null
+          dados_novos?: Json | null
+          evento: string
+          falta_id: number
+          id?: never
+          ip_origem?: string | null
+          operacao: string
+          user_agent?: string | null
+        }
+        Update: {
+          alterado_em?: string
+          alterado_por?: string | null
+          alterado_por_email?: string | null
+          alterado_por_nome?: string | null
+          campos_alterados?: Json | null
+          dados_antigos?: Json | null
+          dados_novos?: Json | null
+          evento?: string
+          falta_id?: number
+          id?: never
+          ip_origem?: string | null
+          operacao?: string
+          user_agent?: string | null
+        }
+        Relationships: []
       }
       horas_extras: {
         Row: {
@@ -5315,6 +5383,24 @@ export type Database = {
             referencedColumns: ["id"]
           },
         ]
+      }
+      vw_faltas_colaboradores_convenia_auditoria: {
+        Row: {
+          alterado_em: string | null
+          alterado_por: string | null
+          alterado_por_email: string | null
+          alterado_por_nome: string | null
+          campos_alterados: Json | null
+          dados_antigos: Json | null
+          dados_novos: Json | null
+          evento: string | null
+          falta_id: number | null
+          id: number | null
+          ip_origem: string | null
+          operacao: string | null
+          user_agent: string | null
+        }
+        Relationships: []
       }
     }
     Functions: {
