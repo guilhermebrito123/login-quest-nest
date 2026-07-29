@@ -1,57 +1,30 @@
-# Diagnóstico — logs de diárias temporárias
+## Objetivo
+Registrar quem criou/alterou/excluiu cada registro de `public.faltas_colaboradores_convenia`, sem tocar em nenhuma policy, função ou trigger já existente.
 
-## Números reais do banco
+## Estado atual verificado
+- `faltas_colaboradores_convenia`: `id bigint`, `colaborador_convenia_id uuid`, `diaria_temporaria_id bigint`, `data_falta`, `motivo`, `atestado_path`, `justificada_em`, `justificada_por uuid`, `local_falta uuid`, `created_at`, `updated_at`. **Não existem** `created_by`/`updated_by`.
+- Triggers já existentes na tabela (todas serão preservadas): `trg_bloquear_vinculo_diaria_se_hora_extra` (BEFORE UPDATE), `trg_reverter_justificativa_ao_remover_atestado` (BEFORE UPDATE), `trg_sync_falta_para_diaria`, `trg_faltas_convenia_cascade_data_hora_extra`, `trg_sync_hora_extra_operacao_on_falta_motivo` (AFTER UPDATE), `trg_cascade_delete_diaria_on_falta_delete` (AFTER DELETE).
+- `public.usuarios(id uuid, full_name, email)` existe → FK e resolução de nome/email são válidas.
+- `public.has_role(uuid, internal_access_level)` existe → a policy do script funciona como está.
 
-- Linhas em `public.diarias_temporarias_logs`: **35.814**
-- Tamanho da tabela: **4,8 MB** / índices: **5,6 MB** (tabela pequena)
-- Índices já existentes cobrem quase tudo que você listou:
-  - PK em `id`
-  - `(operacao_em DESC, criado_em DESC)` — ordenação principal
-  - `(diaria_id, operacao_em DESC)`
-  - `(campo, operacao_em DESC)`
-  - `(operacao, operacao_em DESC)`
-  - `(usuario_responsavel, operacao_em DESC)`
-  - `(operacao_em)` simples + índice de retenção em `COALESCE(criado_em, operacao_em)`
+## O que será implementado
+1. **Colunas de autoria** `created_by` / `updated_by` (uuid, FK → `public.usuarios(id)`) em `faltas_colaboradores_convenia`, mais trigger BEFORE INSERT/UPDATE `trg_faltas_convenia_autoria` que grava `auth.uid()` (só se o uid existir em `usuarios`, evitando violação de FK) e nunca reescreve `created_by`.
+2. **Tabela nova** `public.faltas_colaboradores_convenia_auditoria` (id identity, `falta_id bigint`, `operacao`, `evento`, `alterado_em`, `alterado_por`, nome/email do autor, `dados_antigos`, `dados_novos`, `campos_alterados`, `ip_origem`, `user_agent`) — sem FK para a tabela original, para sobreviver a exclusões. Índices em `falta_id`, `alterado_em DESC`, `alterado_por`, `evento`.
+3. **RLS apenas na tabela nova**: `GRANT SELECT` a `authenticated`, sem acesso para `anon`, e uma policy de leitura para `admin`, `gestor_operacoes` e `supervisor` via `has_role`. Nenhuma policy existente é criada, alterada ou removida.
+4. **Trigger AFTER INSERT/UPDATE/DELETE** `trg_faltas_convenia_auditoria`, que classifica o evento (`CRIACAO`, `ATUALIZACAO`, `EXCLUSAO`, `JUSTIFICATIVA_REGISTRADA`, `JUSTIFICATIVA_REVERTIDA`, `JUSTIFICATIVA_ALTERADA`) e grava o diff campo a campo.
+5. **View** `public.vw_faltas_colaboradores_convenia_auditoria` com o autor resolvido por `LEFT JOIN usuarios`, com `security_invoker = on` para que a RLS da tabela de auditoria continue valendo (ajuste em relação ao script original, que sem isso criaria uma view SECURITY DEFINER e seria apontada como falha de segurança pelo linter).
 
-## EXPLAIN ANALYZE das consultas típicas
+## Ajustes em relação ao script enviado
+- View criada com `WITH (security_invoker = on)` e sem `ORDER BY` interno (ordenação fica a cargo da consulta).
+- Sem `REVOKE ... FROM anon` desnecessário além do padrão; grants explícitos conforme padrão do projeto (`GRANT SELECT ... TO authenticated`, `GRANT ALL ... TO service_role` para uso por edge functions).
+- Resto do script mantido: nomes, colunas, eventos e comportamento "best-effort".
 
-| Cenário | Tempo real | Plano |
-|---|---|---|
-| `ORDER BY operacao_em DESC LIMIT 50 OFFSET 0` | **2,4 ms** | Index Scan Backward (4 buffers) |
-| `count(*)` exact sem filtro | **7,2 ms** | Index Only Scan (216 buffers) |
-| Busca `ILIKE '%status%'` em 4 colunas + ORDER BY + LIMIT 50 | **1,0 ms** | Index Scan Backward, filtro em memória |
+## Por que não quebra fluxos atuais
+- A trigger de autoria é BEFORE e só escreve em duas colunas novas; a de auditoria é AFTER e só faz INSERT em tabela nova.
+- Ambas envolvem toda a lógica em bloco `EXCEPTION WHEN OTHERS` com `RAISE WARNING`: qualquer erro na auditoria **não** aborta o INSERT/UPDATE/DELETE original.
+- Triggers AFTER UPDATE já existentes continuam disparando na mesma ordem relativa (ordem alfabética não altera a semântica delas, pois nenhuma depende de `created_by`/`updated_by`).
+- Nenhuma policy, função ou trigger de outros módulos é tocada.
+- Registros anteriores ficam com `created_by/updated_by = NULL` e sem histórico retroativo (não há como reconstruir).
 
-Todos os cenários custam **menos de 10 ms no Postgres**, inclusive o `count exact` e o OR/ILIKE. Nenhum ILIKE está caindo em seq scan lento porque o `ORDER BY ... LIMIT` já resolve via índice de tempo, e o filtro é aplicado em batches pequenos.
-
-## Conclusão
-
-**O banco não é o gargalo desta tela.** A demora percebida vem quase certamente do frontend, não da consulta:
-
-1. O `select` está fazendo **embed via FK para `usuarios(full_name, email)`** — isso, sim, obriga o PostgREST a fazer join extra em cada linha e é o que mais tende a pesar quando cresce.
-2. `count exact` roda em toda troca de página, mesmo quando os filtros não mudaram.
-3. React renderizando 50 linhas com colunas grandes de `valor_antigo`/`valor_novo` (podem ser JSON longos) sem virtualização.
-4. Latência de rede (ida/volta para o Supabase) domina os 2–10 ms de execução.
-
-## O que vale a pena implementar
-
-### Não implementar agora (não traz ganho mensurável)
-- Nenhum índice novo. Os que você listou já existem ou seriam redundantes com os atuais para 35k linhas.
-- **pg_trgm/GIN em `campo`, `operacao`, `valor_antigo`, `valor_novo`**: não compensa. O ILIKE hoje roda em 1 ms porque o LIMIT 50 sobre índice temporal já é seletivo. GIN trigram só valeria a pena se você fosse permitir busca **sem** ordenação temporal ou em tabelas com milhões de linhas.
-- **Particionamento mensal**: fora de escala para 35k linhas / 5 MB. Só faria sentido acima de alguns milhões de linhas.
-- **RPC keyset/cursor**: OFFSET só dói em páginas altas (offset > 10k). Com 35k linhas e ordenação indexada, OFFSET simples ainda é aceitável. Pode virar necessário no futuro, não agora.
-- Coluna gerada consolidada para busca: prematuro.
-
-### Vale a pena (ganho perceptível, baixo risco)
-1. **Parar de embutir `usuarios(full_name, email)` na mesma query.** Buscar os logs primeiro, depois um `select ... in (usuario_ids)` em `usuarios` numa segunda chamada e mapear no cliente. É a mudança que mais deve reduzir latência percebida.
-2. **Só rodar `count exact` quando filtros/busca mudarem**, não a cada troca de página. Cachear o total até o filtro mudar. Se quiser zero custo, usar `count: 'estimated'` (a tabela é analisada regularmente) e cair para `exact` só quando `< N`.
-3. **`VACUUM ANALYZE public.diarias_temporarias_logs`** (barato, sem side effects) só para atualizar estatísticas — não vai transformar nada, mas é higiene.
-
-Nada disso mexe em RLS, schema de tabela nem quebra o frontend — são ajustes na forma de consultar.
-
-## Faz sentido?
-
-Sim, mas com a inversão do foco: o banco está saudável para esta tela. A otimização de maior impacto é reduzir o payload por linha (tirar o embed de usuários) e evitar `count exact` repetido. Só depois disso, se ainda estiver lento, faz sentido pensar em keyset/virtualização de lista no React.
-
-Se quiser, no build eu:
-- Rodo `VACUUM ANALYZE` na tabela.
-- Refatoro a tela para buscar usuários em query separada e cachear o count.
+## Depois da migração
+Retorno o resultado do linter e, se você quiser, um prompt pronto para o seu frontend local consumir a view de auditoria.
