@@ -1,30 +1,44 @@
-## Objetivo
-Registrar quem criou/alterou/excluiu cada registro de `public.faltas_colaboradores_convenia`, sem tocar em nenhuma policy, função ou trigger já existente.
+# Proteger a troca de motivo de diárias com falta vinculada
 
-## Estado atual verificado
-- `faltas_colaboradores_convenia`: `id bigint`, `colaborador_convenia_id uuid`, `diaria_temporaria_id bigint`, `data_falta`, `motivo`, `atestado_path`, `justificada_em`, `justificada_por uuid`, `local_falta uuid`, `created_at`, `updated_at`. **Não existem** `created_by`/`updated_by`.
-- Triggers já existentes na tabela (todas serão preservadas): `trg_bloquear_vinculo_diaria_se_hora_extra` (BEFORE UPDATE), `trg_reverter_justificativa_ao_remover_atestado` (BEFORE UPDATE), `trg_sync_falta_para_diaria`, `trg_faltas_convenia_cascade_data_hora_extra`, `trg_sync_hora_extra_operacao_on_falta_motivo` (AFTER UPDATE), `trg_cascade_delete_diaria_on_falta_delete` (AFTER DELETE).
-- `public.usuarios(id uuid, full_name, email)` existe → FK e resolução de nome/email são válidas.
-- `public.has_role(uuid, internal_access_level)` existe → a policy do script funciona como está.
+## Problema
 
-## O que será implementado
-1. **Colunas de autoria** `created_by` / `updated_by` (uuid, FK → `public.usuarios(id)`) em `faltas_colaboradores_convenia`, mais trigger BEFORE INSERT/UPDATE `trg_faltas_convenia_autoria` que grava `auth.uid()` (só se o uid existir em `usuarios`, evitando violação de FK) e nunca reescreve `created_by`.
-2. **Tabela nova** `public.faltas_colaboradores_convenia_auditoria` (id identity, `falta_id bigint`, `operacao`, `evento`, `alterado_em`, `alterado_por`, nome/email do autor, `dados_antigos`, `dados_novos`, `campos_alterados`, `ip_origem`, `user_agent`) — sem FK para a tabela original, para sobreviver a exclusões. Índices em `falta_id`, `alterado_em DESC`, `alterado_por`, `evento`.
-3. **RLS apenas na tabela nova**: `GRANT SELECT` a `authenticated`, sem acesso para `anon`, e uma policy de leitura para `admin`, `gestor_operacoes` e `supervisor` via `has_role`. Nenhuma policy existente é criada, alterada ou removida.
-4. **Trigger AFTER INSERT/UPDATE/DELETE** `trg_faltas_convenia_auditoria`, que classifica o evento (`CRIACAO`, `ATUALIZACAO`, `EXCLUSAO`, `JUSTIFICATIVA_REGISTRADA`, `JUSTIFICATIVA_REVERTIDA`, `JUSTIFICATIVA_ALTERADA`) e grava o diff campo a campo.
-5. **View** `public.vw_faltas_colaboradores_convenia_auditoria` com o autor resolvido por `LEFT JOIN usuarios`, com `security_invoker = on` para que a RLS da tabela de auditoria continue valendo (ajuste em relação ao script original, que sem isso criaria uma view SECURITY DEFINER e seria apontada como falha de segurança pelo linter).
+Quando uma diária é criada com motivo `DIÁRIA - FALTA`, o sistema gera automaticamente uma falta para o colaborador ausente. Se depois alguém troca o motivo da diária (por exemplo para `DIÁRIA - SALÁRIO`), a falta gerada continua existindo e continua apontando para essa diária. O resultado é um registro de falta indevido, e a justificativa da falta passa a falhar com erro de "colaborador ausente é obrigatório", porque uma diária de salário não tem colaborador ausente.
 
-## Ajustes em relação ao script enviado
-- View criada com `WITH (security_invoker = on)` e sem `ORDER BY` interno (ordenação fica a cargo da consulta).
-- Sem `REVOKE ... FROM anon` desnecessário além do padrão; grants explícitos conforme padrão do projeto (`GRANT SELECT ... TO authenticated`, `GRANT ALL ... TO service_role` para uso por edge functions).
-- Resto do script mantido: nomes, colunas, eventos e comportamento "best-effort".
+Caso real: falta 4313 (02/09/2026, YAN SCHIAVO DE LIMA FERREIRA) ainda vinculada à diária 4342, hoje com motivo `DIÁRIA - SALÁRIO` e status Paga.
 
-## Por que não quebra fluxos atuais
-- A trigger de autoria é BEFORE e só escreve em duas colunas novas; a de auditoria é AFTER e só faz INSERT em tabela nova.
-- Ambas envolvem toda a lógica em bloco `EXCEPTION WHEN OTHERS` com `RAISE WARNING`: qualquer erro na auditoria **não** aborta o INSERT/UPDATE/DELETE original.
-- Triggers AFTER UPDATE já existentes continuam disparando na mesma ordem relativa (ordem alfabética não altera a semântica delas, pois nenhuma depende de `created_by`/`updated_by`).
-- Nenhuma policy, função ou trigger de outros módulos é tocada.
-- Registros anteriores ficam com `created_by/updated_by = NULL` e sem histórico retroativo (não há como reconstruir).
+## O que será feito
 
-## Depois da migração
-Retorno o resultado do linter e, se você quiser, um prompt pronto para o seu frontend local consumir a view de auditoria.
+### 1. Bloqueio claro na troca de motivo
+
+Ao tentar alterar o motivo de uma diária de `DIÁRIA - FALTA` ou `DIÁRIA - FALTA ATESTADO` para qualquer outro motivo, a operação será recusada enquanto existir uma falta vinculada àquela diária. A mensagem de erro identificará exatamente a falta que impede a mudança, informando:
+
+- o número (ID) da falta;
+- o nome do colaborador;
+- a data da falta;
+- a orientação de excluir a falta antes de alterar o motivo da diária.
+
+Assim, o usuário autorizado exclui a falta gerada por engano e só então corrige o motivo da diária.
+
+### 2. Justificativa deixa de quebrar
+
+A rotina de justificar falta passa a validar que a diária vinculada ainda é uma diária de falta. Se não for, ela devolve uma mensagem explicativa em vez do erro técnico atual sobre "colaborador ausente".
+
+### 3. Correção do caso atual
+
+Como a diária 4342 é legitimamente uma diária de salário, a falta 4313 será desvinculada dela (a falta continua existindo, com todo o seu histórico) para que possa ser justificada ou excluída normalmente pela equipe. Nenhum dado da diária 4342 é alterado.
+
+## Fluxos que continuam iguais
+
+- Criar diária de falta e gerar a falta automaticamente.
+- Justificar e reverter justificativa de faltas normais.
+- Cancelar ou reprovar diária, que já desvincula a falta hoje.
+- Vínculo automático de falta existente a uma nova diária de falta.
+- Exclusão de faltas pelos perfis já autorizados.
+
+## Detalhes técnicos
+
+- Nova trigger `BEFORE UPDATE` em `public.diarias_temporarias`: quando `OLD.motivo_vago IN ('DIÁRIA - FALTA','DIÁRIA - FALTA ATESTADO')` e `NEW.motivo_vago` for diferente (ou nulo), busca em `faltas_colaboradores_convenia` a linha com `diaria_temporaria_id = NEW.id`. Se existir, `RAISE EXCEPTION` com ID da falta, nome do colaborador (`colaboradores_convenia.name`/`last_name`) e `data_falta`.
+- Bypass mantido para os fluxos internos que já usam `app.rpc_call` (`justificar_falta`, `reverter_justificativa`) e para transições de cancelamento/reprovação, que continuam desvinculando via `desvincular_falta_ao_reprovar_cancelar`.
+- `justificar_falta_convenia`: antes do `UPDATE` na diária, verifica o `motivo_vago` atual; se não for de falta, levanta mensagem explicativa em vez de forçar `DIÁRIA - FALTA ATESTADO`.
+- Correção pontual via `UPDATE` de dados: `faltas_colaboradores_convenia.diaria_temporaria_id = NULL` para a falta 4313, executado com o bypass oficial `app.rpc_call` para não disparar as regras de sincronização.
+- Sem alteração de schema em tabelas; apenas funções, uma trigger e uma correção de dado pontual.
