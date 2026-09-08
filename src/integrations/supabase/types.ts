@@ -2377,21 +2377,21 @@ export type Database = {
       }
       cost_center: {
         Row: {
-          convenia_id: string
+          convenia_id: string | null
           created_at: string
           id: string
           name: string
           updated_at: string
         }
         Insert: {
-          convenia_id: string
+          convenia_id?: string | null
           created_at?: string
           id?: string
           name: string
           updated_at?: string
         }
         Update: {
-          convenia_id?: string
+          convenia_id?: string | null
           created_at?: string
           id?: string
           name?: string
